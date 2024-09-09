@@ -1,0 +1,16 @@
+build
+backup
+result
+result.*
+.vscode
+src/test.cpp
+data
+resource/sequence
+paper
+bin
+bin*
+paper
+*.ini
+*.csv
+bp
+m_A_damp

@@ -1,0 +1,4546 @@
+
+
+scene_name = "one million"
+out_file = 'C:\codebase\admm_elasticity\result\one million'
+seperate_out = false
+show_windows = false
+
+[global]
+dt = 0.02
+pin = []
+g = 2.98
+# density = 10.0
+
+[solver]
+admm_max_iter = 30
+DCD_interval = 5
+GS_max_iter = 5
+contact.use_CCD = false
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.enable = true
+contact.w_scale = 250.0
+contact.kappa = 1e6
+contact.unique = false
+contact.beta = 1e5
+contact.mu = 0.1
+damp.kl = 1e-4
+damp.km = 1e-3
+
+[DCD]
+narrow.max_collision = 40000
+narrow.thickness = 3e-2
+broad.radius = 3e-2
+broad.strategy = 'rebuild'
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.600432023558112, -1.8000000000000025, -9.598066086988638]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.679177773337987, -1.8000000000000025, -6.883118883860575]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.655670539954315, -1.8000000000000025, -4.182358972223047]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.687573475899296, -1.8000000000000025, -1.4415431386882407]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.660566342978953, -1.8000000000000025, 1.3390783191707047]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.604599215783695, -1.8000000000000025, 4.0831383112293285]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.624048899724615, -1.8000000000000025, 6.831669523292113]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.586825163799945, -1.8000000000000025, 9.561146020253563]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.827771028701235, -1.8000000000000025, -9.621988854365563]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.815944816682505, -1.8000000000000025, -6.924082332306265]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.924031885542872, -1.8000000000000025, -4.130348435553346]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.933386048378743, -1.8000000000000025, -1.3654021539262455]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.8468702627721, -1.8000000000000025, 1.430831362910645]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.837237029318047, -1.8000000000000025, 4.127830549410646]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.896770993709589, -1.8000000000000025, 6.9118481558838525]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.831552827526809, -1.8000000000000025, 9.588463882092082]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.106731979646579, -1.8000000000000025, -9.637453234211199]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.19138863295594, -1.8000000000000025, -6.886569949568192]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.067476796359822, -1.8000000000000025, -4.126545705753791]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.194626643400111, -1.8000000000000025, -1.3997950861055628]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.130932190352858, -1.8000000000000025, 1.3100974564163401]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.0822391540390495, -1.8000000000000025, 4.165035639647266]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.171569349592891, -1.8000000000000025, 6.8682483689838065]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.07753049178791, -1.8000000000000025, 9.55500464866524]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3909348381546192, -1.8000000000000025, -9.588801075665241]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.401583918899771, -1.8000000000000025, -6.946617891819864]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3508415645235612, -1.8000000000000025, -4.0509233990289095]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3152342307586942, -1.8000000000000025, -1.3238683016279396]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3893810014519605, -1.8000000000000025, 1.406925883752562]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.438871102991822, -1.8000000000000025, 4.109232136982984]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3338877285243935, -1.8000000000000025, 6.89901096926177]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.419751927230294, -1.8000000000000025, 9.657091749426396]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3183011388041947, -1.8000000000000025, -9.559188183796186]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3924379517019005, -1.8000000000000025, -6.8389045694582915]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.4479213900423158, -1.8000000000000025, -4.071037862957554]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3778533772941088, -1.8000000000000025, -1.4329969944895105]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.4154791637198425, -1.8000000000000025, 1.3408248539862448]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3554597519374827, -1.8000000000000025, 4.075884229196106]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.4411584116677076, -1.8000000000000025, 6.88164994615666]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.4274297052267961, -1.8000000000000025, 9.597412671631663]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.188867616425048, -1.8000000000000025, -9.675753650271064]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.136994995610637, -1.8000000000000025, -6.834419255677828]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.147012614213493, -1.8000000000000025, -4.073697310950844]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.1520093104085145, -1.8000000000000025, -1.3376443432474279]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.135759712193922, -1.8000000000000025, 1.3955260289528315]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.200324690716336, -1.8000000000000025, 4.054354188818449]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.143294068023238, -1.8000000000000025, 6.804946416981409]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.200504498151588, -1.8000000000000025, 9.563423771475932]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.879999906549642, -1.8000000000000025, -9.589428334700017]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.875815954166804, -1.8000000000000025, -6.8753167403281275]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.90170253474772, -1.8000000000000025, -4.102503021377218]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.8774296163698025, -1.8000000000000025, -1.4449208594641174]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.8667110410174885, -1.8000000000000025, 1.3313147678558632]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.819151870722017, -1.8000000000000025, 4.073274024476639]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.832665681141059, -1.8000000000000025, 6.930611346086604]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.8855292295475685, -1.8000000000000025, 9.662416791112413]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.558051729872417, -1.8000000000000025, -9.63605859047961]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.569765890492107, -1.8000000000000025, -6.865621347838665]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.658918798500498, -1.8000000000000025, -4.052429281056747]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.65668128746649, -1.8000000000000025, -1.4312018223359484]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.58140575986787, -1.8000000000000025, 1.301783812753479]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.656531923794407, -1.8000000000000025, 4.148660142139775]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.602106278431666, -1.8000000000000025, 6.859267978182711]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.63815294628197, -1.8000000000000025, 9.672734331817388]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.642531095643381, -0.9000000000000026, -9.675522959140395]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.552208829319497, -0.9000000000000026, -6.876059875026186]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.690926948330901, -0.9000000000000026, -4.10381038428821]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.61723977413921, -0.9000000000000026, -1.4266922506848108]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.599890134636073, -0.9000000000000026, 1.4413555245597713]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.648186402458142, -0.9000000000000026, 4.077504210838777]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.619090369691563, -0.9000000000000026, 6.915095269698718]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.648770601645872, -0.9000000000000026, 9.590231215509917]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.806685790973474, -0.9000000000000026, -9.590948511385353]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.935907384375234, -0.9000000000000026, -6.893949707579512]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.897325935813269, -0.9000000000000026, -4.14053354198459]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.820929935080047, -0.9000000000000026, -1.3086145559893811]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.882837148219423, -0.9000000000000026, 1.447664133843757]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.886766451687862, -0.9000000000000026, 4.1550214569282335]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.8568426879194675, -0.9000000000000026, 6.927235282080314]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.839292300595758, -0.9000000000000026, 9.6304262716205]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.087650948226969, -0.9000000000000026, -9.588950882853384]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.079883481858939, -0.9000000000000026, -6.939830986468634]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.05509191219212, -0.9000000000000026, -4.06936460473674]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.137415403308656, -0.9000000000000026, -1.4455581663798789]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.118347082128763, -0.9000000000000026, 1.4373893993926163]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.131274308369711, -0.9000000000000026, 4.168422378384211]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.090564179680379, -0.9000000000000026, 6.872368715324505]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.088925256812927, -0.9000000000000026, 9.646240094193754]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3823792609427574, -0.9000000000000026, -9.633203704595415]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.328900170367266, -0.9000000000000026, -6.840949974316892]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3947135304789668, -0.9000000000000026, -4.108493568975001]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3300765316948056, -0.9000000000000026, -1.3281548400946654]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3887908012863424, -0.9000000000000026, 1.3186219160376886]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.4401636506588407, -0.9000000000000026, 4.074498689686113]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3590872465853483, -0.9000000000000026, 6.911466205906706]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.353311338168682, -0.9000000000000026, 9.667218615058609]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.351087702835903, -0.9000000000000026, -9.574666539289419]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.353221680797672, -0.9000000000000026, -6.944130312976029]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3578773035642868, -0.9000000000000026, -4.160771141381796]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3989026825983508, -0.9000000000000026, -1.4426994338081034]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3124614705528543, -0.9000000000000026, 1.4081288450554563]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3418825872341937, -0.9000000000000026, 4.183083017476925]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.4076908697182997, -0.9000000000000026, 6.8845083103113645]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.4233413196897935, -0.9000000000000026, 9.587782262741122]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.1651342141928165, -0.9000000000000026, -9.553011012982834]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.189022648221149, -0.9000000000000026, -6.835372790697467]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.198909605746438, -0.9000000000000026, -4.156641309260789]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.178498855544031, -0.9000000000000026, -1.4055815764256199]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.083679868723992, -0.9000000000000026, 1.3185956164884178]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.135557791193628, -0.9000000000000026, 4.115784459460269]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.0542723337314275, -0.9000000000000026, 6.847882585806708]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.060595202383579, -0.9000000000000026, 9.630876937582617]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.805736679166191, -0.9000000000000026, -9.694593681690778]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.897367887651807, -0.9000000000000026, -6.912645427284977]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.810614019365762, -0.9000000000000026, -4.141278616745393]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.939602191976778, -0.9000000000000026, -1.3061670551734998]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.868984098114645, -0.9000000000000026, 1.3307979310040903]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.883930794669574, -0.9000000000000026, 4.074092613609356]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.850959120568703, -0.9000000000000026, 6.933462987135652]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.827501093568792, -0.9000000000000026, 9.565405232086754]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.697088454935916, -0.9000000000000026, -9.591514869973189]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.689810846762452, -0.9000000000000026, -6.85893611806282]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.687589271088573, -0.9000000000000026, -4.194350191086648]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.560006259268704, -0.9000000000000026, -1.3486691829672512]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.588770569698344, -0.9000000000000026, 1.395418261238726]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.567868293292726, -0.9000000000000026, 4.07758286078305]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.683605450971982, -0.9000000000000026, 6.861664494285488]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.665747699896954, -0.9000000000000026, 9.570949435248906]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.670181324671859, -2.6645352591003757e-15, -9.660111612436348]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.647820318014558, -2.6645352591003757e-15, -6.900461032761421]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.672169003841429, -2.6645352591003757e-15, -4.156173430181104]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.696085777813368, -2.6645352591003757e-15, -1.4480837476945059]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.587364146982901, -2.6645352591003757e-15, 1.409026185134131]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.642747764151652, -2.6645352591003757e-15, 4.198545960740631]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.671999964227554, -2.6645352591003757e-15, 6.941330686569149]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.675314591483628, -2.6645352591003757e-15, 9.622555902543827]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.849158529035597, -2.6645352591003757e-15, -9.625574753187475]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.940304792495487, -2.6645352591003757e-15, -6.832329373616618]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.944027715012101, -2.6645352591003757e-15, -4.126808896651807]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.8860143240315494, -2.6645352591003757e-15, -1.363101670343271]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.836981504870868, -2.6645352591003757e-15, 1.3211100143111434]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.902410621648294, -2.6645352591003757e-15, 4.077922791849085]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.898392381955382, -2.6645352591003757e-15, 6.8882739581863035]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.9470769912822625, -2.6645352591003757e-15, 9.695148298489642]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.086528224579363, -2.6645352591003757e-15, -9.69472819593024]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.166029565521213, -2.6645352591003757e-15, -6.8835594427979885]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.194628779064752, -2.6645352591003757e-15, -4.170199054587438]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.146826694966821, -2.6645352591003757e-15, -1.3120949160333346]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.147790477230805, -2.6645352591003757e-15, 1.3070218847744304]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.194726759959739, -2.6645352591003757e-15, 4.176341130110769]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.078060006331168, -2.6645352591003757e-15, 6.918161738850923]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.147343489949842, -2.6645352591003757e-15, 9.634644632038082]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3279678109459674, -2.6645352591003757e-15, -9.550727529136351]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3794437871523222, -2.6645352591003757e-15, -6.815995067181817]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.368112038363602, -2.6645352591003757e-15, -4.059761068354002]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3306556235814089, -2.6645352591003757e-15, -1.429913481615559]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.4005538371503263, -2.6645352591003757e-15, 1.407024878068686]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3963581499451152, -2.6645352591003757e-15, 4.167375322892045]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.349048326509811, -2.6645352591003757e-15, 6.808942821884131]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3491122930575266, -2.6645352591003757e-15, 9.593940154566653]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3070080371409638, -2.6645352591003757e-15, -9.574559711369021]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3163124398406172, -2.6645352591003757e-15, -6.948117152432138]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3651045808280848, -2.6645352591003757e-15, -4.08180979338936]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.4415993147982515, -2.6645352591003757e-15, -1.3589973512757325]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.4182562680338435, -2.6645352591003757e-15, 1.3001874379112746]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.416853047346919, -2.6645352591003757e-15, 4.156961284259117]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3977431492530012, -2.6645352591003757e-15, 6.947010770667113]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.4069875339642266, -2.6645352591003757e-15, 9.577794053062352]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.1360894328416435, -2.6645352591003757e-15, -9.671207186479029]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.19778686569054, -2.6645352591003757e-15, -6.944521341217703]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.081242316447225, -2.6645352591003757e-15, -4.067900799980137]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.118851356621104, -2.6645352591003757e-15, -1.4367525580847165]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.133461116313397, -2.6645352591003757e-15, 1.448825708601797]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.175999310106432, -2.6645352591003757e-15, 4.198474018460692]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.1880935483560595, -2.6645352591003757e-15, 6.801449996382392]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.086889743514803, -2.6645352591003757e-15, 9.564391073172327]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.859451395748767, -2.6645352591003757e-15, -9.660154400104902]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.902505333073194, -2.6645352591003757e-15, -6.926148695524281]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.809741999121602, -2.6645352591003757e-15, -4.187427127452938]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.88321689446941, -2.6645352591003757e-15, -1.3796267870617065]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.910180641296826, -2.6645352591003757e-15, 1.3662449748671843]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.942074482707042, -2.6645352591003757e-15, 4.152379465260271]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.927657426818563, -2.6645352591003757e-15, 6.930059261832682]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.93514628684245, -2.6645352591003757e-15, 9.656236405589553]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.56839984216996, -2.6645352591003757e-15, -9.65699499773044]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.562972251597497, -2.6645352591003757e-15, -6.8058344232156855]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.674417227572356, -2.6645352591003757e-15, -4.172232892901512]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.64840991575917, -2.6645352591003757e-15, -1.3737364042913889]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.636604061195065, -2.6645352591003757e-15, 1.4245247818915416]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.635396252374925, -2.6645352591003757e-15, 4.093664718904922]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.572709154712545, -2.6645352591003757e-15, 6.912104181716526]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.59156421382444, -2.6645352591003757e-15, 9.592790259223367]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.601895833587585, 0.8999999999999972, -9.561500179609872]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.662016677402631, 0.8999999999999972, -6.815575055889509]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.558861099609162, 0.8999999999999972, -4.166809273786964]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.640176164553809, 0.8999999999999972, -1.4164895328354579]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.584465902742904, 0.8999999999999972, 1.3565475610644242]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.692286077356293, 0.8999999999999972, 4.196403385045732]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.570259861600139, 0.8999999999999972, 6.931808043972467]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.67808202348201, 0.8999999999999972, 9.662095756158116]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.825654906637738, 0.8999999999999972, -9.583746135328202]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.903540587931056, 0.8999999999999972, -6.814556308218707]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.9226685910516235, 0.8999999999999972, -4.073136784456171]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.8560740520554635, 0.8999999999999972, -1.4151854556516703]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.946843791631784, 0.8999999999999972, 1.373020420529068]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.930839821024923, 0.8999999999999972, 4.176732940775068]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.815973226062191, 0.8999999999999972, 6.803585313588123]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.825319921797881, 0.8999999999999972, 9.590741708689638]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.130376870464561, 0.8999999999999972, -9.620526796602569]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.17286914023279, 0.8999999999999972, -6.83326025345303]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.07680053234016, 0.8999999999999972, -4.174520921035893]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.1513211419681175, 0.8999999999999972, -1.3303376489563625]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.178822687604943, 0.8999999999999972, 1.4299845942896425]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.170905699579561, 0.8999999999999972, 4.1545357228587765]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.0830591457660566, 0.8999999999999972, 6.838442590928331]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.083500337291685, 0.8999999999999972, 9.58183940345278]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.428374407165343, 0.8999999999999972, -9.594585955650038]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.4410471901012087, 0.8999999999999972, -6.898119806245862]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3808865852824272, 0.8999999999999972, -4.150251056265402]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.383943484327018, 0.8999999999999972, -1.3120259853047678]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3915570450551673, 0.8999999999999972, 1.3066260445790743]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3200812240446353, 0.8999999999999972, 4.185929699159901]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.4414017553313503, 0.8999999999999972, 6.905908804576136]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.4324881187873757, 0.8999999999999972, 9.669613485481197]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3133964476496942, 0.8999999999999972, -9.61566705660815]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3684110706700352, 0.8999999999999972, -6.83180603964319]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3736265851297222, 0.8999999999999972, -4.177870745952711]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.4065691847589772, 0.8999999999999972, -1.390470413108762]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3348229638204536, 0.8999999999999972, 1.3561829063288542]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.4363958525546359, 0.8999999999999972, 4.180132903144855]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3760673328626698, 0.8999999999999972, 6.9482915301001]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3680385872434435, 0.8999999999999972, 9.582757038066894]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.173939277493769, 0.8999999999999972, -9.643361486252246]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.093599051376801, 0.8999999999999972, -6.925395184453153]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.068068112662063, 0.8999999999999972, -4.113318424201251]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.079818674156849, 0.8999999999999972, -1.3212006106188792]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.121427580828158, 0.8999999999999972, 1.4012524188512447]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.121062916620049, 0.8999999999999972, 4.105747228038068]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.182082870730612, 0.8999999999999972, 6.943812068651141]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.117485501382324, 0.8999999999999972, 9.579551770809925]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.943474887936304, 0.8999999999999972, -9.674874466761901]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.86204826322593, 0.8999999999999972, -6.946357731704175]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.9254315541873765, 0.8999999999999972, -4.164538128598892]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.847549980928584, 0.8999999999999972, -1.3389985857497848]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.839233191479867, 0.8999999999999972, 1.3626894031910037]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.947042378355544, 0.8999999999999972, 4.058014857486443]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.851944802568639, 0.8999999999999972, 6.91432865981324]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.82599975439426, 0.8999999999999972, 9.653650795763511]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.603036762471373, 0.8999999999999972, -9.6252227240539]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.620485770128873, 0.8999999999999972, -6.802311536740431]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.584456044604536, 0.8999999999999972, -4.0724341925718734]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.610234165395187, 0.8999999999999972, -1.3798271672849118]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.632076567031763, 0.8999999999999972, 1.4219878864893492]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.55881867023016, 0.8999999999999972, 4.079431672506731]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.576938127208475, 0.8999999999999972, 6.857390401545334]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.630927742624472, 0.8999999999999972, 9.643307306057359]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.623644744784945, 1.7999999999999972, -9.643356015827141]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.695471642178704, 1.7999999999999972, -6.829516428606093]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.67401566857224, 1.7999999999999972, -4.069104936280441]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.56025055949718, 1.7999999999999972, -1.3775854506975485]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.6034638079315, 1.7999999999999972, 1.3145988356914824]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.556196742363415, 1.7999999999999972, 4.080772337154508]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.565514568094518, 1.7999999999999972, 6.845311436611624]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-9.58061032357819, 1.7999999999999972, 9.696011431078663]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.849938023660933, 1.7999999999999972, -9.611235228220004]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.851626398973085, 1.7999999999999972, -6.895759670643138]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.9022609856582235, 1.7999999999999972, -4.134750211622309]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.859140587336785, 1.7999999999999972, -1.4107297030161199]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.892263040990702, 1.7999999999999972, 1.3573157449164768]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.894472790267864, 1.7999999999999972, 4.133174953007579]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.8799499084052025, 1.7999999999999972, 6.9209032979896925]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-6.8552657100603405, 1.7999999999999972, 9.696254832853153]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.1052163506474715, 1.7999999999999972, -9.611133832114039]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.139637526133725, 1.7999999999999972, -6.943278305062871]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.07190459998935, 1.7999999999999972, -4.060725729189924]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.07069050075505, 1.7999999999999972, -1.336103888554053]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.176807625069929, 1.7999999999999972, 1.4142038751241799]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.098075564912872, 1.7999999999999972, 4.073008738493256]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.086678206094134, 1.7999999999999972, 6.886892455972109]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-4.09501634528345, 1.7999999999999972, 9.592842756026887]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.328503915142715, 1.7999999999999972, -9.63691653799734]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3484620375380132, 1.7999999999999972, -6.863111854295134]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.4466049231924707, 1.7999999999999972, -4.0729040670986265]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.336293737726745, 1.7999999999999972, -1.3376547421642595]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3837609296000082, 1.7999999999999972, 1.3832448643976925]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.4048797462347355, 1.7999999999999972, 4.1917563762046175]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.3855647188432574, 1.7999999999999972, 6.914099075155129]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [-1.367160507163229, 1.7999999999999972, 9.55581055491507]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.410661669916946, 1.7999999999999972, -9.691688480225622]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3453647338492551, 1.7999999999999972, -6.927895879356875]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.449979726058217, 1.7999999999999972, -4.113058546194086]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3372397299907934, 1.7999999999999972, -1.4240691513921497]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3055234264446778, 1.7999999999999972, 1.4077834430183334]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3476697157722963, 1.7999999999999972, 4.068999487941502]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.4522437249299731, 1.7999999999999972, 6.867377468754235]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [1.3232076994552049, 1.7999999999999972, 9.697068489757445]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.192512014248845, 1.7999999999999972, -9.585060640279112]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.143092611941714, 1.7999999999999972, -6.949237956064465]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.05687359263827, 1.7999999999999972, -4.0556440330610135]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.095088805858236, 1.7999999999999972, -1.441551181895873]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.118912661092084, 1.7999999999999972, 1.3755700434761788]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.144717227837859, 1.7999999999999972, 4.164398426692932]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.185202173862953, 1.7999999999999972, 6.91878147064288]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [4.126692184010626, 1.7999999999999972, 9.616624326558643]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.838677259397048, 1.7999999999999972, -9.693197942093757]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.882676659510061, 1.7999999999999972, -6.8436606466457786]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.912359711383399, 1.7999999999999972, -4.066947887772925]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.906776069432468, 1.7999999999999972, -1.333336141665681]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.85301002681803, 1.7999999999999972, 1.321914305558531]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.838429019128441, 1.7999999999999972, 4.097903773243548]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.897115650545565, 1.7999999999999972, 6.930726766986201]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [6.841852580573828, 1.7999999999999972, 9.553209996113779]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.568922148387873, 1.7999999999999972, -9.631246555636057]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.653770505530744, 1.7999999999999972, -6.915979008617908]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.598748523851615, 1.7999999999999972, -4.167201199744675]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.647121717470277, 1.7999999999999972, -1.402587216096821]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.646220509062143, 1.7999999999999972, 1.445679269321948]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.56811330264842, 1.7999999999999972, 4.062863788469727]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.593185627181839, 1.7999999999999972, 6.828693331951939]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+[[mesh]]
+f.path = 'tetmesh/mydonut_999.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [9.586474193252467, 1.7999999999999972, 9.594310513906354]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 50.0
+
+
+
+[[mesh]]
+f.path = 'flat\flat_v3452.obj'
+f.type = 'static'
+f.color = 6
+t.scale = 15.0
+t.translate = [0.0, -2.5, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 8000.0
+k.min_limit = 0.98
+k.max_limit = 1.02
+k.bending = 0.001
+# k.use_limit = true
+k.use_limit = false
+density = 2.5
+animate = ""
+
+[mesh_post]
+center_ids = []
+
+[[collider]]
+type = 'plane'
+center = [0, -0.6, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 10
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false

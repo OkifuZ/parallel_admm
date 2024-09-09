@@ -1,0 +1,128 @@
+scene_name = "cyliner"
+out_file = 'F:\PBA\admm_soft\admm-elasticity\result\cylinder'
+seperate_out = false
+show_windows = true
+
+[global]
+dt = 0.0333
+# pin = [20, 39, 60, 79] # 20x20
+# pin = [40, 159, 120, 79] # 40x40
+pin = [] 
+g = 0.98
+
+[solver]
+admm_max_iter = 50
+DCD_interval = 5
+GS_max_iter = 5
+contact.use_CCD = true
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.enable = true
+contact.w_scale = 1000.0
+contact.kappa = 1e6
+contact.beta = 2e5
+contact.mu = 0.9
+contact.unique = false
+damp.kl = 1e-2
+damp.km = 1e-2
+
+[DCD]
+narrow.max_collision = 40000
+narrow.thickness = 1e-2
+broad.radius = 1e-2
+broad.strategy = 'rebuild'
+
+
+[[mesh]]
+f.path = 'tetmesh/cylinder_220.msh'
+f.type = 'tet'
+f.color = 7
+t.scale = 0.7
+t.translate = [0, 2.5, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 20000.0
+k.min_limit = 0.999
+k.max_limit = 1.001
+k.use_limit = true
+density = 1.1
+
+[[mesh]]
+f.path = 'tetmesh/cylinder_220.msh'
+f.type = 'tet'
+f.color = 8
+t.scale = 0.6
+t.translate = [0, 1.7, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 20000.0
+k.min_limit = 0.999
+k.max_limit = 1.001
+k.use_limit = true
+density = 1.1
+
+[[mesh]]
+f.path = 'tetmesh/cylinder_220.msh'
+f.type = 'tet'
+f.color = 9
+t.scale = 0.5
+t.translate = [0, 1.1, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 20000.0
+k.min_limit = 0.999
+k.max_limit = 1.001
+k.use_limit = true
+density = 1.1
+
+[[mesh]]
+f.path = 'tetmesh/cylinder_220.msh'
+f.type = 'tet'
+f.color = 10
+t.scale = 0.4
+t.translate = [0, 0.6, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 20000.0
+k.min_limit = 0.999
+k.max_limit = 1.001
+k.use_limit = true
+density = 1.1
+
+[[mesh]]
+f.path = 'tetmesh/cylinder_220.msh'
+f.type = 'tet'
+f.color = 23
+t.scale = 0.3
+t.translate = [0, 0.2, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 20000.0
+k.min_limit = 0.999
+k.max_limit = 1.001
+k.use_limit = true
+density = 1.1
+
+[[mesh]]
+f.path = 'tetmesh/mat20x20.msh'
+f.type = 'tet'
+f.color = 24
+t.scale = 4.0
+t.translate = [0, -0.1, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 100000.0
+k.min_limit = 0.999
+k.max_limit = 1.001
+k.use_limit = true
+density = 1.1
+
+
+[mesh_post]
+center_ids = []
+
+[[collider]]
+type = 'plane'
+center = [0, -0.2, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 3
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false
+

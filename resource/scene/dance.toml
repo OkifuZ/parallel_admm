@@ -1,0 +1,132 @@
+scene_name = "dance_x3"
+# out_file = './'
+out_file = 'C:\codebase\admm_elasticity\result\dance_x3'
+# out_file = 'F:\PBA\admm_soft\admm-elasticity\result\dance\'
+seperate_out = true
+show_windows = true
+
+[global]
+dt = 0.02
+pin = []
+# pin = [0, 1]
+g = 4.98
+# density = 10.0
+
+[solver]
+admm_max_iter = 200
+DCD_interval = 10
+# admm_max_iter = 60
+# DCD_interval = 6
+GS_max_iter = 4
+contact.use_CCD = true
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.enable = true
+contact.w_scale = 50
+contact.kappa = 1e6
+contact.beta = 1e5
+contact.mu = 0.1
+contact.unique = true
+damp.kl = 2e-5
+damp.km = 0
+
+[DCD]
+narrow.max_collision = 50000
+narrow.thickness = 4e-2
+broad.radius = 4e-2
+broad.strategy = 'rebuild'
+
+# [[mesh]]
+# f.path = 'flat/flat.obj'
+# f.type = 'tri'
+# f.color = 14
+# t.scale = 1
+# t.translate = [-0.15, 11.5, -0]
+# t.rotate = [0, 90, 0]
+# k.stretch = 1000.0
+# k.min_limit = 0.99
+# k.max_limit = 1.01
+# k.bending = 0.01
+# k.use_limit = true
+# density = 1.0
+
+[[mesh]]
+f.path = 'body/smpl_tri.obj'
+f.type = 'static'
+f.color = 3
+t.scale = 10.5
+t.translate = [0.05, 0.05, 0]
+t.rotate = [0, 90, 0]
+k.stretch = 15000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = false
+density = 2.0
+# animate = "sequence/Capoeira.npz"
+# animate = "sequence/Rumba.npz"
+# animate = "sequence/Rotate.npz"
+animate = ""
+
+# [[mesh]]
+# # f.path = 'hood/garment_meshes/tank_good.obj'
+# f.path = 'hood/garment_meshes/tank_good.obj'
+# f.type = 'tri'
+# f.color = 33
+# t.scale = 12.7
+# t.translate = [0.00, 11.8, -0]
+# t.rotate = [0, 90, 0]
+# k.stretch = 1000.0
+# k.min_limit = 0.99
+# k.max_limit = 1.01
+# k.bending = 0.001
+# k.use_limit = true
+# density = 0.5
+
+# [[mesh]]
+# # f.path = 'hood/garment_meshes/tank_good.obj'
+# f.path = 'hood/garment_meshes/tank_good.obj'
+# f.type = 'tri'
+# f.color = 33
+# t.scale = 14.1
+# t.translate = [-0.15, 11.5, -0]
+# t.rotate = [0, 90, 0]
+# k.stretch = 1000.0
+# k.min_limit = 0.99
+# k.max_limit = 1.01
+# k.bending = 0.01
+# k.use_limit = true
+# density = 1.0
+
+[[mesh]]
+f.path = 'hood/garment_meshes/dress_5294.obj'
+# f.path = 'hood/garment_meshes/tank_good.obj'
+# f.path = 'hood/garment_meshes/tshirt_unzipped.obj'
+f.type = 'tri'
+f.color = 7
+t.scale = 12.5
+t.translate = [-0.05, 11.8, -0]
+t.rotate = [0, 90, 0]
+k.stretch = 8000.0
+k.min_limit = 0.98
+k.max_limit = 1.02
+k.bending = 0.01
+# k.use_limit = true
+k.use_limit = false
+density = 2.0
+
+
+
+[mesh_post]
+center_ids = []
+
+[[collider]]
+type = 'plane'
+center = [0, -100, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 10
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false

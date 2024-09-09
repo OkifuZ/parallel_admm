@@ -1,0 +1,343 @@
+scene_name = "20-layers-wostab"
+out_file = 'F:\PBA\admm_soft\admm-elasticity\result\20-layers-wostab'
+seperate_out = false
+show_windows = true
+
+[global]
+dt = 0.0333
+# pin = [0, 1, 2, 3]
+pin = []
+g = 0.98
+density = 0.1
+
+[solver]
+admm_max_iter = 20
+DCD_interval = 5
+GS_max_iter = 3
+contact.use_CCD = true
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.enable = true
+contact.w_scale = 400.0
+contact.kappa = 1e6
+contact.beta = 1e5
+contact.mu = 0.7
+contact.unique = false
+damp.kl = 1e-3
+damp.km = 1e-4
+
+[DCD]
+narrow.max_collision = 70000
+narrow.thickness = 3e-2
+broad.radius = 3e-2
+broad.strategy = 'rebuild'
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'static'
+f.color = 0
+t.scale = 3.0
+t.translate = [0, 1.0, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+animate = ""
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 1
+t.scale = 2.6
+t.translate = [0, 1.4, 0]
+t.rotate = [0, 20, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 2
+t.scale = 2.6
+t.translate = [0, 1.8, 0]
+t.rotate = [0, 40, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 3
+t.scale = 2.6
+t.translate = [0, 2.2, 0]
+t.rotate = [0, 60, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 4
+t.scale = 2.6
+t.translate = [0, 2.6, 0]
+t.rotate = [0, 80, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 5
+t.scale = 2.6
+t.translate = [0, 3.0, 0]
+t.rotate = [0, 100, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 6
+t.scale = 2.6
+t.translate = [0, 3.4, 0]
+t.rotate = [0, 120, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 7
+t.scale = 2.6
+t.translate = [0, 3.8, 0]
+t.rotate = [0, 140, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 8
+t.scale = 2.6
+t.translate = [0, 4.2, 0]
+t.rotate = [0, 160, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 9
+t.scale = 2.6
+t.translate = [0, 4.6, 0]
+t.rotate = [0, 180, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 10
+t.scale = 3.0
+t.translate = [0, 5.0, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 11
+t.scale = 2.6
+t.translate = [0, 5.4, 0]
+t.rotate = [0, 20, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 12
+t.scale = 2.6
+t.translate = [0, 5.8, 0]
+t.rotate = [0, 40, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 13
+t.scale = 2.6
+t.translate = [0, 6.2, 0]
+t.rotate = [0, 60, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 14
+t.scale = 2.6
+t.translate = [0, 6.6, 0]
+t.rotate = [0, 80, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 15
+t.scale = 2.6
+t.translate = [0, 7.0, 0]
+t.rotate = [0, 100, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 16
+t.scale = 2.6
+t.translate = [0, 7.4, 0]
+t.rotate = [0, 120, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 17
+t.scale = 2.6
+t.translate = [0, 7.8, 0]
+t.rotate = [0, 140, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 18
+t.scale = 2.6
+t.translate = [0, 8.2, 0]
+t.rotate = [0, 160, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 19
+t.scale = 2.6
+t.translate = [0, 8.6, 0]
+t.rotate = [0, 180, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 20
+t.scale = 2.6
+t.translate = [0, 9.0, 0]
+t.rotate = [0, 200, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = true
+density = 1.0
+
+[mesh_post]
+center_ids = []
+
+[[collider]]
+type = 'plane'
+center = [0, -2, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 10
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false

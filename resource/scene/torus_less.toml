@@ -1,0 +1,209 @@
+scene_name = "torus"
+out_file = 'F:\PBA\admm_soft\admm-elasticity\result\torus'
+seperate_out = false
+show_windows = true
+
+[global]
+dt = 0.025
+pin = []
+g = 1.98
+density = 1.1
+
+[solver]
+admm_max_iter = 25
+DCD_interval = 4
+GS_max_iter = 5
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.use_CCD = true
+contact.enable = true
+contact.w_scale = 300.0
+contact.kappa = 1e6
+contact.beta = 2e5
+contact.mu = 0.5
+contact.unique = false
+
+damp.kl = 1e-4
+damp.km = 0
+
+[DCD]
+narrow.max_collision = 50000
+narrow.thickness = 5e-2
+broad.radius = 5e-2
+broad.strategy = 'rebuild'
+
+[[mesh]]
+f.path = 'tetmesh/torus.msh'
+f.type = 'tet'
+f.color = 0
+t.scale = 1.7
+t.translate = [0, 1.5, 0]
+t.rotate = [90, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = false
+density = 1.0
+
+[[mesh]]
+f.path = 'tetmesh/torus.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1.7
+t.translate = [0.2, 2.0, 0.0]
+t.rotate = [90, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = false
+density = 1.0
+
+[[mesh]]
+f.path = 'tetmesh/torus.msh'
+f.type = 'tet'
+f.color = 2
+t.scale = 1.7
+t.translate = [0.4, 2.5, 0.0]
+t.rotate = [90, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = false
+density = 1.0
+
+[[mesh]]
+f.path = 'tetmesh/torus.msh'
+f.type = 'tet'
+f.color = 3
+t.scale = 1.7
+t.translate = [0.6, 3.0, 0.0]
+t.rotate = [90, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = false
+density = 1.0
+
+[[mesh]]
+f.path = 'tetmesh/torus.msh'
+f.type = 'tet'
+f.color = 4
+t.scale = 1.7
+t.translate = [0.8, 3.5, 0.0]
+t.rotate = [90, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = false
+density = 1.0
+
+[[mesh]]
+f.path = 'tetmesh/torus.msh'
+f.type = 'tet'
+f.color = 5
+t.scale = 1.7
+t.translate = [1.0, 4.0, 0.0]
+t.rotate = [90, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = false
+density = 1.0
+
+[[mesh]]
+f.path = 'tetmesh/torus.msh'
+f.type = 'tet'
+f.color = 6
+t.scale = 1.7
+t.translate = [1.2, 4.5, 0.0]
+t.rotate = [90, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = false
+density = 1.0
+
+[[mesh]]
+f.path = 'tetmesh/torus.msh'
+f.type = 'tet'
+f.color = 7
+t.scale = 1.7
+t.translate = [1.4, 5.0, 0.0]
+t.rotate = [90, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = false
+density = 1.0
+
+[[mesh]]
+f.path = 'tetmesh/torus.msh'
+f.type = 'tet'
+f.color = 8
+t.scale = 1.7
+t.translate = [1.6, 5.5, 0.0]
+t.rotate = [90, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = false
+density = 1.0
+
+[[mesh]]
+f.path = 'tetmesh/torus.msh'
+f.type = 'tet'
+f.color = 9
+t.scale = 1.7
+t.translate = [1.8, 6.0, 0.0]
+t.rotate = [90, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = false
+density = 1.0
+
+[[mesh]]
+# f.path = 'flat/flat_v651.obj'
+f.path = 'trimesh/bowl.obj'
+f.type = 'static'
+f.color = 15
+t.scale = 0.8
+t.translate = [2.4, 1.2, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 15000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = false
+density = 1.0
+animate = ""
+
+[[mesh]]
+f.path = 'flat/flat_v1429.obj'
+f.type = 'tri'
+f.color = 18
+t.scale = 3.0
+t.translate = [2.4, 7.7, 0.0]
+t.rotate = [0, 0, 0]
+k.stretch = 15000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = false
+density = 1.0
+
+
+[mesh_post]
+center_ids = []
+
+[[collider]]
+type = 'plane'
+center = [0, -20, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 5
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false
+

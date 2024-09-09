@@ -1,0 +1,84 @@
+#pragma once
+
+
+#include <Eigen/Core>
+
+#include "src_config.h"
+
+#include "mutils/exception_handle.h"
+#include "mutils/cformat.h"
+#include "mutils/common_types.h"
+#include "mutils/timer.h"
+#include "mutils/aux_color.h"
+#include "mesh/mesh_container.h"
+
+#include <string>
+#include <filesystem>
+#include <memory>
+#include <unordered_set>
+
+#include <fstream>
+#include <functional>
+
+#include "mutils/common_types.h"
+#include "mutils/cuda_tools.cuh"
+#include "device_launch_parameters.h"
+#include "contact/lbvh/lbvh.cuh"
+#include <thrust/sort.h>
+#include <thrust/sequence.h>
+#include <thrust/device_ptr.h>
+#include "mutils/dist_g.cuh"
+
+#include "contact/narrow_phase.h"
+
+//void Init_CUDA() {
+//    cudaError_t cudaStatus = cudaSetDevice(0);
+//    if (cudaStatus != cudaSuccess) {
+//        fprintf(stderr, "cudaSetDevice failed!  Do you have a CUDA-capable GPU installed?");
+//        exit(0);
+//    }
+//}
+
+class Solver;
+
+class BVH_GPU {
+public:
+
+    size_t max_collision_number = 100000;
+
+    lbvh_f bvh_f;
+    lbvh_e bvh_e;
+    std::vector<AABB> bvs;
+    std::vector<Node> nodes;
+
+    Solver* solver;
+    MeshData* mesh;
+
+    double3* d_verts;
+    uint2* d_edges;
+    uint3* d_faces;
+    uint32_t* d_surfVertIdx;
+    int4* d_collisonPairs;
+    std::vector<int4> h_collisionPairs;
+
+
+    size_t v_num{};
+    size_t e_num{};
+    size_t t_num{};
+
+    Result<double>* d_contact_info;
+    std::vector<Result<double>> h_contact_info;
+    uint32_t* d_cpNum;
+    uint32_t h_cpNum;
+
+    void init();
+
+    void construct(bool copy_to_host = false);
+
+    void update(const ADU::Matf_X3& verts, bool copy_to_host = false);
+
+    void convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct_info, const ADU::Matf_X3& pos);
+
+    void dcd();
+
+};

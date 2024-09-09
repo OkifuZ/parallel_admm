@@ -1,0 +1,6 @@
+[submodule "3rdparty/polyscope"]
+	path = 3rdparty/polyscope
+	url = https://github.com/nmwsharp/polyscope.git
+[submodule "3rdparty/ccd"]
+	path = 3rdparty/ccd
+	url = https://github.com/Continuous-Collision-Detection/Exact-Root-Parity-CCD.git

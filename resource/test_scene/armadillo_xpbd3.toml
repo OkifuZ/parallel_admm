@@ -1,0 +1,84 @@
+scene_name = "arma_xpbd_it20"
+# out_file = './'
+out_file = 'C:\codebase\admm_elasticity\result\arma_xpbd_it20\'
+seperate_out = false
+show_windows = true
+
+[global]
+dt = 0.02
+pin = []
+g = 2.9
+# density = 10.0
+
+[xpbd]
+enable = true
+iter = 20
+
+
+[solver]
+admm_max_iter = 15
+DCD_interval = 5
+GS_max_iter = 3
+contact.use_CCD = true
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.enable = true
+contact.w_scale = 10.0
+contact.kappa = 1e6
+contact.beta = 3e5
+contact.mu = 0.2
+contact.unique = false
+damp.kl = 0
+damp.km = 1e-3
+
+
+
+[DCD]
+narrow.max_collision = 100000
+narrow.thickness = 3e-2
+broad.radius = 3e-2
+broad.strategy = 'rebuild'
+
+[[mesh]]
+f.path = 'trimesh/armadillo_17k.obj'
+f.type = 'static'
+f.color = 0
+t.scale = 0.08
+t.translate = [0, -1.8, -2]
+t.rotate = [110, 0, 0]
+k.stretch = 15000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = false
+density = 1.0
+animate = ""
+
+[[mesh]]
+f.path = 'flat/flat_v10649.obj'
+f.type = 'tri'
+f.color = 1
+t.scale = 8
+t.translate = [0, 2.4, 0]
+t.rotate = [0, 20, 0]
+k.stretch = 8000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.bending = 0.005
+k.use_limit = false
+density = 25000.0
+
+
+[mesh_post]
+center_ids = []
+
+[[collider]]
+type = 'plane'
+center = [0, -2.6, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 10
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false

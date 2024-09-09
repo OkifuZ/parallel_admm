@@ -1,0 +1,108 @@
+scene_name = "armd_ADMM_iter40"
+out_file = 'C:\codebase\admm_elasticity\result\armd_ADMM_iter40\'
+seperate_out = false
+show_windows = true
+end_frame = 2000
+
+[global]
+dt = 0.015
+pin = [0, 1, 2, 3]
+g = 2.98
+# density = 10.0
+
+[solver]
+admm_max_iter = 40
+DCD_interval = 5
+GS_max_iter = 5
+contact.use_CCD = false
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.enable = true
+contact.w_scale = 500.0
+contact.kappa = 1e6
+contact.unique = false
+contact.beta = 1e5
+contact.mu = 0.5
+contact.use_heu_wc = false
+contact.wc_beta = 25
+contact.wc_sigma = 0.001
+damp.kl = 1e-4
+damp.km = 1e-4
+
+
+[DCD]
+narrow.max_collision = 40000
+narrow.thickness = 3e-2
+broad.radius = 3e-2
+broad.strategy = 'rebuild'
+
+[[mesh]]
+f.path = 'flat\flat_v10649.obj'
+# f.path = 'flat\flat_v31389.obj'
+f.type = 'tri'
+f.color = 6
+t.scale = 6
+t.translate = [0.0, -0.0, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 15000.0
+k.min_limit = 0.995
+k.max_limit = 1.005
+k.bending = 0.001
+# k.use_limit = true
+k.use_limit = false
+density = 0.1
+animate = ""
+
+[[mesh]]
+f.path = 'tetmesh/armadillo2500.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 0.04
+t.translate = [0.0, 2.0, 0.7]
+t.rotate = [-70, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.999
+k.max_limit = 1.001
+k.use_limit = false
+density = 1.0
+
+# [[mesh]]
+# f.path = 'tetmesh/mydonut_999.msh'
+# f.type = 'tet'
+# f.color = 1
+# t.scale = 1
+# t.translate = [0.0, 1.0, -0.0]
+# t.rotate = [0, 0, 0]
+# k.stretch = 10000.0
+# k.min_limit = 0.99
+# k.max_limit = 1.01
+# k.use_limit = false
+# density = 100.0
+
+# [[mesh]]
+# f.path = 'flat/flat_v134.obj'
+# f.type = 'tri'
+# f.color = 2
+# t.scale = 2.0
+# t.translate = [0, 1.8, 0]
+# t.rotate = [0, 40, 0]
+# k.stretch = 1000.0
+# k.min_limit = 0.95
+# k.max_limit = 1.05
+# k.bending = 1.0
+# k.use_limit = true
+# density = 1.0
+
+[mesh_post]
+center_ids = []
+
+[[collider]]
+type = 'plane'
+center = [0, -2, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 10
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false

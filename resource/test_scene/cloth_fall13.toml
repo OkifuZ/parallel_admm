@@ -1,0 +1,91 @@
+scene_name = "cloth_fall"
+# out_file = './'
+out_file = 'C:\codebase\admm_elasticity\result\cloth_fall13\'
+seperate_out = false
+show_windows = true
+
+end_frame = 370
+
+[global]
+dt = 0.03
+pin = []
+# pin = [4, 24]
+# pin = []
+g = 9.81
+# density = 10.0
+
+[solver]
+admm_max_iter = 41
+DCD_interval = 5
+GS_max_iter = 3
+contact.use_CCD = true
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.enable = true
+contact.w_scale = 800
+contact.unique = true
+contact.kappa = 1e6
+contact.beta = 1e5
+contact.mu = 0.4
+damp.kl = 0
+damp.km = 0
+
+[DCD]
+narrow.max_collision = 150000
+narrow.thickness = 1e-2
+broad.radius = 1e-2
+broad.strategy = 'rebuild'
+
+[[mesh]]
+f.path = 'trimesh/square17K.obj'
+f.type = 'tri'
+f.color = 14
+t.scale = 4.0
+t.translate = [0, 0.615, -0]
+t.rotate = [0, 0, 0]
+k.stretch = 700.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 0.005
+k.use_limit = false
+density = 0.05
+
+
+[[mesh]]
+f.path = 'trimesh/unit_ball.obj'
+# f.path = 'trimesh/middle_ball.obj'
+# f.path = 'trimesh/2tri.obj'
+f.type = 'static'
+f.color = 16
+t.scale = 0.6
+# t.translate = [0.00, 1.0, 0]
+t.translate = [0.00, -0.0, 0]
+t.rotate = [90, 0, 0]
+animate = "track/rotate_y.npz"
+
+[[mesh]]
+# f.path = 'trimesh/middle_ball.obj'
+f.path = 'flat/flat_v3452.obj'
+f.type = 'static'
+f.color = 23
+t.scale = 2.0
+t.translate = [0.00, -0.63, 0]
+t.rotate = [0, 0, 0]
+animate = ""
+
+
+[mesh_post]
+center_ids = [0, 1]
+
+
+
+[[collider]]
+type = 'plane'
+center = [0, -100, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 10
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false

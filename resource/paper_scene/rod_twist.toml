@@ -1,0 +1,104 @@
+scene_name = "rod_twist"
+out_file = 'F:\PBA\admm_soft\admm-elasticity\result\rod_twist'
+seperate_out = false
+show_windows = true
+
+[global]
+dt = 0.025
+pin = [
+    7,8,9,10,12,14,15,575,576,577,578,579,580,581,582,
+    0,1,2,3,4,5,6,11,13,16,17,18,19,20,22,21
+    ]
+g = 0.0
+density = 1.1
+
+[solver]
+admm_max_iter = 20
+DCD_interval = 2
+GS_max_iter = 3
+contact.use_CCD = true
+contact.enable = true
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.w_scale = 2000.0
+contact.kappa = 1e6
+contact.beta = 0.5e5
+contact.mu = 0.1
+contact.unique = false
+
+damp.kl = 1e-4
+damp.km = 1e-4
+
+[DCD]
+narrow.max_collision = 20000
+narrow.thickness = 2e-3
+broad.radius = 2e-3
+broad.strategy = 'rebuild'
+
+[[mesh]]
+f.path = 'tetmesh/rod.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 1
+t.translate = [0.0, -0.1, -0.1]
+t.rotate = [0, 0, 0]
+k.stretch = 100000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 100.0
+
+[[mesh]]
+f.path = 'tetmesh/rod.msh'
+f.type = 'tet'
+f.color = 2
+t.scale = 1
+t.translate = [0, -0.1, 0.1]
+t.rotate = [0, 0, 0]
+k.stretch = 100000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 100.0
+
+[[mesh]]
+f.path = 'tetmesh/rod.msh'
+f.type = 'tet'
+f.color = 3
+t.scale = 1
+t.translate = [0, 0.1, -0.1]
+t.rotate = [0, 0, 0]
+k.stretch = 100000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 100.0
+
+[[mesh]]
+f.path = 'tetmesh/rod.msh'
+f.type = 'tet'
+f.color = 4
+t.scale = 1
+t.translate = [0, 0.1, 0.1]
+t.rotate = [0, 0, 0]
+k.stretch = 100000.0
+k.min_limit = 0.99
+k.max_limit = 1.01
+k.use_limit = false
+density = 100.0
+
+
+[mesh_post]
+center_ids = []
+
+[[collider]]
+type = 'plane'
+center = [0, -100, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 1
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false
+

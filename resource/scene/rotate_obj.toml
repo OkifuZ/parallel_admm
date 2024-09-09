@@ -1,0 +1,117 @@
+scene_name = "moving_obj"
+# out_file = './'
+out_file = 'F:\PBA\admm_soft\admm-elasticity\result\moving_obj\'
+seperate_out = false
+show_windows = true
+
+[global]
+dt = 0.03
+pin = []
+# pin = [4, 24]
+# pin = []
+g = 1.98
+# density = 10.0
+
+[solver]
+admm_max_iter = 24
+DCD_interval = 8
+GS_max_iter = 3
+contact.use_CCD = true
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.enable = true
+contact.w_scale = 50
+contact.kappa = 1e6
+contact.beta = 1e5
+contact.mu = 0.2
+contact.unique = false
+damp.kl = 0
+damp.km = 0
+
+[DCD]
+narrow.max_collision = 50000
+narrow.thickness = 3e-2
+broad.radius = 3e-2
+broad.strategy = 'rebuild'
+
+# [[mesh]]
+# f.path = 'flat/flat_v1429.obj'
+# f.type = 'tri'
+# f.color = 14
+# t.scale = 1.7
+# t.translate = [0, 1.2, -0]
+# t.rotate = [0, 0, 0]
+# k.stretch = 1000.0
+# k.min_limit = 0.99
+# k.max_limit = 1.01
+# k.bending = 0.001
+# k.use_limit = true
+# density = 0.1
+
+[[mesh]]
+f.path = 'frictionPD/drape_6652.obj'
+# f.path = 'frictionPD/drape_5548.obj'
+# f.path = 'frictionPD/three_drape_8786.obj'
+# f.path = 'frictionPD/three_drape_11521.obj'
+f.type = 'tri'
+f.color = 14
+t.scale = 2.5
+t.translate = [0, 1.2, -0]
+t.rotate = [90, 0, 0]
+k.stretch = 500.0
+k.min_limit = 0.98
+k.max_limit = 1.02
+k.bending = 0.0001
+k.use_limit = true
+density = 0.1
+
+
+[[mesh]]
+f.path = 'trimesh/unit_ball.obj'
+# f.path = 'trimesh/middle_ball.obj'
+# f.path = 'trimesh/2tri.obj'
+f.type = 'static'
+f.color = 16
+t.scale = 1.0
+# t.translate = [0.00, 1.0, 0]
+t.translate = [0.00, -1.0, 0]
+t.rotate = [90, 0, 0]
+animate = "track/rotate_y.npz"
+
+# [[mesh]]
+# f.path = 'frictionPD/bunny.obj'
+# # f.path = 'trimesh/middle_ball.obj'
+# # f.path = 'trimesh/2tri.obj'
+# f.type = 'static'
+# f.color = 16
+# t.scale = 18.0
+# # t.translate = [0.00, 1.0, 0]
+# t.translate = [0.00, -0.8, 0]
+# t.rotate = [0, 0, 0]
+# animate = "track/rotate_y.npz"
+
+[[mesh]]
+f.path = 'flat/flat_v1429.obj'
+f.type = 'static'
+f.color = 23
+t.scale = 5.0
+t.translate = [0.00, -2.0, 0]
+t.rotate = [0, 0, 0]
+animate = ""
+
+
+[mesh_post]
+center_ids = [0, 1]
+
+
+
+[[collider]]
+type = 'plane'
+center = [0, -100, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 10
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false

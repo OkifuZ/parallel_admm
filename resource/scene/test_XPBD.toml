@@ -1,0 +1,105 @@
+scene_name = "5-layers"
+out_file = 'F:\PBA\admm_soft\admm-elasticity\result\5-layers\5-layers'
+seperate_out = false
+show_windows = true
+
+[global]
+dt = 0.03
+# pin = []
+pin = [0, 1, 2, 3]
+# pin = [23, 83, 84, 86, 85, 111, 113]
+g = 2.98
+# density = 10.0
+
+[solver]
+admm_max_iter = 20
+DCD_interval = 5
+GS_max_iter = 3
+contact.use_CCD = false
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.enable = true
+# contact.w_scale = 200.0
+contact.w_scale = 1000
+contact.kappa = 1e6
+contact.unique = false
+contact.beta = 1e5
+contact.mu = 0.8
+damp.kl = 0
+damp.km = 0
+
+[DCD]
+narrow.max_collision = 40000
+narrow.thickness = 5e-2
+broad.radius = 5e-2
+broad.strategy = 'rebuild'
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 0
+t.scale = 2.5
+t.translate = [0, 0.8, 0]
+t.rotate = [10, 0, 0]
+k.stretch = 15000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = false
+density = 4.0
+
+
+# [[mesh]]
+# f.path = 'flat/flat_v377.obj'
+# f.type = 'tri'
+# f.color = 0
+# t.scale = 2.5
+# t.translate = [0, 1.8, 0]
+# t.rotate = [0, 0, 0]
+# k.stretch = 10000.0
+# k.min_limit = 0.95
+# k.max_limit = 1.05
+# k.bending = 0
+# k.use_limit = true
+# density = 4.0
+
+[[mesh]]
+f.path = 'flat/flat_v377.obj'
+f.type = 'tri'
+f.color = 1
+t.scale = 2.5
+t.translate = [0, 1.8, 0]
+t.rotate = [0, 45, 0]
+k.stretch = 10000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 0
+k.use_limit = true
+density = 4.0
+
+# [[mesh]]
+# f.path = 'tetmesh/middle_ball.msh'
+# f.type = 'tet'
+# f.color = 1
+# t.scale = 1.5
+# t.translate = [0, 2.5, 0]
+# t.rotate = [0, 0, 0]
+# k.stretch = 2000.0
+# k.min_limit = 0.95
+# k.max_limit = 1.05
+# k.use_limit = true
+# density = 1.0
+
+[mesh_post]
+center_ids = []
+
+[[collider]]
+type = 'plane'
+center = [0, -2, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 10
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false

@@ -1,0 +1,115 @@
+scene_name = "analytic_cloth_mu07"
+# out_file = './'
+out_file = 'C:\codebase\admm_elasticity\result\analytic_mu08'
+# out_file = 'F:\PBA\admm_soft\admm-elasticity\result\dance\'
+seperate_out = true
+show_windows = true
+
+[global]
+dt = 0.005
+pin = []
+# pin = [0, 1]
+g = 9.8
+# density = 10.0
+
+[solver]
+admm_max_iter = 100
+DCD_interval = 10
+GS_max_iter = 10
+contact.use_CCD = true
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.enable = true
+contact.w_scale = 80
+contact.kappa = 1e6
+contact.beta = 1e5
+contact.mu = 0.4
+# contact.mu = 0.7
+contact.unique = false
+damp.kl = 0
+damp.km = 0
+
+[DCD]
+narrow.max_collision = 50000
+narrow.thickness = 2e-3
+broad.radius = 2e-3
+broad.strategy = 'rebuild'
+
+# [[mesh]]
+# f.path = 'tetmesh/cube.msh'
+# f.type = 'tet'
+# f.color = 14
+# t.scale = 0.35
+# t.translate = [-0, 1.6, -2.0]
+# t.rotate = [30, 0, 0]
+# k.stretch = 10000.0
+# k.min_limit = 0.999
+# k.max_limit = 1.001
+# k.use_limit = true
+# # k.use_limit = false
+# density = 4.0
+
+# [[mesh]]
+# # f.path = 'flat/flat.obj'
+# f.path = 'frictionPD\analytic\support.obj'
+# f.type = 'static'
+# f.color = 6
+# t.scale = 0.4
+# t.translate = [0.0, -0.0, 0]
+# t.rotate = [-15, 0, 0]
+# k.stretch = 8000.0
+# k.min_limit = 0.98
+# k.max_limit = 1.02
+# k.bending = 0.001
+# # k.use_limit = true
+# k.use_limit = false
+# density = 2.5
+# animate = ""
+
+[[mesh]]
+f.path = 'flat/flat_v134.obj'
+f.type = 'tri'
+f.color = 7
+t.scale = 0.3
+t.translate = [-0, 2.3, -2.0]
+t.rotate = [45, 0, 0]
+k.stretch = 1000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 0.0001
+# k.use_limit = true
+k.use_limit = true
+density = 5.0
+
+[[mesh]]
+# f.path = 'flat/flat.obj'
+f.path = 'frictionPD\analytic\support.obj'
+f.type = 'static'
+f.color = 6
+t.scale = 0.4
+t.translate = [0.0, -0.0, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 8000.0
+k.min_limit = 0.98
+k.max_limit = 1.02
+k.bending = 0.001
+# k.use_limit = true
+k.use_limit = false
+density = 2.5
+animate = ""
+
+
+
+[mesh_post]
+center_ids = [0, 1]
+
+[[collider]]
+type = 'plane'
+center = [0, -100, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 2
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false

@@ -1,0 +1,3348 @@
+
+scene_name = "ball"
+out_file = 'F:\PBA\admm_soft\admm-elasticity\result\ball'
+seperate_out = false
+show_windows = true
+
+[global]
+dt = 0.0333
+pin = [
+    156, 171, 172, 187, 188, 203, 204, 219, 220, 235, 236, 238, 241, 
+    245, 250, 256, 263, 264, 266, 269, 273, 278, 284, 291, 292, 294, 
+    297, 301, 306, 312, 319, 320, 322, 325, 329, 334, 340, 347, 348, 
+    350, 353, 357, 362, 368, 375, 376, 377, 378, 379, 380, 381, 382, 
+    460, 461, 462, 463, 464, 465, 466, 544, 545, 546, 547, 548, 549, 
+    550, 628, 629, 630, 631, 632, 633, 634, 712, 713, 714, 715, 716, 
+    717, 718]
+g = 0.98
+density = 0.2
+
+[solver]
+admm_max_iter = 25
+DCD_interval = 5
+GS_max_iter = 5
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.enable = true
+contact.w_scale = 2000.0
+contact.kappa = 1e6
+contact.beta = 1e5
+contact.unique = false
+contact.mu = 0.5
+
+damp.kl = 1e-3
+damp.km = 1e-4
+
+[DCD]
+narrow.max_collision = 40000
+narrow.thickness = 5e-2
+broad.radius = 5e-2
+broad.strategy = 'rebuild'
+
+
+[[mesh]]
+f.path = 'trimesh/bowl.obj'
+f.type = 'tri'
+f.color = 0
+t.scale = 0.4
+t.translate = [0, 1.7, 0]
+t.rotate = [0, 0, 0]
+k.stretch = 10000.0
+k.bending = 0.2
+k.min_limit = 0.90
+k.max_limit = 1.1
+k.use_limit = false
+
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 1
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 2.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 2
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 2.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 3
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 2.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 4
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 2.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 5
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 2.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 6
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 2.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 7
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 2.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 8
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 2.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 9
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 2.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 10
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 2.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 11
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 2.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 12
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 2.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 13
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 2.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 14
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 2.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 15
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 2.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 16
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 2.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 17
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 2.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 18
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 2.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 19
+t.scale = 0.2
+t.translate = [0.2999999999999998, 2.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 20
+t.scale = 0.2
+t.translate = [0.2999999999999998, 2.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 21
+t.scale = 0.2
+t.translate = [0.2999999999999998, 2.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 22
+t.scale = 0.2
+t.translate = [0.2999999999999998, 2.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 23
+t.scale = 0.2
+t.translate = [0.2999999999999998, 2.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 24
+t.scale = 0.2
+t.translate = [0.2999999999999998, 2.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 25
+t.scale = 0.2
+t.translate = [0.7999999999999998, 2.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 26
+t.scale = 0.2
+t.translate = [0.7999999999999998, 2.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 27
+t.scale = 0.2
+t.translate = [0.7999999999999998, 2.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 28
+t.scale = 0.2
+t.translate = [0.7999999999999998, 2.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 29
+t.scale = 0.2
+t.translate = [0.7999999999999998, 2.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 30
+t.scale = 0.2
+t.translate = [0.7999999999999998, 2.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 31
+t.scale = 0.2
+t.translate = [1.2999999999999998, 2.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 32
+t.scale = 0.2
+t.translate = [1.2999999999999998, 2.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 33
+t.scale = 0.2
+t.translate = [1.2999999999999998, 2.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 34
+t.scale = 0.2
+t.translate = [1.2999999999999998, 2.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 35
+t.scale = 0.2
+t.translate = [1.2999999999999998, 2.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 36
+t.scale = 0.2
+t.translate = [1.2999999999999998, 2.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 37
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 2.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 38
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 2.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 39
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 2.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 40
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 2.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 41
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 2.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 42
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 2.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 43
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 2.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 44
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 2.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 45
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 2.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 46
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 2.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 47
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 2.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 48
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 2.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 49
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 2.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 50
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 2.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 51
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 2.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 52
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 2.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 53
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 2.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 54
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 2.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 55
+t.scale = 0.2
+t.translate = [0.2999999999999998, 2.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 56
+t.scale = 0.2
+t.translate = [0.2999999999999998, 2.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 57
+t.scale = 0.2
+t.translate = [0.2999999999999998, 2.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 58
+t.scale = 0.2
+t.translate = [0.2999999999999998, 2.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 59
+t.scale = 0.2
+t.translate = [0.2999999999999998, 2.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 60
+t.scale = 0.2
+t.translate = [0.2999999999999998, 2.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 61
+t.scale = 0.2
+t.translate = [0.7999999999999998, 2.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 62
+t.scale = 0.2
+t.translate = [0.7999999999999998, 2.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 63
+t.scale = 0.2
+t.translate = [0.7999999999999998, 2.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 64
+t.scale = 0.2
+t.translate = [0.7999999999999998, 2.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 65
+t.scale = 0.2
+t.translate = [0.7999999999999998, 2.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 66
+t.scale = 0.2
+t.translate = [0.7999999999999998, 2.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 67
+t.scale = 0.2
+t.translate = [1.2999999999999998, 2.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 68
+t.scale = 0.2
+t.translate = [1.2999999999999998, 2.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 69
+t.scale = 0.2
+t.translate = [1.2999999999999998, 2.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 70
+t.scale = 0.2
+t.translate = [1.2999999999999998, 2.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 71
+t.scale = 0.2
+t.translate = [1.2999999999999998, 2.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 72
+t.scale = 0.2
+t.translate = [1.2999999999999998, 2.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 73
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 3.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 74
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 3.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 75
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 3.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 76
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 3.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 77
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 3.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 78
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 3.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 79
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 3.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 80
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 3.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 81
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 3.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 82
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 3.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 83
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 3.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 84
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 3.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 85
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 3.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 86
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 3.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 87
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 3.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 88
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 3.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 89
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 3.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 90
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 3.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 91
+t.scale = 0.2
+t.translate = [0.2999999999999998, 3.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 92
+t.scale = 0.2
+t.translate = [0.2999999999999998, 3.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 93
+t.scale = 0.2
+t.translate = [0.2999999999999998, 3.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 94
+t.scale = 0.2
+t.translate = [0.2999999999999998, 3.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 95
+t.scale = 0.2
+t.translate = [0.2999999999999998, 3.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 96
+t.scale = 0.2
+t.translate = [0.2999999999999998, 3.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 97
+t.scale = 0.2
+t.translate = [0.7999999999999998, 3.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 98
+t.scale = 0.2
+t.translate = [0.7999999999999998, 3.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 99
+t.scale = 0.2
+t.translate = [0.7999999999999998, 3.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 100
+t.scale = 0.2
+t.translate = [0.7999999999999998, 3.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 101
+t.scale = 0.2
+t.translate = [0.7999999999999998, 3.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 102
+t.scale = 0.2
+t.translate = [0.7999999999999998, 3.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 103
+t.scale = 0.2
+t.translate = [1.2999999999999998, 3.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 104
+t.scale = 0.2
+t.translate = [1.2999999999999998, 3.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 105
+t.scale = 0.2
+t.translate = [1.2999999999999998, 3.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 106
+t.scale = 0.2
+t.translate = [1.2999999999999998, 3.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 107
+t.scale = 0.2
+t.translate = [1.2999999999999998, 3.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 108
+t.scale = 0.2
+t.translate = [1.2999999999999998, 3.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 109
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 3.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 110
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 3.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 111
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 3.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 112
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 3.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 113
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 3.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 114
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 3.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 115
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 3.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 116
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 3.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 117
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 3.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 118
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 3.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 119
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 3.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 120
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 3.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 121
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 3.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 122
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 3.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 123
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 3.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 124
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 3.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 125
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 3.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 126
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 3.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 127
+t.scale = 0.2
+t.translate = [0.2999999999999998, 3.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 128
+t.scale = 0.2
+t.translate = [0.2999999999999998, 3.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 129
+t.scale = 0.2
+t.translate = [0.2999999999999998, 3.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 130
+t.scale = 0.2
+t.translate = [0.2999999999999998, 3.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 131
+t.scale = 0.2
+t.translate = [0.2999999999999998, 3.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 132
+t.scale = 0.2
+t.translate = [0.2999999999999998, 3.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 133
+t.scale = 0.2
+t.translate = [0.7999999999999998, 3.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 134
+t.scale = 0.2
+t.translate = [0.7999999999999998, 3.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 135
+t.scale = 0.2
+t.translate = [0.7999999999999998, 3.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 136
+t.scale = 0.2
+t.translate = [0.7999999999999998, 3.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 137
+t.scale = 0.2
+t.translate = [0.7999999999999998, 3.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 138
+t.scale = 0.2
+t.translate = [0.7999999999999998, 3.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 139
+t.scale = 0.2
+t.translate = [1.2999999999999998, 3.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 140
+t.scale = 0.2
+t.translate = [1.2999999999999998, 3.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 141
+t.scale = 0.2
+t.translate = [1.2999999999999998, 3.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 142
+t.scale = 0.2
+t.translate = [1.2999999999999998, 3.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 143
+t.scale = 0.2
+t.translate = [1.2999999999999998, 3.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 144
+t.scale = 0.2
+t.translate = [1.2999999999999998, 3.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 145
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 4.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 146
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 4.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 147
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 4.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 148
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 4.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 149
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 4.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 150
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 4.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 151
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 4.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 152
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 4.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 153
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 4.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 154
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 4.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 155
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 4.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 156
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 4.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 157
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 4.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 158
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 4.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 159
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 4.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 160
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 4.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 161
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 4.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 162
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 4.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 163
+t.scale = 0.2
+t.translate = [0.2999999999999998, 4.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 164
+t.scale = 0.2
+t.translate = [0.2999999999999998, 4.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 165
+t.scale = 0.2
+t.translate = [0.2999999999999998, 4.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 166
+t.scale = 0.2
+t.translate = [0.2999999999999998, 4.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 167
+t.scale = 0.2
+t.translate = [0.2999999999999998, 4.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 168
+t.scale = 0.2
+t.translate = [0.2999999999999998, 4.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 169
+t.scale = 0.2
+t.translate = [0.7999999999999998, 4.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 170
+t.scale = 0.2
+t.translate = [0.7999999999999998, 4.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 171
+t.scale = 0.2
+t.translate = [0.7999999999999998, 4.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 172
+t.scale = 0.2
+t.translate = [0.7999999999999998, 4.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 173
+t.scale = 0.2
+t.translate = [0.7999999999999998, 4.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 174
+t.scale = 0.2
+t.translate = [0.7999999999999998, 4.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 175
+t.scale = 0.2
+t.translate = [1.2999999999999998, 4.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 176
+t.scale = 0.2
+t.translate = [1.2999999999999998, 4.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 177
+t.scale = 0.2
+t.translate = [1.2999999999999998, 4.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 178
+t.scale = 0.2
+t.translate = [1.2999999999999998, 4.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 179
+t.scale = 0.2
+t.translate = [1.2999999999999998, 4.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 180
+t.scale = 0.2
+t.translate = [1.2999999999999998, 4.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 181
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 4.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 182
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 4.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 183
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 4.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 184
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 4.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 185
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 4.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 186
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 4.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 187
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 4.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 188
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 4.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 189
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 4.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 190
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 4.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 191
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 4.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 192
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 4.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 193
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 4.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 194
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 4.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 195
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 4.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 196
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 4.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 197
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 4.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 198
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 4.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 199
+t.scale = 0.2
+t.translate = [0.2999999999999998, 4.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 200
+t.scale = 0.2
+t.translate = [0.2999999999999998, 4.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 201
+t.scale = 0.2
+t.translate = [0.2999999999999998, 4.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 202
+t.scale = 0.2
+t.translate = [0.2999999999999998, 4.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 203
+t.scale = 0.2
+t.translate = [0.2999999999999998, 4.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 204
+t.scale = 0.2
+t.translate = [0.2999999999999998, 4.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 205
+t.scale = 0.2
+t.translate = [0.7999999999999998, 4.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 206
+t.scale = 0.2
+t.translate = [0.7999999999999998, 4.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 207
+t.scale = 0.2
+t.translate = [0.7999999999999998, 4.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 208
+t.scale = 0.2
+t.translate = [0.7999999999999998, 4.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 209
+t.scale = 0.2
+t.translate = [0.7999999999999998, 4.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 210
+t.scale = 0.2
+t.translate = [0.7999999999999998, 4.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 211
+t.scale = 0.2
+t.translate = [1.2999999999999998, 4.8, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 212
+t.scale = 0.2
+t.translate = [1.2999999999999998, 4.8, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 213
+t.scale = 0.2
+t.translate = [1.2999999999999998, 4.8, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 214
+t.scale = 0.2
+t.translate = [1.2999999999999998, 4.8, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 215
+t.scale = 0.2
+t.translate = [1.2999999999999998, 4.8, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 216
+t.scale = 0.2
+t.translate = [1.2999999999999998, 4.8, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 217
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 5.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 218
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 5.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 219
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 5.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 220
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 5.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 221
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 5.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 222
+t.scale = 0.2
+t.translate = [-1.2000000000000002, 5.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 223
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 5.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 224
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 5.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 225
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 5.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 226
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 5.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 227
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 5.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 228
+t.scale = 0.2
+t.translate = [-0.7000000000000002, 5.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 229
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 5.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 230
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 5.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 231
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 5.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 232
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 5.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 233
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 5.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 234
+t.scale = 0.2
+t.translate = [-0.20000000000000018, 5.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 235
+t.scale = 0.2
+t.translate = [0.2999999999999998, 5.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 236
+t.scale = 0.2
+t.translate = [0.2999999999999998, 5.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 237
+t.scale = 0.2
+t.translate = [0.2999999999999998, 5.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 238
+t.scale = 0.2
+t.translate = [0.2999999999999998, 5.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 239
+t.scale = 0.2
+t.translate = [0.2999999999999998, 5.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 240
+t.scale = 0.2
+t.translate = [0.2999999999999998, 5.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 241
+t.scale = 0.2
+t.translate = [0.7999999999999998, 5.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 242
+t.scale = 0.2
+t.translate = [0.7999999999999998, 5.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 243
+t.scale = 0.2
+t.translate = [0.7999999999999998, 5.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 244
+t.scale = 0.2
+t.translate = [0.7999999999999998, 5.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 245
+t.scale = 0.2
+t.translate = [0.7999999999999998, 5.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 246
+t.scale = 0.2
+t.translate = [0.7999999999999998, 5.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 247
+t.scale = 0.2
+t.translate = [1.2999999999999998, 5.3, -1.2000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 248
+t.scale = 0.2
+t.translate = [1.2999999999999998, 5.3, -0.7000000000000002]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 249
+t.scale = 0.2
+t.translate = [1.2999999999999998, 5.3, -0.20000000000000018]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 250
+t.scale = 0.2
+t.translate = [1.2999999999999998, 5.3, 0.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 251
+t.scale = 0.2
+t.translate = [1.2999999999999998, 5.3, 0.7999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+
+[[mesh]]
+f.path = 'tetmesh/coarse_ball.msh'
+f.type = 'tet'
+f.color = 252
+t.scale = 0.2
+t.translate = [1.2999999999999998, 5.3, 1.2999999999999998]
+t.rotate = [0, 0, 0]
+k.stretch = 2000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = true
+
+[mesh_post]
+center_ids = []
+
+[[collider]]
+type = 'plane'
+center = [0, 0, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 5
+color.background = [0.1, 0.1, 0.1]
+enable_ground = true
+
+
+
