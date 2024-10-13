@@ -92,6 +92,7 @@ public:
     polyscope::PointCloud* vis_contactP{};
     polyscope::PointCloud* pin_pts{};
     polyscope::CurveNetwork* vis_bvh{};
+    polyscope::CurveNetwork* vis_eect{};
 
 
     unsigned int pause = 1;
@@ -109,6 +110,7 @@ public:
 
     std::vector<glm::vec3> bvh_nodes;
     std::vector<std::array<size_t, 2>> bvh_edges;
+
 
     BVH_GPU* bvh;
 
@@ -247,6 +249,16 @@ void main_loop() {
         app.vis_contactP->updatePointPositions(app.solver->prox_query->get_contact_points());
         app.vis_contactP->addVectorQuantity("normal", app.solver->prox_query->get_contact_normals());
         app.vis_contactP->addVectorQuantity("S", s_vec);
+
+        /*if (!app.pause) {
+            std::cout << step_idx << "\n";
+
+            for (auto& ct: app.solver->prox_query->contact_info_list ) {
+                std::cout << ct.vinds[0] << "-" << ct.vinds[1] << "; " << ct.vinds[2] << "-" << ct.vinds[3] << "\n" ;
+            }
+        }*/
+
+
     }
     app.vis_bvh->updateNodePositions(app.bvh_nodes);
 
@@ -413,10 +425,9 @@ int main(int argc, const char* argv[]) {
 
     app.mesh->get_mass(app.mass);
 
-    app.solver = std::make_unique<ADMMParallelSolver>();
     // app.solver = std::make_unique<ADMMSolverFull_RL_damping>();
-    
     // ADMMSolverFull_RL_damping* solver = static_cast<ADMMSolverFull_RL_damping*>(app.solver.get());
+    app.solver = std::make_unique<ADMMParallelSolver>();
     ADMMParallelSolver* solver = static_cast<ADMMParallelSolver*>(app.solver.get());
 
     solver->static_mesh_id_begin = static_mesh_id_begin;
@@ -437,6 +448,8 @@ int main(int argc, const char* argv[]) {
     solver->g = app_config.global.g;
 
     solver->use_CCD = app_config.solver.contact.use_CCD;
+
+    solver->use_jacobi = app_config.solver.contact.use_jacobi;
 
     solver->coloring_parallel_contact = false;
 
@@ -565,6 +578,9 @@ int main(int argc, const char* argv[]) {
 
         polyscope::registerCurveNetwork("bvh", app.bvh_nodes, app.bvh_edges);
         app.vis_bvh = polyscope::getCurveNetwork("bvh");
+
+       // polyscope::registerCurveNetwork("ee ct", app.mesh->verts, app.ee_edges);
+       // app.vis_eect = polyscope::getCurveNetwork("ee ct");
 
         if (!app_config.global.pin_ids.empty()) {
             polyscope::registerPointCloud("pin", app.pin_v); // ground

@@ -59,6 +59,7 @@ struct APPConfig {
             ADU::Real beta;
             ADU::Real mu;
             bool unique;
+            bool use_jacobi{false};
 
             bool use_heu_wc{ false };
             ADU::Real wc_beta{ 25 };
@@ -199,6 +200,10 @@ struct APPConfig {
         auto& solver_contact_config = solver_config["contact"];
         app_config.solver.contact.enable = _CTML(solver_contact_config["enable"].value<bool>());
         app_config.solver.contact.use_CCD = _CTML(solver_contact_config["use_CCD"].value<bool>());
+        auto use_jc = solver_contact_config["use_Jacobi"].value<bool>();
+        if (use_jc) {
+            app_config.solver.contact.use_jacobi = *use_jc;
+        }
         app_config.solver.contact.w_scale = _CTML(solver_contact_config["w_scale"].value<ADU::Real>());
         app_config.solver.contact.mu = _CTML(solver_contact_config["mu"].value<ADU::Real>());
         app_config.solver.contact.kappa = _CTML(solver_contact_config["kappa"].value<ADU::Real>());

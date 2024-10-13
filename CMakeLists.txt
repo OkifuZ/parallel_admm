@@ -104,9 +104,11 @@ include_directories(
 # add_executable(twobody
 # ${HEADER_FILES} ${SOURCE_FILES} "src/twobody.cpp")
 # target_link_libraries(twobody polyscope igl::core TBB::tbb Eigen3::Eigen mshio::mshio embree)
+include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
 add_executable(main
-${HEADER_FILES} ${SOURCE_FILES} "src/main.cpp")
+${HEADER_FILES} ${SOURCE_FILES} "src/main.cpp"
+)
 target_link_libraries(main polyscope igl::core TBB::tbb Eigen3::Eigen mshio::mshio embree tomlplusplus::tomlplusplus argparse ZLIB::ZLIB)
 set_property(TARGET main PROPERTY CUDA_SEPARABLE_COMPILATION ON)
 

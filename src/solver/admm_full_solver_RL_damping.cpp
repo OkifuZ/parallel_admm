@@ -12,7 +12,7 @@
 #include <mutex>
 #include <memory>
 #include <random>
-
+#include <chrono>
 
 
 void ADMMSolverFull_RL_damping::init() {
@@ -20,8 +20,6 @@ void ADMMSolverFull_RL_damping::init() {
 	Timer timer("ADMMSolverFull_RL_damping::init()");
 
 	this->precompute();
-
-	printf("ADMM solver init after precompute\n");
 
 	if (animator) {
 		animator->reset();
@@ -35,20 +33,24 @@ void ADMMSolverFull_RL_damping::init() {
 	x_prev.resize(nDynVert, 3);
 #endif // PROFILE_RR
 
-	printf("ADMM solver init done\n");
+	printf("ADMMSolverFull_RL_damping init done\n");
 }
 
 void ADMMSolverFull_RL_damping::precompute() {
 	using namespace ADU;
 
+	printf("ADMMSolverFull_RL_damping::precompute start\n");
+
+
 	// construct global matrix
 	if (m_constraints.size() == 0) {
-		throw std::runtime_error("ADMMSolver::init Error: empty constraints");
+		throw std::runtime_error("ADMMSolverFull_RL_damping::precompute Error: empty constraints");
 	}
 	int m = m_constraints.size();
 
 	int nDynVert = static_vert_begin;
-	
+
+	// Sparse Mass Matrix triplets
 	m_M = SpMatf(nDynVert, nDynVert);
 	TripList M_trips;
 	for (int vi = 0; vi < nDynVert; vi++) {
@@ -56,7 +58,7 @@ void ADMMSolverFull_RL_damping::precompute() {
 	}
 	m_M.setFromTriplets(M_trips.begin(), M_trips.end());
 
-	// elastic 
+	// Sparse Elastic Matrices triplets
 	m_dt2DTWeTWeD = SpMatf(nDynVert, nDynVert);
 	m_dt2DTWeTWe = SpMatf(nDynVert, m_nCDim);
 	m_D = SpMatf(m_nCDim, nDynVert);
@@ -96,13 +98,13 @@ void ADMMSolverFull_RL_damping::precompute() {
 	Dd.setFromTriplets(D_d_trips.begin(), D_d_trips.end());
 	m_Damp_Mat = m_dt * (damp_k_L * Dd.transpose() * Wd * Dd + damp_k_M * m_M);
 
-	m_A = SpMatf(nDynVert, nDynVert);
-	m_A = m_M + m_dt2DTWeTWeD;
-	m_A_damp = m_A + m_Damp_Mat;
+
 
 	// frictional contact
 	m_dt2Wc = SpMatf(nDynVert, nDynVert);
 	m_W_c = SpMatf(nDynVert, nDynVert);
+
+
 	if (enable_frictional_contact) {
 		TripList Wc_trips;
 		if (use_heuristic_W_c) {
@@ -142,15 +144,21 @@ void ADMMSolverFull_RL_damping::precompute() {
 		m_dt2Wc.setZero();
 	}
 
-	m_A_damp += m_dt2Wc;
+	// compose A
+	m_A = SpMatf(nDynVert, nDynVert);
+	m_A = m_M + m_dt2DTWeTWeD + m_dt2Wc;
+	m_A_damp = m_A + m_Damp_Mat;
+
 	m_I = SpMatf(nDynVert, nDynVert);
 	m_I.setIdentity();
 
+	// dual variables
 	m_Ue = Matf_X3(m_nCDim, 3);
 	m_Ue.setZero();
 	m_Uc = Matf_X3(nDynVert, 3);
 	m_Uc.setZero();
 
+	// Gamma_c for PGS
 	if (enable_frictional_contact && prox_query) {
 		Gamma_c.reserve(prox_query->max_collision_num);
 	}
@@ -161,25 +169,26 @@ void ADMMSolverFull_RL_damping::precompute() {
 		ADU::make_exception("ADMMSolver::init LLT failed");
 	}
 
-	if (Eigen::saveMarket(m_A_damp, "./m_A_damp")) {
-		printf("saved m_A_damp to ./m_A_damp\n");
+	auto save_name_A = "./m_A_damp_" + ADU::getCurTime();
+	if (Eigen::saveMarket(m_A_damp, save_name_A)) {
+		printf("saved m_A_damp\n");
 	}
 	else {
-		printf("save failed\n");
+		printf("save m_A_damp failed\n");
 	}
 
 	CompactSparseMat c(m_A_damp);
 	
 	// XPBD
-	m_M_bar_vec = (m_M + m_dt2Wc);
+	/*m_M_bar_vec = (m_M + m_dt2Wc);
 	m_M_bar_inv_vec = Vecf_X(m_nVert);
 	for (int i = 0; i < nDynVert; i++) {
 		m_M_bar_inv_vec(i) = 1.0_r / m_M_bar_vec.coeff(i, i);
 		if (m_pin_inds_set.count(i)) 
 			m_M_bar_inv_vec(i) = 0.0_r;
-	}
+	}*/
 
-	printf("total vert num = %d\n", nDynVert);
+	printf("ADMMSolverFull_RL_damping done, total vert num = %d\n", nDynVert);
 }
 
 void ADMMSolverFull_RL_damping::step() {
@@ -299,7 +308,7 @@ void ADMMSolverFull_RL_damping::step_fast() {
 						}
 
 						// project p into feasible set
-						project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
+						ADMMSolverFull_RL_damping::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
 					}
 				}
 			);
@@ -405,7 +414,8 @@ void ADMMSolverFull_RL_damping::project_feasible(ADU::Matf_X3& p,
 	ProximalQuery::ContactInfoList& contacts,
 	ADU::Real mu, size_t max_GS_iter)
 {
-	_project_feasible_plain(p, contacts, mu, max_GS_iter);
+	std::cout << "here" << "\n";
+	ADMMSolverFull_RL_damping::_project_feasible_plain(p, contacts, mu, max_GS_iter);
 }
 
 void ADMMSolverFull_RL_damping::_project_feasible_plain(ADU::Matf_X3& p,

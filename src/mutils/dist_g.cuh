@@ -481,6 +481,8 @@ __inline__ __device__ Result<T> dcdEE(Eigen::Vector3<T> const& P0, Eigen::Vector
     result.closest[0] = P0 + s * P1mP0;
     result.closest[1] = Q0 + t * Q1mQ0;
     Eigen::Vector3<T> diff = result.closest[0] - result.closest[1];
+    result.sqrDistance = diff.dot(diff);
+
     if constexpr (std::is_floating_point_v<T>){
         result.distance = sqrtf(result.sqrDistance);
     }

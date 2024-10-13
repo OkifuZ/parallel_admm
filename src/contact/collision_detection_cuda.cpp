@@ -36,7 +36,7 @@
 
 
 void BVH_GPU::init() {
-    auto verts = solver->getVertices();
+    auto verts = solver->getVertices(); //
     auto edges = mesh->surface_edges;
     auto tris = mesh->surface_tris;
 
@@ -71,7 +71,7 @@ void BVH_GPU::init() {
 
     bvh_f.init(nullptr, d_verts, d_faces, d_surfVertIdx, d_collisonPairs, d_cpNum, t_num, v_num, d_contact_info);
     bvh_e.init(nullptr, d_verts, nullptr, d_edges, d_collisonPairs, d_cpNum, e_num, v_num, d_contact_info);
-
+    bvh_e.face_number = t_num;
     bvs.reserve(300000);
 }
 
@@ -127,9 +127,10 @@ void BVH_GPU::convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct
     CUDA_SAFE_CALL(cudaMemcpy((void*)h_collisionPairs.data(), d_collisonPairs, h_cpNum * sizeof(int4), cudaMemcpyDeviceToHost));
 
     printf("contact count: %d\n", h_cpNum);
-    if (ct_info.size() < h_cpNum) {
-        ct_info.resize(h_cpNum);
-    }
+
+    ct_info.resize(h_cpNum);
+    /*if (ct_info.size() < h_cpNum) {
+    }*/
 
     for (int i = 0; i < h_cpNum; i++) {
         const Result<double>& res = h_contact_info[i];
@@ -149,7 +150,8 @@ void BVH_GPU::convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct
         if (res.barycentric[2] < -1) {
             // edge edge
             Vecf_3 normal = (v1 - v0).cross(v3 - v2).normalized();
-            Vecf_3 pt = 0.5_r * (res.closest[0].cast<ADU::Real>() + res.closest[1].cast<ADU::Real>());
+            //Vecf_3 pt = 0.5_r * (res.closest[0].cast<ADU::Real>() + res.closest[1].cast<ADU::Real>());
+            Vecf_3 pt = res.closest[0].cast<ADU::Real>();
             ContactInfo ct(res, v0_index, v1_index, v2_index, v3_index, normal, pt, false);
             ct_info[i] = ct;
         }

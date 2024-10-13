@@ -4,13 +4,17 @@
 
 #include <chrono>
 #include <string>
+#include <sstream>
 #include <vector>
+#include <iomanip>
 #include <cassert>
 #include <map>
 #include <algorithm>
 
 
 namespace ADU {
+
+    std::string getCurTime();
 
     class Timer {
     public:

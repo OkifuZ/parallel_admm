@@ -23,6 +23,8 @@
 
 class ADMMSolverFull :public Solver {
 public:
+	bool use_jacobi = false;
+
 	size_t max_remaining = 0;
 	int _color_max_num = 16;
 	std::random_device rd;     // Only used once to initialise (seed) engine
@@ -201,6 +203,7 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 
     virtual void step();
 	virtual void init();
+	virtual void precompute();
 
 	std::unique_ptr<CompactSparseMat> comp_mat;
 
@@ -208,9 +211,19 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	void Jacobi_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr);
 	ADU::Matf_X3 jacobi_buffer;
 
-	virtual void _project_feasible_plain(ADU::Matf_X3& p,
-		ProximalQuery::ContactInfoList& contacts,
-		ADU::Real mu, size_t max_jacobi_iter);
+
+    void project_feasible(ADU::Matf_X3& p,
+                          ProximalQuery::ContactInfoList& contacts,
+                          ADU::Real mu, size_t max_jacobi_iter) override;
+
+    void _project_feasible_plain(ADU::Matf_X3& p,
+                                 ProximalQuery::ContactInfoList& contacts,
+                                 ADU::Real mu, size_t max_jacobi_iter) override;
+
+	void _project_feasible_plain_2(ADU::Matf_X3& p,
+								 ProximalQuery::ContactInfoList& contacts,
+								 ADU::Real mu, size_t max_jacobi_iter);
+
 
 	std::vector<tbb::concurrent_vector<ADU::Real>> Gamma_i;
 	std::vector<ADU::Vecf_4> Gamma_c_aux; // original gamma_c, being ot divided by ni

@@ -14,3 +14,6 @@ paper
 *.csv
 bp
 m_A_damp
+/m_A_damp_MD*
+.idea
+cmake-build-release-visual-studio

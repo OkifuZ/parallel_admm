@@ -1695,15 +1695,15 @@ void _dcd_vf(const double3* _vertexes, const uint3* _faces, const uint32_t* _sur
 
 __global__
 void _dcd_ee(const double3* _vertexes, const uint2* _edges, const AABB* _bvs, const Node* _nodes, 
-    int4* _collisionPair, uint32_t* _cpNum, Result<double>* contact_info, double dHat, int number) {
+    int4* _collisionPair, uint32_t* _cpNum, Result<double>* contact_info, double dHat, int e_number, int t_number) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx >= number) return;
+    if (idx >= e_number) return;
 
     uint32_t  stack[64];
     uint32_t* stack_ptr = stack;
     *stack_ptr++ = 0;
 
-    idx = idx + number - 1;
+    idx = idx + e_number - 1;
     AABB _bv = _bvs[idx]; // leaf AABB
     uint32_t self_eid = _nodes[idx].element_idx;
 
@@ -1725,7 +1725,11 @@ void _dcd_ee(const double3* _vertexes, const uint2* _edges, const AABB* _bvs, co
             if (obj_idx != 0xFFFFFFFF)
             {
                 if (self_eid != obj_idx) {
-                    if (!(_edges[self_eid].x == _edges[obj_idx].x || _edges[self_eid].x == _edges[obj_idx].y || _edges[self_eid].y == _edges[obj_idx].x || _edges[self_eid].y == _edges[obj_idx].y || obj_idx < self_eid)) {
+                    if (!(_edges[self_eid].x == _edges[obj_idx].x ||
+                          _edges[self_eid].x == _edges[obj_idx].y ||
+                          _edges[self_eid].y == _edges[obj_idx].x ||
+                          _edges[self_eid].y == _edges[obj_idx].y ||
+                          obj_idx < self_eid)) {
                         _checkDCDEdgeEdge(_vertexes, _edges[self_eid].x, _edges[self_eid].y, _edges[obj_idx].x, _edges[obj_idx].y, dHat, _cpNum, _collisionPair, contact_info);
                     }
                 }
@@ -1761,7 +1765,7 @@ void lbvh_e::discreteCollisionDetection(double thickness) {
     int blockNum = (numbers + threadNum - 1) / threadNum;
 
     _dcd_ee << < blockNum, threadNum >> > (this->_vertexes, this->_edges, this->_bvs, this->_nodes,
-        this->_collisionPair, this->_cpNum, this->_dcd_info, thickness, this->edge_number);
+        this->_collisionPair, this->_cpNum, this->_dcd_info, thickness, this->edge_number, this->face_number);
     CUDA_SAFE_CALL(cudaDeviceSynchronize());
 }
 

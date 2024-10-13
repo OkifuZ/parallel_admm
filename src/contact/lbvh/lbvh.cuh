@@ -83,6 +83,7 @@ class lbvh_e : public lbvh{
 public:
     double3* _rest_vertexes;
     uint32_t edge_number;
+    uint32_t face_number;
     uint2* _edges;
 public:
     void init(int* _btype, double3* _mVerts, double3* _rest_vertexes, uint2* _mEdges, 

@@ -536,5 +536,17 @@ ADU::Matf_X3& ProximalQuery::get_contact_normals() {
 	return contact_normals;
 }
 
+ADU::Matf_X3& ProximalQuery::get_contact_edges_points() {
+	contact_edges_points.setZero();
+	int idx = 0;
+	for (int ci = 0; ci < contact_info_list.size(); ci++) {
+		const auto& ct = contact_info_list[ci];
+		if (ct.pair_type == ContactInfo::EE) {
+
+		}
+	}
+	return contact_points;
+
+}
 
 

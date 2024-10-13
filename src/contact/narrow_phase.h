@@ -60,6 +60,7 @@ public:
 	ADU::Matf_X3 contact_points = ADU::Matf_X3(max_collision_num, 3);
 	ADU::Matf_X3 S_vecs = ADU::Matf_X3(max_collision_num, 3);
 	ADU::Matf_X3 contact_normals = ADU::Matf_X3(max_collision_num, 3);
+	ADU::Matf_X3 contact_edges_points = ADU::Matf_X3(max_collision_num * 4, 2);
 
 	void narrow_PT(const ADU::Matf_X3& pos, int vi0, int vi1, int vi2, int vi3);
 	void narrow_PT_with_CCD(const ADU::Matf_X3& pos_t0, const ADU::Matf_X3& pos, int vi0, int vi1, int vi2, int vi3);
@@ -71,7 +72,9 @@ public:
 
 	ADU::Matf_X3& get_contact_normals();
 
-	ADU::Matf_X3 get_SaSb_mean() {
+	ADU::Matf_X3& get_contact_edges_points();
+
+	ADU::Matf_X3& get_SaSb_mean() {
 		S_vecs.setZero();
 
 		auto& contacts = contact_info_list;
