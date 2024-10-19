@@ -1,6 +1,7 @@
 #include "constraint/XPBD_constraints.h"
 #include "constraint/bending_constraint.h"
 #include "constraint/bending_constraint.h"
+#include <mutils/common_type_hostonly.h>
 
 
 

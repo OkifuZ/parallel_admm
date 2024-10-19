@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <Eigen/Sparse>
 #include <Eigen/Core>
 
 constexpr auto ADMM_VERBOSE = false;
@@ -59,7 +58,6 @@ namespace ADU {
 	using Veci_3 = Eigen::Vector<int, 3>;
 	using Veci_4 = Eigen::Vector<int, 4>;
 
-	using SpMatf = Eigen::SparseMatrix<Real, Eigen::RowMajor>;
-	using Tripf = Eigen::Triplet<Real>;
+
 }
 

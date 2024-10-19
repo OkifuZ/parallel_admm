@@ -1,21 +1,21 @@
 scene_name = "fabric_1"
-out_file = 'F:\PBA\admm_soft\admm-elasticity\result\presult\fabric_1'
+out_file = 'D:\data\padmm_result\fabric_1'
 seperate_out = false
-show_windows = true
+show_windows = false
 
 [global]
-dt = 0.025
+dt = 0.01
 pin = [0, 1, 2, 3]
-g = 2.98
+g = 3.98
 
 [solver]
-admm_max_iter = 30
-DCD_interval = 10
-GS_max_iter = 100
+admm_max_iter = 20
+DCD_interval = 6
+GS_max_iter = 20
 contact.use_CCD = false
 admm.warmstart_Ue = true
 admm.warmstart_Uc = true
-contact.enable = true
+contact.enable = false
 contact.use_Jacobi = true
 contact.w_scale = 25
 contact.kappa = 1e5
@@ -33,32 +33,32 @@ broad.radius = 5e-2
 broad.strategy = 'rebuild'
 
 [[mesh]]
-f.path = 'flat/flat_v134.obj'
+f.path = 'flat/flat_v31389.obj'
 f.type = 'tri'
 f.color = 0
-t.scale = 2.5
+t.scale = 15
 t.translate = [0, 0.8, 0]
 t.rotate = [0, 0, 0]
-k.stretch = 15000.0
+k.stretch = 19000.0
 k.min_limit = 0.95
 k.max_limit = 1.05
 k.bending = 1.0
 k.use_limit = false
 density = 4.0
 
-[[mesh]]
-f.path = 'flat/flat_v134.obj'
-f.type = 'tri'
-f.color = 1
-t.scale = 2.5
-t.translate = [0, 1.8, 0]
-t.rotate = [0, 30, 0]
-k.stretch = 15000.0
-k.min_limit = 0.95
-k.max_limit = 1.05
-k.bending = 1.0
-k.use_limit = false
-density = 4.0
+# [[mesh]]
+# f.path = 'flat/flat_v134.obj'
+# f.type = 'tri'
+# f.color = 1
+# t.scale = 2.5
+# t.translate = [0, 1.8, 0]
+# t.rotate = [0, 30, 0]
+# k.stretch = 15000.0
+# k.min_limit = 0.95
+# k.max_limit = 1.05
+# k.bending = 1.0
+# k.use_limit = false
+# density = 4.0
 
 # [[mesh]]
 # f.path = 'flat/flat_v134.obj'

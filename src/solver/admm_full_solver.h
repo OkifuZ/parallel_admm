@@ -2,6 +2,7 @@
 #pragma once
 
 #include "mutils/common_types.h"
+#include <mutils/common_type_hostonly.h>
 
 //#define EIGEN_USE_MKL_ALL
 //#include "Eigen/Eigen"
@@ -14,6 +15,7 @@
 #include "solver/animator.h"
 
 #include "contact/narrow_phase.h"
+#include "solver/jacobi_solver.h"
 
 
 
@@ -206,10 +208,18 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	virtual void precompute();
 
 	std::unique_ptr<CompactSparseMat> comp_mat;
+	// std::unique_ptr<CuCompactSparseMat> comp_mat_device;
+	std::unique_ptr<CuSolverData> solver_data_device;
 
-	void GS_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr);
-	void Jacobi_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr);
+
+	void GS_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr, int iter_cnt);
+	void Jacobi_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr, int iter_cnt, bool on_device=false);
+
 	ADU::Matf_X3 jacobi_buffer;
+
+	ADU::Matf_X3 x_curr;
+
+	ADU::Matf_X3 b_curr;
 
 
     void project_feasible(ADU::Matf_X3& p,

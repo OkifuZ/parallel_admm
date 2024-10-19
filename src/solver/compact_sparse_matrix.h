@@ -1,6 +1,9 @@
+#pragma once
+
 #include "mutils/common_types.h"
 #include "mutils/exception_handle.h"
 #include "mutils/cformat.h"
+#include <mutils/common_type_hostonly.h>
 
 #include <vector>
 #include <iostream>

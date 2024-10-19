@@ -2,6 +2,7 @@
 
 #include "mutils/common_types.h"
 #include "XPBD_constraints.h"
+#include <mutils/common_type_hostonly.h>
 
 #include <array>
 #include <Eigen/Dense>

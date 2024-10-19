@@ -2,6 +2,7 @@
 #include "mutils/timer.h"
 #include "constraint/pin_constraint.h"
 
+
 #include <Eigen/SparseCore>
 #include <Eigen/SparseCholesky>
 #include <unsupported/Eigen/SparseExtra>
@@ -26,10 +27,12 @@ void ADMMParallelSolver::init() {
 		animator->reset();
 		animator->animate_all(m_vertices, m_vertices, m_velocities, this->m_dt);
 	}
+	int nDynVert = static_vert_begin;
 
 	comp_mat = std::make_unique<CompactSparseMat>(m_A_damp); // for parallel global solver
+	solver_data_device = std::make_unique<CuSolverData>(*comp_mat, nDynVert, nDynVert, nDynVert);
+	// comp_mat_device = std::make_unique<CuCompactSparseMat>(*comp_mat);
 
-    int nDynVert = static_vert_begin;
     jacobi_buffer.resize(nDynVert, 3);
 	jacobi_buffer.setZero();
 
@@ -222,11 +225,13 @@ void ADMMParallelSolver::step() {
 
 	Matf_X3 x_tilde = x_0.block(0, 0, nDynVert, 3) + m_dt * v_0.block(0, 0, nDynVert, 3); // nDynVert * 3
 	Matf_X3 M_x_tilde = m_M * x_tilde; // nDynVert * 3
-	Matf_X3 b = Matf_X3(nDynVert, 3);
-	b.setZero();
+	b_curr.resize(nDynVert, 3);
+	b_curr.setZero();
 
 	// initial value
-	Matf_X3 x_curr(m_nVert, 3);
+	x_curr.resize(m_nVert, 3);
+	x_curr.setZero();
+	// Matf_X3 x_curr(m_nVert, 3);
 	x_curr.block(0, 0, nDynVert, 3) = x_tilde;
 	x_curr.block(nDynVert, 0, m_nVert - nDynVert, 3) = x_0.block(nDynVert, 0, m_nVert - nDynVert, 3);
 	Matf_X3 z(m_nCDim, 3);
@@ -319,29 +324,18 @@ void ADMMParallelSolver::step() {
 			Timer local_project_timer("global_propogation");
 
 			// global
-			b = M_x_tilde + m_dt2DTWeTWe * (z - m_Ue);
+			b_curr = M_x_tilde + m_dt2DTWeTWe * (z - m_Ue);
 			// friction
 			if (enable_frictional_contact) {
-				b += m_dt2Wc * (m_dt * p.block(0, 0, nDynVert, 3) + x_0.block(0, 0, nDynVert, 3) - m_Uc);
+				b_curr += m_dt2Wc * (m_dt * p.block(0, 0, nDynVert, 3) + x_0.block(0, 0, nDynVert, 3) - m_Uc);
 			}
 			// damp
-			b += b_ini;
+			b_curr += b_ini;
 
-			for (int i = 0; i < 25; i++) {
-                // GS_global(b, x_curr);
-                Jacobi_global(b, x_curr);
-            }
-            /*tbb::parallel_invoke(
-				[&]() {
-					x_curr.block(0, 0, nDynVert, 1) = m_LLT_solver->solve(b.col(0));
-				},
-				[&]() {
-					x_curr.block(0, 1, nDynVert, 1) = m_LLT_solver->solve(b.col(1));
-				},
-				[&]() {
-					x_curr.block(0, 2, nDynVert, 1) = m_LLT_solver->solve(b.col(2));
-				}
-			);*/
+
+            //GS_global(b_curr, x_curr, 45);
+            Jacobi_global(b_curr, x_curr, 40, false);
+
 		}
 		DX = m_D * x_curr.block(0, 0, nDynVert, 3);
 		m_Ue += DX - z;
@@ -357,68 +351,74 @@ void ADMMParallelSolver::step() {
 	
 }
 
-void ADMMParallelSolver::GS_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr) {
+void ADMMParallelSolver::GS_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr, int iter_cnt) {
     using namespace ADU;
 
     int nDynVert = static_vert_begin;
-    for (int i = 0; i < nDynVert; i++) {
-        Real a_ii = comp_mat->diag_data[i];
-        Vecf_3 b_i_p = b.row(i); 
-        
-        Vecf_3 b_i_m = Vecf_3::Zero();
-        int st_ind = comp_mat->offdiag_perline_start[i];
-        int ed_ind = comp_mat->offdiag_perline_start[i+1];
-        for (int j = st_ind; j < ed_ind; j++) {
-            int ind = comp_mat->offdiag_indices[j];
-            b_i_m += x_curr.row(ind) * comp_mat->offdiag_data[j];
-        }
 
-        x_curr.row(i) = (b_i_p - b_i_m) / a_ii;
-    }
+	for (int i = 0; i < iter_cnt; i++) {
+		for (int i = 0; i < nDynVert; i++) {
+	        Real a_ii = comp_mat->diag_data[i];
+	        Vecf_3 b_i_p = b.row(i);
+
+	        Vecf_3 b_i_m = Vecf_3::Zero();
+	        int st_ind = comp_mat->offdiag_perline_start[i];
+	        int ed_ind = comp_mat->offdiag_perline_start[i+1];
+	        for (int j = st_ind; j < ed_ind; j++) {
+	            int ind = comp_mat->offdiag_indices[j];
+	            b_i_m += x_curr.row(ind) * comp_mat->offdiag_data[j];
+	        }
+	        x_curr.row(i) = (b_i_p - b_i_m) / a_ii;
+	    }
+	}
 
 }
 
-void ADMMParallelSolver::Jacobi_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr) {
+void ADMMParallelSolver::Jacobi_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr, int iter_cnt, bool on_device) {
     using namespace ADU;
 
     int nDynVert = static_vert_begin;
 
-    tbb::parallel_for(
-        tbb::blocked_range<size_t>(0, nDynVert), 
-        [&](const tbb::blocked_range<size_t>& r) {
-            for (size_t i = r.begin(); i < r.end(); i++) {
-                Real a_ii = comp_mat->diag_data[i];
-                Vecf_3 b_i_p = b.row(i); 
-                
-                Vecf_3 b_i_m = Vecf_3::Zero();
-                int st_ind = comp_mat->offdiag_perline_start[i];
-                int ed_ind = comp_mat->offdiag_perline_start[i+1];
-                for (int j = st_ind; j < ed_ind; j++) {
-                    int ind = comp_mat->offdiag_indices[j];
-                    b_i_m += x_curr.row(ind) * comp_mat->offdiag_data[j];
-                }
+	if (on_device) {
 
-                jacobi_buffer.row(i) = (b_i_p - b_i_m) / a_ii;
-            }
-    });
-    x_curr.block(0, 0, nDynVert, 3) = jacobi_buffer;
-    
-    // for (int i = 0; i < nDynVert; i++) {
-    //     Real a_ii = comp_mat->diag_data[i];
-    //     Vecf_3 b_i_p = b.row(i); 
-        
-    //     Vecf_3 b_i_m = Vecf_3::Zero();
-    //     int st_ind = comp_mat->offdiag_perline_start[i];
-    //     int ed_ind = comp_mat->offdiag_perline_start[i+1];
-    //     for (int j = st_ind; j < ed_ind; j++) {
-    //         int ind = comp_mat->offdiag_indices[j];
-    //         b_i_m += x_curr.row(ind) * comp_mat->offdiag_data[j];
-    //     }
+		// copy host to device (temp)
+		copy_mat2thrustvector(x_curr, solver_data_device->x_curr_device, m_nVert);
+		copy_mat2thrustvector(b_curr, solver_data_device->b_curr_device, m_nVert);
 
-    //     jacobi_buffer.row(i) = (b_i_p - b_i_m) / a_ii;
-    // }
+		cu_jacobi_global(solver_data_device->sp_mat_device,
+			solver_data_device->b_curr_device,
+			solver_data_device->x_curr_device,
+			solver_data_device->jacobi_buffer_1,solver_data_device->jacobi_buffer_2, nDynVert, iter_cnt);
 
-    // x_curr.block(0, 0, nDynVert, 3) = jacobi_buffer;
+		// copy device to host (temp)
+		copy_thrustvector2mat(solver_data_device->x_curr_device,x_curr,  m_nVert);
+
+	}
+	else {
+		for (int i= 0; i < iter_cnt; i++) {
+			tbb::parallel_for(
+				tbb::blocked_range<size_t>(0, nDynVert),
+				[&](const tbb::blocked_range<size_t>& r) {
+					for (size_t i = r.begin(); i < r.end(); i++) {
+						Real a_ii = comp_mat->diag_data[i];
+						Vecf_3 b_i_p = b.row(i);
+
+						Vecf_3 b_i_m = Vecf_3::Zero();
+						int st_ind = comp_mat->offdiag_perline_start[i];
+						int ed_ind = comp_mat->offdiag_perline_start[i+1];
+						for (int j = st_ind; j < ed_ind; j++) {
+							int ind = comp_mat->offdiag_indices[j]; // col
+							b_i_m += x_curr.row(ind) * comp_mat->offdiag_data[j];
+						}
+
+						jacobi_buffer.row(i) = (b_i_p - b_i_m) / a_ii;
+					}
+			});
+			x_curr.block(0, 0, nDynVert, 3) = jacobi_buffer;
+		}
+
+	}
+
 
 }
 
@@ -582,6 +582,7 @@ void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
 	}
 }
 
+/*
 void ADMMParallelSolver::_project_feasible_plain_2(ADU::Matf_X3& p,
 	ProximalQuery::ContactInfoList& contacts,
 	ADU::Real mu, size_t max_GS_iter)
@@ -660,6 +661,7 @@ void ADMMParallelSolver::_project_feasible_plain_2(ADU::Matf_X3& p,
 		}
 	}
 }
+*/
 
 void ADMMParallelSolver::compute_Scc(bool is_XPBD ) {
 	using namespace ADU;

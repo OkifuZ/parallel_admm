@@ -56,7 +56,7 @@ src/mediator/*.cpp
 
 src/contact/lbvh/*.cu
 src/mutils/*.cu
-# src/solver/*.cu
+src/solver/*.cu
 # src/constraint/*.cu
 # src/mutils/*.cu
 # src/contact/*.cu
@@ -83,6 +83,8 @@ src/zensim/math/bit/*.hpp
 
 src/contact/lbvh/*.cuh
 src/mutils/*.cuh
+src/solver/*.cuh
+
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -108,6 +110,9 @@ include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
 add_executable(main
 ${HEADER_FILES} ${SOURCE_FILES} "src/main.cpp"
+        src/solver/mcuda_wrapper.h
+        src/solver/mcuda_wrapper.cu
+        src/mutils/common_type_hostonly.h
 )
 target_link_libraries(main polyscope igl::core TBB::tbb Eigen3::Eigen mshio::mshio embree tomlplusplus::tomlplusplus argparse ZLIB::ZLIB)
 set_property(TARGET main PROPERTY CUDA_SEPARABLE_COMPILATION ON)

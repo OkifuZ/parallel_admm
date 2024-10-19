@@ -18,6 +18,8 @@
 
 #include "mutils/dist_g.cuh"
 
+
+
 template <class F>
 __device__ __host__
 inline F __m_min(F a, F b) {
@@ -79,11 +81,11 @@ inline std::uint32_t morton_code(double x, double y, double z, double resolution
     x = __m_min(__m_max(x * resolution, 0.0), resolution - 1.0);
     y = __m_min(__m_max(y * resolution, 0.0), resolution - 1.0);
     z = __m_min(__m_max(z * resolution, 0.0), resolution - 1.0);
-    
+
     const std::uint32_t xx = expand_bits(static_cast<std::uint32_t>(x));
     const std::uint32_t yy = expand_bits(static_cast<std::uint32_t>(y));
     const std::uint32_t zz = expand_bits(static_cast<std::uint32_t>(z));
-    
+
     std::uint32_t mchash = ((xx << 2) + (yy << 1) + zz);
 
     return mchash;
@@ -103,13 +105,13 @@ void AABB::combines(const double& x, const double& y, const double& z, const dou
     upper = make_double3(__m_max(upper.x, xx), __m_max(upper.y, yy), __m_max(upper.z, zz));
 }
 
-__host__ __device__  
+__host__ __device__
 void AABB::combines(const AABB& aabb) {
     lower = make_double3(__m_min(lower.x, aabb.lower.x), __m_min(lower.y, aabb.lower.y), __m_min(lower.z, aabb.lower.z));
     upper = make_double3(__m_max(upper.x, aabb.upper.x), __m_max(upper.y, aabb.upper.y), __m_max(upper.z, aabb.upper.z));
 }
 
-__host__ __device__ 
+__host__ __device__
 double3 AABB::center() {
     return make_double3((upper.x + lower.x) * 0.5, (upper.y + lower.y) * 0.5, (upper.z + lower.z) * 0.5);
 }
@@ -392,7 +394,7 @@ int _dType_EE(const double3& v0, const double3& v1, const double3& v2, const dou
         }
     }
 
-    if (tN <= 0.0) { 
+    if (tN <= 0.0) {
         if (-d <= 0.0) {
             return 0;
         }
@@ -403,7 +405,7 @@ int _dType_EE(const double3& v0, const double3& v1, const double3& v2, const dou
             return 6;
         }
     }
-    else if (tN >= tD) { 
+    else if (tN >= tD) {
         if ((-d + b) <= 0.0) {
             return 1;
         }
@@ -419,7 +421,7 @@ int _dType_EE(const double3& v0, const double3& v1, const double3& v2, const dou
 }
 
 
-__device__ 
+__device__
 inline bool _checkPTintersection(const double3* _vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3, const double& dHat, uint32_t* _cpNum, int* _mInx, int4* _collisionPair, int4* _ccd_collisionPair) noexcept
 {
     double3 v0 = _vertexes[id0];
@@ -435,7 +437,7 @@ inline bool _checkPTintersection(const double3* _vertexes, const uint32_t& id0, 
         _d_PP(v0, v1, d);
         if (d < dHat) {
             //printf("%d   %d   %d   %d   %d   %f\n", dtype, idx, _faces[obj_idx].x, _faces[obj_idx].y, _faces[obj_idx].z, d);
-            int cdp_idx = atomicAdd(_cpNum, 1);         
+            int cdp_idx = atomicAdd(_cpNum, 1);
             _ccd_collisionPair[cdp_idx] = make_int4(-id0 - 1, id1, id2, id3);
             _collisionPair[cdp_idx] = make_int4(-id0 - 1, id1, -1, -1);
             _mInx[cdp_idx] = atomicAdd(_cpNum + 2, 1);
@@ -447,7 +449,7 @@ inline bool _checkPTintersection(const double3* _vertexes, const uint32_t& id0, 
         _d_PP(v0, v2, d);
         if (d < dHat) {
             //printf("%d   %d   %d   %d   %d   %f\n", dtype, idx, _faces[obj_idx].x, _faces[obj_idx].y, _faces[obj_idx].z, d);
-            int cdp_idx = atomicAdd(_cpNum, 1);         
+            int cdp_idx = atomicAdd(_cpNum, 1);
             _ccd_collisionPair[cdp_idx] = make_int4(-id0 - 1, id1, id2, id3);
             _collisionPair[cdp_idx] = make_int4(-id0 - 1, id2, -1, -1);
             _mInx[cdp_idx] = atomicAdd(_cpNum + 2, 1);
@@ -574,7 +576,7 @@ inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_
                 if (smooth) {
                     _collisionPair[cdp_idx] = make_int4(-id0 - 1, -id2 - 1, -id1 - 1, -id3 - 1);
                     MatIndex[cdp_idx] = atomicAdd(_cpNum + 4, 1);
-                    
+
                     break;
                 }
                 _collisionPair[cdp_idx] = make_int4(-id0 - 1, id2, -1, add_e);
@@ -589,7 +591,7 @@ inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_
         }
         break;
     }
-    
+
     case 1: {
         _d_PP(v0, v3, d);
         if (d < dHat) {
@@ -618,7 +620,7 @@ inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_
         }
         break;
     }
-        
+
     case 2: {
         _d_PE(v0, v2, v3, d);
         if (d < dHat) {
@@ -809,11 +811,11 @@ inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_
                 int cdp_idx = atomicAdd(_cpNum, 1);
                 MatIndex[cdp_idx] = atomicAdd(_cpNum + 4, 1);
                 _ccd_collisionPair[cdp_idx] = make_int4(id0, id1, id2, id3);
-                if (smooth) {                  
+                if (smooth) {
                     _collisionPair[cdp_idx] = make_int4(id0, id1, id2, -id3 - 1);
                     break;
                 }
-                _collisionPair[cdp_idx] = make_int4(id0, id1, id2, id3);             
+                _collisionPair[cdp_idx] = make_int4(id0, id1, id2, id3);
             }
             else {
 
@@ -954,7 +956,7 @@ void _calcMChash(uint64_t* _MChash, AABB* _bvs, int number) {
     double3 SceneSize = make_double3(maxBv.upper.x - maxBv.lower.x, maxBv.upper.y - maxBv.lower.y, maxBv.upper.z - maxBv.lower.z);
     double3 centerP = _bvs[idx + number - 1].center();
     double3 offset = make_double3(centerP.x - maxBv.lower.x, centerP.y - maxBv.lower.y, centerP.z - maxBv.lower.z);
-    
+
     //printf("%d   %f     %f     %f\n", offset.x, offset.y, offset.z);
     uint64_t mc32 = morton_code(offset.x / SceneSize.x, offset.y / SceneSize.y, offset.z / SceneSize.z);
     uint64_t mc64 = ((mc32 << 32) | idx);
@@ -1046,7 +1048,7 @@ void _selfQuery_vf(const int* _btype, const double3* _vertexes, const uint3* _fa
     uint32_t  stack[64];
     uint32_t* stack_ptr = stack;
     *stack_ptr++ = 0;
-      
+
     AABB _bv;
     idx = _surfVerts[idx];
     _bv.upper = _vertexes[idx];
@@ -1093,7 +1095,7 @@ void _selfQuery_vf(const int* _btype, const double3* _vertexes, const uint3* _fa
             }
         }
     } while (stack < stack_ptr);
-} 
+}
 
 __global__
 void _selfQuery_vf_ccd(const int* _btype, const double3* _vertexes, const double3* moveDir, double alpha, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes, int4* _ccd_collisionPair, uint32_t* _cpNum, double dHat, int number) {
@@ -1180,7 +1182,7 @@ void _selfQuery_ee(const int* _btype, const double3* _vertexes, const double3* _
         const uint32_t node_id = *--stack_ptr;
         const uint32_t L_idx = _nodes[node_id].left_idx;
         const uint32_t R_idx = _nodes[node_id].right_idx;
-        
+
         if (overlap(_bv, _bvs[L_idx], gapl))
         {
             const auto obj_idx = _nodes[L_idx].element_idx;
@@ -1296,7 +1298,7 @@ AABB calcMaxBV(AABB* _leafBoxes, AABB* _tempLeafBox, const int& number) {
     //AABB* _tempLeafBox;
     //CUDA_SAFE_CALL(cudaMalloc((void**)&_tempLeafBox, number * sizeof(AABB)));
     CUDA_SAFE_CALL(cudaMemcpy(_tempLeafBox, _leafBoxes + number - 1, number * sizeof(AABB), cudaMemcpyDeviceToDevice));
-    
+
     _reduct_max_box << <blockNum, threadNum, sharedMsize >> > (_tempLeafBox, numbers);
 
     numbers = blockNum;
@@ -1380,7 +1382,7 @@ void selfQuery_ee(const int* _btype, const double3* _vertexes, const double3* _r
     int numbers = number;
     const unsigned int threadNum = 256;
     int blockNum = (numbers + threadNum - 1) / threadNum;
-    
+
     _selfQuery_ee << <blockNum, threadNum >> > (_btype, _vertexes, _rest_vertexes, _edges, _bvs, _nodes, _collisonPairs, _ccd_collisonPairs, _cpNum, MatIndex, dHat, numbers);
 }
 
@@ -1434,7 +1436,7 @@ lbvh::~lbvh() {
 
 
 
-void lbvh_f::init(int* _mbtype, double3* _mVerts, uint3* _mFaces, uint32_t* _mSurfVert, 
+void lbvh_f::init(int* _mbtype, double3* _mVerts, uint3* _mFaces, uint32_t* _mSurfVert,
     int4* _mCollisonPairs, uint32_t* _mcpNum, const int& faceNum, const int& vertNum, Result<double>* contact_info) {
     _faces = _mFaces;
     _surfVerts = _mSurfVert;
@@ -1449,7 +1451,7 @@ void lbvh_f::init(int* _mbtype, double3* _mVerts, uint3* _mFaces, uint32_t* _mSu
     MALLOC_DEVICE_MEM(face_number);
 }
 
-void lbvh_e::init(int* _mbtype, double3* _mVerts, double3* _mRest_vertexes, uint2* _mEdges, 
+void lbvh_e::init(int* _mbtype, double3* _mVerts, double3* _mRest_vertexes, uint2* _mEdges,
     int4* _mCollisonPairs, uint32_t* _mcpNum, const int& edgeNum, const int& vertNum, Result<double>* contact_info) {
     _rest_vertexes = _mRest_vertexes;
     _edges = _mEdges;
@@ -1590,7 +1592,7 @@ void lbvh_e::SelfCollitionFullDetect(double dHat, const double3* moveDir, const 
 
 
 __device__
-inline bool _checkDCDPointTriangle(const double3* _vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3, 
+inline bool _checkDCDPointTriangle(const double3* _vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3,
     const double& dHat, uint32_t* _cpNum, int4* _collisionPair, Result<double>* contact_info) noexcept
 {
     const double3& _v0 = _vertexes[id0];
@@ -1637,7 +1639,7 @@ inline bool _checkDCDEdgeEdge(const double3* _vertexes, const uint32_t& id0, con
 }
 
 __global__
-void _dcd_vf(const double3* _vertexes, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes, 
+void _dcd_vf(const double3* _vertexes, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes,
     int4* _collisionPair, uint32_t* _cpNum, Result<double>* contact_info, double dHat, int number) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= number) return;
@@ -1694,7 +1696,7 @@ void _dcd_vf(const double3* _vertexes, const uint3* _faces, const uint32_t* _sur
 }
 
 __global__
-void _dcd_ee(const double3* _vertexes, const uint2* _edges, const AABB* _bvs, const Node* _nodes, 
+void _dcd_ee(const double3* _vertexes, const uint2* _edges, const AABB* _bvs, const Node* _nodes,
     int4* _collisionPair, uint32_t* _cpNum, Result<double>* contact_info, double dHat, int e_number, int t_number) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= e_number) return;

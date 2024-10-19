@@ -66,8 +66,8 @@ public:
     size_t e_num{};
     size_t t_num{};
 
-    Result<double>* d_contact_info;
-    std::vector<Result<double>> h_contact_info;
+    Result<ADU::Real>* d_contact_info;
+    std::vector<Result<ADU::Real>> h_contact_info;
     uint32_t* d_cpNum;
     uint32_t h_cpNum;
 

@@ -69,7 +69,7 @@ public:
 		// for std::vector
 	};
 
-	ContactInfo(const Result<double>& result, size_t v0, size_t v1, size_t v2, size_t v3,
+	ContactInfo(const Result<ADU::Real>& result, size_t v0, size_t v1, size_t v2, size_t v3,
 		const ADU::Vecf_3& normal, const ADU::Vecf_3& point, bool from_CCD) :
 		vinds({ v0, v1, v2, v3 }), pair_type(EE), point(point)
 	{

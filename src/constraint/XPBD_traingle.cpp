@@ -1,6 +1,8 @@
 #include "constraint/XPBD_constraints.h"
 #include "mutils/exception_handle.h"
 #include "constraint/bending_constraint.h"
+#include <mutils/common_type_hostonly.h>
+
 
 bool FEMTriangleConstraint::initConstraint(const ADU::Matf_X3& verts, const unsigned int particle1, const unsigned int particle2,
 	const unsigned int particle3, const ADU::Real xxStiffness, const ADU::Real yyStiffness, const ADU::Real xyStiffness,

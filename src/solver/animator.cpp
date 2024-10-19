@@ -24,8 +24,8 @@ void ScriptAnimator::read_rigid_animate(int mesh_id, const std::string& npz_path
     ScriptedData script_data;
     script_data.pos.resize(pos.shape[0]);
     script_data.quat.resize(quat.shape[0]);
-    auto pos_data = pos.data<double>();
-    auto quat_data = quat.data<double>();
+    auto pos_data = pos.data<ADU::Real>();
+    auto quat_data = quat.data<ADU::Real>();
     script_data.frame_nu = pos.shape[0];
     for (int fn = 0; fn < script_data.frame_nu; fn++) {
         script_data.pos[fn] = ADU::Vecf_3{ pos_data[fn * 3 + 0], pos_data[fn * 3 + 1] , pos_data[fn * 3 + 2] };

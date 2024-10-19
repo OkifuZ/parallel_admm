@@ -125,6 +125,7 @@ size_t step_idx = 0;
 
 
 void update_bvh_draw() {
+    if (!app.show_windows) return;
     int num = (app.bvh->bvs.size()) / 2;
     app.bvh_nodes.clear();
     app.bvh_edges.clear();
@@ -208,10 +209,14 @@ void main_loop() {
                     const auto& verts = app.solver->getVertices().block(mesh_obj->start_vertIdx, 0, mesh_obj->end_vertIdx - mesh_obj->start_vertIdx, 3);
                     const auto& faces = app.mesh->getFaceInds(mesh_id);
                     if (app.use_bin) {
-                        igl::writePLY((out_path / out_file_na).string() + ".ply", verts, faces, igl::FileEncoding::Binary);
+                        if (!igl::writePLY((out_path / out_file_na).string() + ".ply", verts, faces, igl::FileEncoding::Binary) ) {
+                            throw std::runtime_error("failed to write PLY file");
+                        }
                     }
                     else {
-                        igl::writeOBJ((out_path / out_file_na).string() + ".obj", verts, faces);
+                        if (!igl::writeOBJ((out_path / out_file_na).string() + ".obj", verts, faces)) {
+                            throw std::runtime_error("failed to write OBJ file");
+                        }
                     }
                     std::cout << "saved to " << out_path / out_file_na << std::endl;
                 }
@@ -219,10 +224,14 @@ void main_loop() {
             else {
                 std::string out_file_na = cformat("%s\_%05d", app_config.scene_name.c_str(), step_idx);
                 if (app.use_bin) {
-                    igl::writePLY((out_path / out_file_na).string() + ".ply", app.solver->getVertices(), app.mesh->surface_tris, igl::FileEncoding::Binary);
+                    if (!igl::writePLY((out_path / out_file_na).string() + ".ply", app.solver->getVertices(), app.mesh->surface_tris, igl::FileEncoding::Binary)) {
+                        throw std::runtime_error("failed to write PLY file");
+                    }
                 }
                 else {
-                    igl::writeOBJ((out_path / out_file_na).string() + ".obj", app.solver->getVertices(), app.mesh->surface_tris);
+                    if (!igl::writeOBJ((out_path / out_file_na).string() + ".obj", app.solver->getVertices(), app.mesh->surface_tris)) {
+                        throw std::runtime_error("failed to write OBJ file");
+                    }
                 }
                 std::cout << "saved to " << out_path / out_file_na << std::endl;
             }
@@ -243,7 +252,7 @@ void main_loop() {
         app.vis_meshP->updateVertexPositions(app.solver->getVertices());
         app.mesh->clear_color();
     }
-    if (app.vis_contactP) {
+    if (app.show_windows && app.vis_contactP) {
         auto solver_ptr = static_cast<ADMMSolverFull_RL_damping*>(app.solver.get());
         auto& s_vec = solver_ptr->prox_query->get_SaSb_mean();
         app.vis_contactP->updatePointPositions(app.solver->prox_query->get_contact_points());
@@ -260,7 +269,9 @@ void main_loop() {
 
 
     }
-    app.vis_bvh->updateNodePositions(app.bvh_nodes);
+    if (app.show_windows ) {
+        app.vis_bvh->updateNodePositions(app.bvh_nodes);
+    }
 
 
     if (step_idx > app.end_frame) {

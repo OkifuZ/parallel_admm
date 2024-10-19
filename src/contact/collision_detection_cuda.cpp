@@ -126,14 +126,13 @@ void BVH_GPU::convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct
     CUDA_SAFE_CALL(cudaMemcpy((void*)h_contact_info.data(), d_contact_info, h_cpNum * sizeof(Result<double>), cudaMemcpyDeviceToHost));
     CUDA_SAFE_CALL(cudaMemcpy((void*)h_collisionPairs.data(), d_collisonPairs, h_cpNum * sizeof(int4), cudaMemcpyDeviceToHost));
 
-    printf("contact count: %d\n", h_cpNum);
 
     ct_info.resize(h_cpNum);
     /*if (ct_info.size() < h_cpNum) {
     }*/
 
     for (int i = 0; i < h_cpNum; i++) {
-        const Result<double>& res = h_contact_info[i];
+        const Result<ADU::Real>& res = h_contact_info[i];
         int4& inds = h_collisionPairs[i];
         // point
         const Vecf_3& v0 = pos.row(inds.x);

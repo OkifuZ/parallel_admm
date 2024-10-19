@@ -6,6 +6,8 @@
 #include <Eigen/SparseCholesky>
 #include <unsupported/Eigen/SparseExtra>
 
+#include <mutils/common_type_hostonly.h>
+
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_for_each.h>
 #include <tbb/parallel_invoke.h>
