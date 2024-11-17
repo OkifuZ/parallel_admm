@@ -79,6 +79,12 @@ public:
 
 	void add_constraints(const ConstraintsList& constraints_) {
 		this->m_constraints.insert(this->m_constraints.end(), constraints_.begin(), constraints_.end());
+
+		/*std::cout << "constraints: ";
+		for (auto& constraint : this->m_constraints) {
+			std::cout << constraint->type << " ";
+		}
+		std::cout << std::endl;*/
 	}
 
 	void add_nodal_constraints(const NodalCollisionConstraintsList& constraints_) {

@@ -7,27 +7,29 @@
 
 #include <array>
 #include <iostream>
+#include <zensim/math/VecInterface.hpp>
 
-class PinConstraint : public Constraint {
+class SpringConstraint : public Constraint {
 public:
 
-	ADU::Vecf_3 pin_poistion{};
+	ADU::Real rest_length{};
 
-	PinConstraint() = delete;
+	SpringConstraint() = delete;
 
-	PinConstraint(int vind, ADU::Matf_X3& verts,
+	SpringConstraint(int vinda,int vindb, ADU::Matf_X3& verts,
 		ADU::Real k, int global_idx, int start_row) :
 		Constraint() {
 		using namespace ADU;
 
-		type = 4;
+		type = 6;
 		this->k = k;
 		this->global_m = global_idx;
 		this->start_row = start_row;
 
 		inds.resize(1, 0);
-		inds[0] = vind;
-		dim = 1;
+		inds[0] = vinda;
+		inds[1] = vindb;
+		dim = 2;
 
 		pin_poistion = verts.row(vind).transpose();
 		
@@ -37,7 +39,8 @@ public:
 	virtual void get_D(std::vector< ADU::Tripf >& triplets, bool local = true) const {
 		// D \in R^{1xn}
 		using namespace ADU;
-		
+
+		// TODO
 		if (local) {
 			triplets.emplace_back(0, inds[0], 1);
 		}
@@ -52,8 +55,15 @@ public:
 		using namespace Eigen;
 		using namespace ADU;
 
-		zi = pin_poistion.transpose();
-		
+		Vecf_3& v0 = zi.row(0);
+		Vecf_3& v1 = zi.row(1);
+		Vecf_3 v2 = v0 - v1;
+		Real dist = std::sqrt(v2.dot(v2));
+		Vecf_3 center = 0.5_r * (v0 + v1);
+
+		v0 = center + 0.5f * rest_length * (v0 - center) / dist;
+		v1 = center + 0.5f * rest_length * (v1 - center) / dist;
+
 	};
 
 

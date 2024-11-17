@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_TOOLCHAIN_FILE "C:/codebase/vcpkg/scripts/buildsystems/vcpkg.cmake")
 set(CMAKE_CUDA_ARCHITECTURES "native") 
 
+#SET(CMAKE_BUILD_TYPE Debug)
 
 project(admm_elasticity LANGUAGES C CXX CUDA)  
 
@@ -113,6 +114,13 @@ ${HEADER_FILES} ${SOURCE_FILES} "src/main.cpp"
         src/solver/mcuda_wrapper.h
         src/solver/mcuda_wrapper.cu
         src/mutils/common_type_hostonly.h
+        src/constraint/triangle_constraint_device.h
+        src/constraint/triangle_constraint_deivce.cu
+        src/mutils/QR_reduced.h
+        src/mutils/svd_fast3.cuh
+        src/constraint/pin_constraint_deivce.cu
+        src/constraint/pin_constraint_deivce.cu
+        src/constraint/spring_constraint.h
 )
 target_link_libraries(main polyscope igl::core TBB::tbb Eigen3::Eigen mshio::mshio embree tomlplusplus::tomlplusplus argparse ZLIB::ZLIB)
 set_property(TARGET main PROPERTY CUDA_SEPARABLE_COMPILATION ON)

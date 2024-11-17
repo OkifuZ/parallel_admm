@@ -16,13 +16,15 @@ CuCompactSparseMat::CuCompactSparseMat(const CompactSparseMat& hostData) {
     offdiag_perline_start = hostData.offdiag_perline_start;
 }
 
-CuSolverData::CuSolverData(const CompactSparseMat& hostData, int jacobi_buffer_size, int x_curr_size, int b_curr_size) :
+CuSolverData::CuSolverData(const CompactSparseMat& hostData,
+    int jacobi_buffer_size, int x_curr_size, int b_curr_size, int constraint_dim) :
     sp_mat_device(hostData)
 {
     jacobi_buffer_1.resize(jacobi_buffer_size * 3);
     jacobi_buffer_2.resize(jacobi_buffer_size * 3);
     x_curr_device.resize(x_curr_size * 3);
     b_curr_device.resize(b_curr_size * 3);
+    z_buffer.resize(constraint_dim * 3);
 }
 
 
@@ -143,3 +145,5 @@ void cu_jacobi_global(const CuCompactSparseMat& A,
     }
     thrust::copy(functor.x_curr, functor.x_curr + nDynVert * 3, x_curr.begin());
 }
+
+

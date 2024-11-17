@@ -1,6 +1,7 @@
 #include "solver/admm_full_solver.h"
 #include "mutils/timer.h"
 #include "constraint/pin_constraint.h"
+#include "thrust/device_vector.h"
 
 
 #include <Eigen/SparseCore>
@@ -15,11 +16,50 @@
 #include <random>
 
 
+void ADMMParallelSolver::convert_constraint2device() {
+	// 1. count constraint num for each type
+	std::vector<std::shared_ptr<TriangleConstraint>> tri_constraints;
+	std::vector<std::shared_ptr<PinConstraint> > pin_constraints;
+
+	for (auto& ct: m_constraints) {
+		if (ct->type == 1) {
+			static bool hit1 = false;
+			if (!hit1) {
+				hit1 = true;
+				triangle_constraint_start_row = ct->start_row;
+			}
+			tri_constraints.push_back(std::dynamic_pointer_cast<TriangleConstraint>(ct));
+		}
+		else if (ct->type == 2) {
+		}
+		else if (ct->type == 3) {
+		}
+		else if (ct->type == 4) {
+			static bool hit4 = false;
+			if (!hit4) {
+				hit4 = true;
+				pin_constraint_start_row = ct->start_row;
+			}
+			pin_constraints.push_back(std::dynamic_pointer_cast<PinConstraint>(ct));
+		}
+		else if (ct->type == 5) {
+		}
+		else if (ct->type == 6) {
+		}
+	}
+
+	std::cout << triangle_constraint_start_row << std::endl;
+	std::cout << pin_constraint_start_row << std::endl;
+
+	this->pin_constraint_cu = std::make_unique<PinConstraintDevice>(pin_constraints);
+	this->triangle_constraint_cu = std::make_unique<TriangleConstraintDevice>(tri_constraints);
+}
+
+
 
 void ADMMParallelSolver::init() {
 	printf("ADMMParallelSolver::init start\n");
 
-    // ADMMSolverFull_RL_damping::init();
 
 	precompute();
 
@@ -30,7 +70,8 @@ void ADMMParallelSolver::init() {
 	int nDynVert = static_vert_begin;
 
 	comp_mat = std::make_unique<CompactSparseMat>(m_A_damp); // for parallel global solver
-	solver_data_device = std::make_unique<CuSolverData>(*comp_mat, nDynVert, nDynVert, nDynVert);
+	solver_data_device = std::make_unique<CuSolverData>(*comp_mat,
+		nDynVert, nDynVert, nDynVert, m_nCDim);
 	// comp_mat_device = std::make_unique<CuCompactSparseMat>(*comp_mat);
 
     jacobi_buffer.resize(nDynVert, 3);
@@ -50,6 +91,9 @@ void ADMMParallelSolver::init() {
 		delta_u.reserve(prox_query->max_collision_num);
 		vi_ct_nums.resize(m_nVert, 0);
 	}
+
+	resizeThrust(this->cache_nCDimX3, m_nCDim*3);
+	resizeThrust(this->cache_nDynVertX3, nDynVert*3);
 
 	printf("ADMMParallelSolver init done\n");
 
@@ -78,6 +122,8 @@ void ADMMParallelSolver::precompute() {
 	}
 	m_M.setFromTriplets(M_trips.begin(), M_trips.end());
 
+	m_M_device = std::make_unique<CompactSparseMat>(m_M, false);
+
 	// Sparse Elastic Matrices triplets
 	m_dt2DTWeTWeD = SpMatf(nDynVert, nDynVert);
 	m_dt2DTWeTWe = SpMatf(nDynVert, m_nCDim);
@@ -95,9 +141,11 @@ void ADMMParallelSolver::precompute() {
 	}
 	m_D.setFromTriplets(D_trips.begin(), D_trips.end());
 	m_W_e.setFromTriplets(We_trips.begin(), We_trips.end());
+	m_D_device = std::make_unique<CompactSparseMat>(m_D, false);
 
 	m_dt2DTWeTWe = m_dt2 * m_D.transpose() * m_W_e.transpose() * m_W_e;
 	m_dt2DTWeTWeD = m_dt2DTWeTWe * m_D;
+	m_dt2DTWeTWe_device = std::make_unique<CompactSparseMat>(m_dt2DTWeTWe, false);
 
 	// damping
 	m_Damp_Mat = SpMatf(nDynVert, nDynVert); // h * k * D_r
@@ -178,6 +226,8 @@ void ADMMParallelSolver::precompute() {
 	m_Uc = Matf_X3(nDynVert, 3);
 	m_Uc.setZero();
 
+	resizeThrust(m_Ue_device, 3*m_nCDim);
+
 	// Gamma_c for PGS
 	if (enable_frictional_contact && prox_query) {
 		Gamma_c.reserve(prox_query->max_collision_num);
@@ -223,8 +273,14 @@ void ADMMParallelSolver::step() {
 		else v_0.row(i).y() -= g * m_dt;
 	}
 
+	ADU::Matf_X3 temp(m_nCDim, 3);
+
 	Matf_X3 x_tilde = x_0.block(0, 0, nDynVert, 3) + m_dt * v_0.block(0, 0, nDynVert, 3); // nDynVert * 3
 	Matf_X3 M_x_tilde = m_M * x_tilde; // nDynVert * 3
+
+	resizeThrust(M_x_tilde_device, nDynVert * 3);
+	copy_mat2thrustvector(M_x_tilde, M_x_tilde_device, nDynVert);
+
 	b_curr.resize(nDynVert, 3);
 	b_curr.setZero();
 
@@ -238,6 +294,7 @@ void ADMMParallelSolver::step() {
 	z.setZero();
 	Matf_X3 DX(m_nCDim, 3);
 	DX.setZero();
+	resizeThrust(DX_device, m_nCDim * 3);
 
 	if (animator) {
 		animator->animate_all(m_vertices, x_curr, v_0, this->m_dt);
@@ -252,8 +309,12 @@ void ADMMParallelSolver::step() {
 
 	Timer timer("ADMMParallelSolver::step()");
 
+	copy_mat2thrustvector(x_curr, solver_data_device->x_curr_device, m_nVert);
+
 	for (int admm_it = 0; admm_it < admm_max_iter; admm_it++) {
 		Timer per_iteration_timer("per_iteration");
+
+		//copy_mat2thrustvector(m_Ue, m_Ue_device, m_nCDim);
 
 		// collision
 		if (enable_frictional_contact && prox_query && (admm_it % collision_detection_interval == 0)) {
@@ -273,19 +334,34 @@ void ADMMParallelSolver::step() {
 
 		{
 			Timer local_project_timer("elastic_local & contact_local");
+
 			tbb::parallel_invoke(
 				[&]() {
 					//Timer local_project_timer("elastic_local");
 					// local
-					DX = m_D * x_curr.block(0, 0, nDynVert, 3);
-					z = DX + m_Ue;
 
-					tbb::parallel_for_each(m_constraints.begin(), m_constraints.end(), [&](const std::shared_ptr<Constraint>& ct) {
-						int cdim = ct->dim;
-						Matf_XX zi = z.block(ct->start_row, 0, cdim, 3);
-						ct->prox(zi);
-						z.block(ct->start_row, 0, cdim, 3) = zi;
-						});
+					/*copy_mat2thrustvector(x_curr, solver_data_device->x_curr_device, m_nVert);
+					copy_mat2thrustvector(m_Ue, m_Ue_device, m_nCDim);*/
+
+					//CUMat_Ax(*m_D_device, solver_data_device->x_curr_device.data().get(), DX_device.data().get());
+					CUVec_a_plus_b(DX_device.data().get(), m_Ue_device.data().get(), solver_data_device->z_buffer.data().get(), m_nCDim);
+
+					/*DX = m_D * x_curr.block(0, 0, nDynVert, 3);
+					z = DX + m_Ue;*/
+
+					// 1. allocate zi_device, done
+					// 2. copy
+					//thrust::copy(z.data(), z.data() + m_nCDim * 3, solver_data_device->z_buffer.begin());
+					// 3. find the block of zi for each constraint (start row, length)
+
+					// TODO device ptr?
+					triangle_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + triangle_constraint_start_row * 3));
+
+					pin_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + pin_constraint_start_row * 3));
+
+					// Copy back
+					//thrust::copy(solver_data_device->z_buffer.begin(), solver_data_device->z_buffer.begin() + m_nCDim * 3, z.data());
+
 				},
 
 				[&]() {
@@ -295,7 +371,6 @@ void ADMMParallelSolver::step() {
 
 						p.block(0, 0, nDynVert, 3) =
 							(x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) + m_Uc) * m_dt_inv; // p as start velocity 
-
 
 
 						// project p into feasible set
@@ -324,31 +399,56 @@ void ADMMParallelSolver::step() {
 			Timer local_project_timer("global_propogation");
 
 			// global
-			b_curr = M_x_tilde + m_dt2DTWeTWe * (z - m_Ue);
+			CUVec_a_minus_b(solver_data_device->z_buffer.data().get(), m_Ue_device.data().get(),
+				cache_nCDimX3.data().get(), m_nCDim);
+			//thrust::copy(cache_nCDimX3.begin(), cache_nCDimX3.begin() + m_nCDim * 3, temp.data());
+			//b_curr = M_x_tilde + m_dt2DTWeTWe * temp;
+
+			CUMat_Ax(*m_dt2DTWeTWe_device, cache_nCDimX3.data().get(),
+				cache_nDynVertX3.data().get());
+			CUVec_a_plus_b(M_x_tilde_device.data().get(), cache_nDynVertX3.data().get(),
+				solver_data_device->b_curr_device.data().get(), nDynVert);
+
+			//thrust::copy(solver_data_device->b_curr_device.begin(), solver_data_device->b_curr_device.begin() + nDynVert * 3, b_curr.data());
+
+			//b_curr = M_x_tilde + m_dt2DTWeTWe * (z - m_Ue);
 			// friction
 			if (enable_frictional_contact) {
 				b_curr += m_dt2Wc * (m_dt * p.block(0, 0, nDynVert, 3) + x_0.block(0, 0, nDynVert, 3) - m_Uc);
 			}
 			// damp
-			b_curr += b_ini;
-
+			//b_curr += b_ini;
 
             //GS_global(b_curr, x_curr, 45);
-            Jacobi_global(b_curr, x_curr, 40, false);
-
+            Jacobi_global(b_curr, x_curr, 40, true);
 		}
-		DX = m_D * x_curr.block(0, 0, nDynVert, 3);
-		m_Ue += DX - z;
-		m_Uc += x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) - p.block(0, 0, nDynVert, 3) * m_dt;
+
+		CUMat_Ax(*m_D_device, solver_data_device->x_curr_device.data().get(), DX_device.data().get());
+		CUVec_a_minus_b(DX_device.data().get(), solver_data_device->z_buffer.data().get(), cache_nCDimX3.data().get(), m_nCDim);
+		CUVec_a_plus_b(cache_nCDimX3.data().get(), m_Ue_device.data().get(), m_Ue_device.data().get(), m_nCDim);
+
+		//copy_thrustvector2mat(solver_data_device->x_curr_device,x_curr,  m_nVert);
+		//copy_thrustvector2mat(m_Ue_device ,m_Ue, m_nCDim);
+
+		//copy_thrustvector2mat(solver_data_device->x_curr_device,x_curr,  m_nVert);
+		//copy_thrustvector2mat(solver_data_device->z_buffer,z,  m_nCDim);
+
+		//DX = m_D * x_curr.block(0, 0, nDynVert, 3);
+
+		//m_Ue += DX - z;
+
+		if (enable_frictional_contact) {
+			m_Uc += x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) - p.block(0, 0, nDynVert, 3) * m_dt;
+		}
 	}
-	
+
+	copy_thrustvector2mat(solver_data_device->x_curr_device,x_curr,  m_nVert);
+
 	m_velocities.block(0, 0, nDynVert, 3) = (x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3)) / m_dt;
 	m_velocities.block(nDynVert, 0, m_nVert - nDynVert, 3) = v_0.block(nDynVert, 0, m_nVert - nDynVert, 3);
 	m_vertices = x_curr;
 
 	step_cnt++;
-
-	
 }
 
 void ADMMParallelSolver::GS_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr, int iter_cnt) {
@@ -382,8 +482,8 @@ void ADMMParallelSolver::Jacobi_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_cu
 	if (on_device) {
 
 		// copy host to device (temp)
-		copy_mat2thrustvector(x_curr, solver_data_device->x_curr_device, m_nVert);
-		copy_mat2thrustvector(b_curr, solver_data_device->b_curr_device, m_nVert);
+		//copy_mat2thrustvector(x_curr, solver_data_device->x_curr_device, m_nVert);
+		//copy_mat2thrustvector(b_curr, solver_data_device->b_curr_device, m_nVert);
 
 		cu_jacobi_global(solver_data_device->sp_mat_device,
 			solver_data_device->b_curr_device,
@@ -391,7 +491,7 @@ void ADMMParallelSolver::Jacobi_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_cu
 			solver_data_device->jacobi_buffer_1,solver_data_device->jacobi_buffer_2, nDynVert, iter_cnt);
 
 		// copy device to host (temp)
-		copy_thrustvector2mat(solver_data_device->x_curr_device,x_curr,  m_nVert);
+		//copy_thrustvector2mat(solver_data_device->x_curr_device,x_curr,  m_nVert);
 
 	}
 	else {
@@ -451,59 +551,6 @@ void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
 		}
 		});
 
-
-	// pure GS
-	/*
-
-	Vecf_3 u{};
-	Vecf_3 u_star{};
-	Vecf_3 u_star_new{};
-	Real u_star_N{};
-	Vecf_3 u_star_T{};
-	Real tau{};
-	Real alpha{};
-	for (size_t gs_iter = 0; gs_iter < max_iter; gs_iter++) {
-		for (int ci = 0; ci < nContact; ci++) {
-			auto& ct = contacts[ci];
-			const auto& vinds = ct.vinds;
-			u = ct.bary[0] * p.row(vinds[0]) +
-				ct.bary[1] * p.row(vinds[1]) +
-				ct.bary[2] * p.row(vinds[2]) +
-				ct.bary[3] * p.row(vinds[3]);
-
-			u += K_c[ci];
-			//u *= (1.0_r - 2 * epsilon);
-
-			u_star = u - ct.r_c;
-
-			// project u_star to satisfy coulomb law
-			const auto& normal = ct.normal;
-			u_star_N = normal.dot(u_star);
-			// u_star_N = normal.dot(u_star);
-			u_star_T = u_star - u_star_N * normal;
-			if (u_star_N < 0) {
-				tau = u_star_T.norm();
-				alpha = -mu * u_star_N;
-				u_star_N = 0;
-				if (tau <= alpha) {
-					u_star_T = Vecf_3::Zero();
-				}
-				else {
-					u_star_T = (1.0_r - alpha / tau) * u_star_T;
-				}
-			}
-			// update force
-			u_star_new = u_star_N * ct.normal + u_star_T;
-			delta_u[ci] = u_star_new - u;
-			ct.r_c += delta_u[ci];
-
-			for (size_t k = 0; k < 4; k++) {
-				size_t j = ct.vinds[k];
-				//p.row(j) += Gamma_c[ci](k) * (u_star_new - u);
-				if (j < static_vert_begin) p.row(j) += Gamma_c[ci](k) * (u_star_new - u);
-			}
-		}
-	}*/
 
 	// pure Jacobi
 	for (size_t gs_iter = 0; gs_iter < max_iter; gs_iter++) {
@@ -581,87 +628,6 @@ void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
 
 	}
 }
-
-/*
-void ADMMParallelSolver::_project_feasible_plain_2(ADU::Matf_X3& p,
-	ProximalQuery::ContactInfoList& contacts,
-	ADU::Real mu, size_t max_GS_iter)
-{
-	// p: current velocity
-	// notion: r_c lies in contact_info
-	using namespace ADU;
-
-	size_t nContact = contacts.size();
-
-	tbb::parallel_for(tbb::blocked_range<size_t>(0, nContact), [&](const tbb::blocked_range<size_t>& r) {
-		for (int ci = r.begin(); ci < r.end(); ci++) {
-			const auto& ct = contacts[ci];
-			for (size_t k = 0; k < 4; k++) {
-				size_t j = ct.vinds[k];
-				if (j < static_vert_begin) {
-					p.row(j) += Gamma_c[ci](k) * ct.r_c;
-				}
-			}
-		}
-		});
-
-	Vecf_3 u{};
-	Vecf_3 u_star{};
-	Vecf_3 u_star_new{};
-	Real u_star_N{};
-	Vecf_3 u_star_T{};
-	Real tau{};
-	Real alpha{};
-	for (size_t gs_iter = 0; gs_iter < max_GS_iter; gs_iter++) {
-		for (int ci = 0; ci < nContact; ci++) {
-			auto& ct = contacts[ci];
-			const auto& vinds = ct.vinds;
-			u = ct.bary[0] * p.row(vinds[0]) +
-				ct.bary[1] * p.row(vinds[1]) +
-				ct.bary[2] * p.row(vinds[2]) +
-				ct.bary[3] * p.row(vinds[3]);
-
-			u += K_c[ci];
-			//u *= (1.0_r - 2 * epsilon);
-
-			u_star = u - ct.r_c;
-
-			// project u_star to satisfy coulomb law
-			const auto& normal = ct.normal;
-			u_star_N = normal.dot(u_star);
-			//u_star_N = normal.dot(u);
-			u_star_T = u_star - u_star_N * normal;
-
-			if (u_star_N < 0) {
-				if (!use_anisotropy) {
-					tau = u_star_T.norm();
-					alpha = -mu * u_star_N;
-					//u_star_N = - u_star_N * 0.1 ;
-					u_star_N = 0;
-					if (tau <= alpha) {
-						u_star_T = Vecf_3::Zero();
-					}
-					else {
-						u_star_T = (1.0_r - alpha / tau) * u_star_T;
-					}
-				}
-
-			}
-
-			// update force
-			u_star_new = u_star_N * ct.normal + u_star_T;
-			ct.r_c += u_star_new - u;
-
-			// update P using r_c
-			for (size_t k = 0; k < 4; k++) {
-				size_t j = ct.vinds[k];
-				//p.row(j) += Gamma_c[ci](k) * (u_star_new - u);
-				if (j < static_vert_begin) p.row(j) += Gamma_c[ci](k) * (u_star_new - u);
-			}
-		}
-	}
-}
-*/
 
 void ADMMParallelSolver::compute_Scc(bool is_XPBD ) {
 	using namespace ADU;

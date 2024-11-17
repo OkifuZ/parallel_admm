@@ -22,6 +22,9 @@
 #include <tbb/concurrent_vector.h>
 #include <random>
 
+#include "constraint/pin_constraint_device.h"
+#include "constraint/triangle_constraint_device.h"
+
 
 class ADMMSolverFull :public Solver {
 public:
@@ -208,8 +211,25 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	virtual void precompute();
 
 	std::unique_ptr<CompactSparseMat> comp_mat;
-	// std::unique_ptr<CuCompactSparseMat> comp_mat_device;
 	std::unique_ptr<CuSolverData> solver_data_device;
+
+	std::unique_ptr<CompactSparseMat> m_D_device;
+	std::unique_ptr<CompactSparseMat> m_dt2DTWeTWe_device;
+	std::unique_ptr<CompactSparseMat> m_M_device;
+
+
+	std::unique_ptr<TriangleConstraintDevice> triangle_constraint_cu;
+	int triangle_constraint_start_row{};
+	std::unique_ptr<PinConstraintDevice> pin_constraint_cu;
+	int pin_constraint_start_row{};
+
+	thrust::device_vector<ADU::Real> DX_device;
+	thrust::device_vector<ADU::Real> m_Ue_device;
+
+	thrust::device_vector<ADU::Real> M_x_tilde_device;
+
+	thrust::device_vector<ADU::Real> cache_nDynVertX3;
+	thrust::device_vector<ADU::Real> cache_nCDimX3;
 
 
 	void GS_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr, int iter_cnt);
@@ -242,5 +262,9 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	std::vector<int> vi_ct_nums;
 
 	virtual void compute_Scc(bool is_XPBD=false);
+
+public:
+	void convert_constraint2device();
+
 
 };

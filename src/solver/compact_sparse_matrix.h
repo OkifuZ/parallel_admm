@@ -7,6 +7,8 @@
 
 #include <vector>
 #include <iostream>
+#include <thrust/device_vector.h>
+#include <thrust/system/cuda/config.h>
 
 
 struct CompactSparseMat{
@@ -14,39 +16,66 @@ struct CompactSparseMat{
     std::vector<ADU::Real> offdiag_data; // [Values]
     std::vector<int> offdiag_indices; // [inner indices]
     std::vector<int> offdiag_perline_start; // [), size = n+1, [outer Starts]
+
+    std::vector<ADU::Real> data;
+    std::vector<int> row_inds;
+    std::vector<int> row_offsets;
+
+    thrust::device_vector<ADU::Real> data_cu;
+    thrust::device_vector<int> row_inds_cu;
+    thrust::device_vector<int> row_offsets_cu;
+
+
+    bool as_system_matrix{false};
+
     int rows{};
     int cols{};
 
-    // equal to SparseMatrix::makeCompressed(), implement for possible manipulation
-    CompactSparseMat(const ADU::SpMatf& mat) {
-        // mat is row major
+    void buildSystemMatrix(const ADU::SpMatf &mat);
 
+    void buildNormalMatrix(const ADU::SpMatf &mat);
+
+    // equal to SparseMatrix::makeCompressed(), implement for possible manipulation
+    explicit CompactSparseMat(const ADU::SpMatf& mat, bool asSystemMatirx=true) {
+        this->as_system_matrix = asSystemMatirx;
+        // mat is row major
         // each line has at least 1 value
         offdiag_perline_start.push_back(0);
-        using namespace ADU;
+
         cols = mat.cols();
         rows = mat.rows();
 
-        for (int k = 0; k < mat.outerSize(); ++k) {
-            int line_vals_num = 0;
-
-            for (SpMatf::InnerIterator it(mat, k); it; ++it) {
-                int col = it.col();
-                int row = it.row();
-                if (row != k) {
-
-                    ADU::make_exception(ADU::cformat("CompactSparseMat: each line has at least 1 value, empty in row %d", k));
-                }
-                if (col == row) {
-                    diag_data.push_back(it.value());
-                }
-                else {
-                    line_vals_num += 1;
-                    offdiag_data.push_back(it.value());
-                    offdiag_indices.push_back(col);
-                }
-            }
-            offdiag_perline_start.push_back(offdiag_perline_start.back() + line_vals_num);
+        if (asSystemMatirx) {
+            buildSystemMatrix(mat);
+        }
+        else {
+            buildNormalMatrix(mat);
         }
     }
 };
+
+struct DataTemp {
+    thrust::device_vector<ADU::Real> data;
+    int cur_row = 0;
+    int cur_col = 0;
+    // TODO multithread
+
+
+    static DataTemp& getInstance(int rows=-1, int cols=-1);
+
+
+
+
+private:
+    DataTemp() {}
+
+};
+
+void CUMat_Ax(const CompactSparseMat& A, const ADU::Real* x, ADU::Real* result);
+void CUVec_a_plus_b(const ADU::Real* a, const ADU::Real* b, ADU::Real* result, int rows);
+void CUVec_a_minus_b(const ADU::Real* a, const ADU::Real* b, ADU::Real* result, int rows);
+
+
+void resizeThrust(thrust::device_vector<ADU::Real>& data, int newSize, ADU::Real defaultVal = 0.0);
+
+

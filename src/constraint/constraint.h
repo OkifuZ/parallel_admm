@@ -16,7 +16,7 @@ class Constraint {
 public:
 
 	std::vector<int> inds{};
-	int type = 0; // 1: triangle, 2: tetrahedral, 3: bending, 4: pin, 5: collision
+	int type = 0; // 1: triangle, 2: tetrahedral, 3: bending, 4: pin, 5: collision 6. spring
 
 	ADU::Real k{};
 	ADU::Real w{};

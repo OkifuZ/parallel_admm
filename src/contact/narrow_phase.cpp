@@ -537,7 +537,7 @@ ADU::Matf_X3& ProximalQuery::get_contact_normals() {
 }
 
 ADU::Matf_X3& ProximalQuery::get_contact_edges_points() {
-	contact_edges_points.setZero();
+	/*contact_edges_points.setZero();
 	int idx = 0;
 	for (int ci = 0; ci < contact_info_list.size(); ci++) {
 		const auto& ct = contact_info_list[ci];
@@ -545,6 +545,8 @@ ADU::Matf_X3& ProximalQuery::get_contact_edges_points() {
 
 		}
 	}
+	return contact_points;*/
+
 	return contact_points;
 
 }

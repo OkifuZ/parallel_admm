@@ -1,7 +1,7 @@
-scene_name = "fabric_1"
-out_file = 'D:\data\padmm_result\fabric_1'
+scene_name = "fabric_2"
+out_file = 'D:\data\padmm_result\fabric_2'
 seperate_out = false
-show_windows = false
+show_windows = true
 
 [global]
 dt = 0.01
@@ -32,11 +32,25 @@ narrow.thickness = 5e-2
 broad.radius = 5e-2
 broad.strategy = 'rebuild'
 
+# [[mesh]]
+# f.path = 'flat/flat_v31389.obj'
+# f.type = 'tri'
+# f.color = 0
+# t.scale = 15
+# t.translate = [0, 0.8, 0]
+# t.rotate = [0, 0, 0]
+# k.stretch = 19000.0
+# k.min_limit = 0.95
+# k.max_limit = 1.05
+# k.bending = 10.0
+# k.use_limit = false
+# density = 4.0
+
 [[mesh]]
-f.path = 'flat/flat_v31389.obj'
+f.path = 'flat/flat_v134.obj'
 f.type = 'tri'
 f.color = 0
-t.scale = 15
+t.scale = 2.5
 t.translate = [0, 0.8, 0]
 t.rotate = [0, 0, 0]
 k.stretch = 19000.0

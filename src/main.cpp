@@ -516,6 +516,8 @@ int main(int argc, const char* argv[]) {
 
     app.solver->m_nCDim = Mesh2Constraint::curr_start_row;
 
+    static_cast<ADMMParallelSolver*>(app.solver.get())->convert_constraint2device();
+
     // proximal query 
     ContactParameter::set_broadphase_radius(app_config.dcd.broad.radius);
     ContactParameter::set_thickness(app_config.dcd.narrow.thickness);
@@ -589,6 +591,7 @@ int main(int argc, const char* argv[]) {
 
         polyscope::registerCurveNetwork("bvh", app.bvh_nodes, app.bvh_edges);
         app.vis_bvh = polyscope::getCurveNetwork("bvh");
+        app.vis_bvh->setEnabled(false);
 
        // polyscope::registerCurveNetwork("ee ct", app.mesh->verts, app.ee_edges);
        // app.vis_eect = polyscope::getCurveNetwork("ee ct");
@@ -604,6 +607,9 @@ int main(int argc, const char* argv[]) {
 
         app.vis_meshP = polyscope::getSurfaceMesh("surface");
         app.vis_contactP = polyscope::getPointCloud("contact");
+
+        app.vis_contactP->setEnabled(false);
+
 
         app.vis_meshP->addFaceColorQuantity("mesh color", app.mesh->f_colors);
 

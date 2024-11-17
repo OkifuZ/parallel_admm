@@ -103,8 +103,10 @@ void BVH_GPU::update(const ADU::Matf_X3& verts, bool copy_to_host) {
 
     CUDA_SAFE_CALL(cudaMemcpy(d_verts, verts_double.data(), v_num * sizeof(double3), cudaMemcpyHostToDevice));
 
-    bvh_f.init(nullptr, d_verts, d_faces, d_surfVertIdx, d_collisonPairs, d_cpNum, t_num, v_num, d_contact_info);
-    bvh_e.init(nullptr, d_verts, nullptr, d_edges, d_collisonPairs, d_cpNum, e_num, v_num, d_contact_info);
+    //bvh_f.init(nullptr, d_verts, d_faces, d_surfVertIdx, d_collisonPairs, d_cpNum, t_num, v_num, d_contact_info);
+    //bvh_e.init(nullptr, d_verts, nullptr, d_edges, d_collisonPairs, d_cpNum, e_num, v_num, d_contact_info);
+
+    // TODO init got memory leak!
 
     construct(copy_to_host);
 }
@@ -163,4 +165,6 @@ void BVH_GPU::convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct
         }
     }
 }
+
+
 
