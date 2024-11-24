@@ -86,14 +86,14 @@ public:
 				result.barycentric[1] - 1, -result.barycentric[1] };
 			ini_bary = { 1 - result.barycentric[0], result.barycentric[0], 1 - result.barycentric[1], result.barycentric[1] };
 
-			pair_type == EE;
+			pair_type = EE;
 		}
 		else {
 			// pt
 			bary = { 1.0_r, -result.barycentric[0], -result.barycentric[1], -result.barycentric[2] };
 			ini_bary = { 1.0_r, result.barycentric[0], result.barycentric[2], result.barycentric[2] };
 		
-			pair_type == PT;
+			pair_type = PT;
 		}
 		
 		Vecf_3 h = result.closest[0] - result.closest[1];
