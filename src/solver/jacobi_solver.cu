@@ -17,14 +17,16 @@ CuCompactSparseMat::CuCompactSparseMat(const CompactSparseMat& hostData) {
 }
 
 CuSolverData::CuSolverData(const CompactSparseMat& hostData,
-    int jacobi_buffer_size, int x_curr_size, int b_curr_size, int constraint_dim) :
+    int jacobi_buffer_size, int x_curr_size, int b_curr_size, int p_size, int constraint_dim) :
     sp_mat_device(hostData)
 {
     jacobi_buffer_1.resize(jacobi_buffer_size * 3);
     jacobi_buffer_2.resize(jacobi_buffer_size * 3);
     x_curr_device.resize(x_curr_size * 3);
+    x_0_device.resize(x_curr_size * 3);
     b_curr_device.resize(b_curr_size * 3);
     z_buffer.resize(constraint_dim * 3);
+    p_device.resize(p_size * 3);
 }
 
 

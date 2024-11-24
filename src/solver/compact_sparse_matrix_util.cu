@@ -79,7 +79,7 @@ void CUVec_a_plus_b(const ADU::Real* a, const ADU::Real* b, ADU::Real* result, i
 {
     if (a == nullptr || b == nullptr) return;
 
-    int blockSize = 256;
+    int blockSize = 512;
     int numBlocks = (rows + blockSize - 1) / blockSize;
 
     auto& temp = DataTemp::getInstance(rows, 3);
@@ -106,12 +106,38 @@ void CUVec_a_minus_b(const ADU::Real* a, const ADU::Real* b, ADU::Real* result, 
 {
     if (a == nullptr || b == nullptr) return;
 
-    int blockSize = 256;
+    int blockSize = 512;
     int numBlocks = (rows + blockSize - 1) / blockSize;
 
     auto& temp = DataTemp::getInstance(rows, 3);
 
     Do_a_minus_b<<<numBlocks, blockSize>>>(a, b, rows,  temp.data.data().get());
+
+    if (result != temp.data.data().get()) {
+        cudaMemcpy(result, temp.data.data().get(), sizeof(ADU::Real) * rows * 3, cudaMemcpyDeviceToDevice);
+    }
+}
+
+__global__ void Do_scale(const ADU::Real* a, ADU::Real s, int num_rows, ADU::Real* result)
+{
+    int row = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (row < num_rows) {
+        result[row*3+0]= a[row*3 + 0] * s;
+        result[row*3+1]= a[row*3 + 1] * s;
+        result[row*3+2]= a[row*3 + 2] * s;
+    }
+}
+
+void CUVec_scale(const ADU::Real* a, ADU::Real scale, ADU::Real* result, int rows) {
+    if (a == nullptr || result == nullptr) return;
+
+    int blockSize = 512;
+    int numBlocks = (rows + blockSize - 1) / blockSize;
+
+    auto& temp = DataTemp::getInstance(rows, 3);
+
+    Do_scale<<<numBlocks, blockSize>>>(a, scale, rows, temp.data.data().get());
 
     if (result != temp.data.data().get()) {
         cudaMemcpy(result, temp.data.data().get(), sizeof(ADU::Real) * rows * 3, cudaMemcpyDeviceToDevice);

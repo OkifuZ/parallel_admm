@@ -74,6 +74,7 @@ private:
 void CUMat_Ax(const CompactSparseMat& A, const ADU::Real* x, ADU::Real* result);
 void CUVec_a_plus_b(const ADU::Real* a, const ADU::Real* b, ADU::Real* result, int rows);
 void CUVec_a_minus_b(const ADU::Real* a, const ADU::Real* b, ADU::Real* result, int rows);
+void CUVec_scale(const ADU::Real* a, ADU::Real scale, ADU::Real* result, int rows);
 
 
 void resizeThrust(thrust::device_vector<ADU::Real>& data, int newSize, ADU::Real defaultVal = 0.0);

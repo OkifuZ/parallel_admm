@@ -5,7 +5,7 @@ show_windows = true
 
 [global]
 dt = 0.01
-pin = [0, 1, 2, 3]
+pin = [0, 1]
 g = 3.98
 
 [solver]
@@ -15,7 +15,7 @@ GS_max_iter = 20
 contact.use_CCD = false
 admm.warmstart_Ue = true
 admm.warmstart_Uc = true
-contact.enable = false
+contact.enable = true
 contact.use_Jacobi = true
 contact.w_scale = 25
 contact.kappa = 1e5

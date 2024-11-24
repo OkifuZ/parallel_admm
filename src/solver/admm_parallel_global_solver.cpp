@@ -71,7 +71,7 @@ void ADMMParallelSolver::init() {
 
 	comp_mat = std::make_unique<CompactSparseMat>(m_A_damp); // for parallel global solver
 	solver_data_device = std::make_unique<CuSolverData>(*comp_mat,
-		nDynVert, nDynVert, nDynVert, m_nCDim);
+		nDynVert, m_nVert, nDynVert, m_nVert, m_nCDim);
 	// comp_mat_device = std::make_unique<CuCompactSparseMat>(*comp_mat);
 
     jacobi_buffer.resize(nDynVert, 3);
@@ -94,6 +94,8 @@ void ADMMParallelSolver::init() {
 
 	resizeThrust(this->cache_nCDimX3, m_nCDim*3);
 	resizeThrust(this->cache_nDynVertX3, nDynVert*3);
+	resizeThrust(this->cache_nDynVertX3_bp1, nDynVert*3);
+
 
 	printf("ADMMParallelSolver init done\n");
 
@@ -172,7 +174,6 @@ void ADMMParallelSolver::precompute() {
 	m_dt2Wc = SpMatf(nDynVert, nDynVert);
 	m_W_c = SpMatf(nDynVert, nDynVert);
 
-
 	if (enable_frictional_contact) {
 		TripList Wc_trips;
 		if (use_heuristic_W_c) {
@@ -212,6 +213,9 @@ void ADMMParallelSolver::precompute() {
 		m_dt2Wc.setZero();
 	}
 
+	m_dt2Wc_device = std::make_unique<CompactSparseMat>(m_dt2Wc, false);
+
+
 	// compose A
 	m_A = SpMatf(nDynVert, nDynVert);
 	m_A = m_M + m_dt2DTWeTWeD + m_dt2Wc;
@@ -227,6 +231,7 @@ void ADMMParallelSolver::precompute() {
 	m_Uc.setZero();
 
 	resizeThrust(m_Ue_device, 3*m_nCDim);
+	resizeThrust(m_Uc_device, 3 * nDynVert);
 
 	// Gamma_c for PGS
 	if (enable_frictional_contact && prox_query) {
@@ -267,6 +272,8 @@ void ADMMParallelSolver::step() {
 	x_0 = m_vertices;
 	v_0 = m_velocities;
 
+	copy_mat2thrustvector(x_0, solver_data_device->x_0_device, m_nVert);
+
 	// explicit integrate as initial value
 	for (int i = 0; i < nDynVert; i++) {
 		if (m_pin_inds_set.count(i)) v_0.row(i).setZero();
@@ -301,7 +308,7 @@ void ADMMParallelSolver::step() {
 	}
 	Matf_X3 b_ini = m_Damp_Mat * x_0.block(0, 0, nDynVert, 3);
 
-	Matf_X3 p(m_nVert, 3); // this should be n*3
+	p.resize(m_nVert, 3);
 	p = v_0;
 
 	if (!warmstart_Ue) { m_Ue.setZero(); }
@@ -314,13 +321,13 @@ void ADMMParallelSolver::step() {
 	for (int admm_it = 0; admm_it < admm_max_iter; admm_it++) {
 		Timer per_iteration_timer("per_iteration");
 
-		//copy_mat2thrustvector(m_Ue, m_Ue_device, m_nCDim);
-
+		// TODO make this run in cuda
 		// collision
-		if (enable_frictional_contact && prox_query && (admm_it % collision_detection_interval == 0)) {
+		if (true && enable_frictional_contact && prox_query && (admm_it % collision_detection_interval == 0)) {
 			Timer collision_timer("dynamic_collision_detection");
 
-			bvh->update(x_curr, true);
+			// bvh->update(x_curr, true);
+			bvh->update(solver_data_device->x_curr_device.data().get(), m_nVert, true);
 			bvh->dcd();
 			bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
 
@@ -340,28 +347,15 @@ void ADMMParallelSolver::step() {
 					//Timer local_project_timer("elastic_local");
 					// local
 
-					/*copy_mat2thrustvector(x_curr, solver_data_device->x_curr_device, m_nVert);
-					copy_mat2thrustvector(m_Ue, m_Ue_device, m_nCDim);*/
-
-					//CUMat_Ax(*m_D_device, solver_data_device->x_curr_device.data().get(), DX_device.data().get());
 					CUVec_a_plus_b(DX_device.data().get(), m_Ue_device.data().get(), solver_data_device->z_buffer.data().get(), m_nCDim);
 
-					/*DX = m_D * x_curr.block(0, 0, nDynVert, 3);
+					/*DX = m_D * x_curr.block(0, 0, nDynVert, 3); // computed after global, since x_curr never changes between two admm iterations
 					z = DX + m_Ue;*/
-
-					// 1. allocate zi_device, done
-					// 2. copy
-					//thrust::copy(z.data(), z.data() + m_nCDim * 3, solver_data_device->z_buffer.begin());
-					// 3. find the block of zi for each constraint (start row, length)
 
 					// TODO device ptr?
 					triangle_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + triangle_constraint_start_row * 3));
 
 					pin_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + pin_constraint_start_row * 3));
-
-					// Copy back
-					//thrust::copy(solver_data_device->z_buffer.begin(), solver_data_device->z_buffer.begin() + m_nCDim * 3, z.data());
-
 				},
 
 				[&]() {
@@ -369,18 +363,21 @@ void ADMMParallelSolver::step() {
 					{ // frictional contact
 						//Timer local_project_timer("contact_local");
 
-						p.block(0, 0, nDynVert, 3) =
-							(x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) + m_Uc) * m_dt_inv; // p as start velocity 
+						CUVec_a_minus_b(solver_data_device->x_curr_device.data().get(), solver_data_device->x_0_device.data().get(), cache_nDynVertX3.data.get(), nDynVert);
+						CUVec_a_plus_b(cache_nDynVertX3.data().get(), m_Uc_device.data().get(), cache_nDynVertX3.data.get(), nDynVert);
+						CUVec_scale(cache_nDynVertX3.data.get(), m_dt_inv, solver_data_device->p_device.data().get(), nDynVert);
 
+						/*p.block(0, 0, nDynVert, 3) =
+							(x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) + m_Uc) * m_dt_inv; // p as start velocity 
+							*/
 
 						// project p into feasible set
-						if (use_jacobi) {
+						/*if (use_jacobi) {
 							if (need_recompute_Scc) {
 								ADMMParallelSolver::compute_Scc();
 								need_recompute_Scc = false;
 							}
 							ADMMParallelSolver::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
-
 						}
 						else {
 							if (need_recompute_Scc) {
@@ -388,8 +385,7 @@ void ADMMParallelSolver::step() {
 								need_recompute_Scc = false;
 							}
 							ADMMSolverFull_RL_damping::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
-
-						}
+						}*/
 					}
 				}
 			);
@@ -401,44 +397,40 @@ void ADMMParallelSolver::step() {
 			// global
 			CUVec_a_minus_b(solver_data_device->z_buffer.data().get(), m_Ue_device.data().get(),
 				cache_nCDimX3.data().get(), m_nCDim);
-			//thrust::copy(cache_nCDimX3.begin(), cache_nCDimX3.begin() + m_nCDim * 3, temp.data());
-			//b_curr = M_x_tilde + m_dt2DTWeTWe * temp;
-
 			CUMat_Ax(*m_dt2DTWeTWe_device, cache_nCDimX3.data().get(),
 				cache_nDynVertX3.data().get());
 			CUVec_a_plus_b(M_x_tilde_device.data().get(), cache_nDynVertX3.data().get(),
 				solver_data_device->b_curr_device.data().get(), nDynVert);
-
-			//thrust::copy(solver_data_device->b_curr_device.begin(), solver_data_device->b_curr_device.begin() + nDynVert * 3, b_curr.data());
-
 			//b_curr = M_x_tilde + m_dt2DTWeTWe * (z - m_Ue);
+
 			// friction
 			if (enable_frictional_contact) {
-				b_curr += m_dt2Wc * (m_dt * p.block(0, 0, nDynVert, 3) + x_0.block(0, 0, nDynVert, 3) - m_Uc);
+				CUVec_scale(solver_data_device->x_0_device.data().get(), m_dt, cache_nDynVertX3.data().get(), nDynVert);
+				CUVec_a_plus_b(cache_nDynVertX3.data().get(), solver_data_device->x_0_device.data().get(), cache_nDynVertX3.data().get(), nDynVert);
+				CUVec_a_minus_b(cache_nDynVertX3.data().get(), m_Ue_device.data().get(), cache_nDynVertX3.data().get(), nDynVert);
+				CUMat_Ax(*m_dt2Wc_device, cache_nDynVertX3.data().get(), cache_nDynVertX3.data().get());
+				CUVec_a_plus_b(solver_data_device->b_curr_device.data().get(), cache_nDynVertX3.data().get(), solver_data_device->b_curr_device.data().get(), nDynVert);
+				//b_curr += m_dt2Wc * (m_dt * p.block(0, 0, nDynVert, 3) + x_0.block(0, 0, nDynVert, 3) - m_Uc);
 			}
 			// damp
 			//b_curr += b_ini;
 
             //GS_global(b_curr, x_curr, 45);
-            Jacobi_global(b_curr, x_curr, 40, true);
+            Jacobi_global(b_curr, x_curr, 10, true);
 		}
 
 		CUMat_Ax(*m_D_device, solver_data_device->x_curr_device.data().get(), DX_device.data().get());
 		CUVec_a_minus_b(DX_device.data().get(), solver_data_device->z_buffer.data().get(), cache_nCDimX3.data().get(), m_nCDim);
 		CUVec_a_plus_b(cache_nCDimX3.data().get(), m_Ue_device.data().get(), m_Ue_device.data().get(), m_nCDim);
-
-		//copy_thrustvector2mat(solver_data_device->x_curr_device,x_curr,  m_nVert);
-		//copy_thrustvector2mat(m_Ue_device ,m_Ue, m_nCDim);
-
-		//copy_thrustvector2mat(solver_data_device->x_curr_device,x_curr,  m_nVert);
-		//copy_thrustvector2mat(solver_data_device->z_buffer,z,  m_nCDim);
-
 		//DX = m_D * x_curr.block(0, 0, nDynVert, 3);
-
 		//m_Ue += DX - z;
 
 		if (enable_frictional_contact) {
-			m_Uc += x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) - p.block(0, 0, nDynVert, 3) * m_dt;
+			CUVec_a_minus_b(solver_data_device->x_curr_device.data().get(), solver_data_device->x_0_device.data().get(), cache_nDynVertX3.data().get(), nDynVert);
+			CUVec_scale(solver_data_device->p_device.data().get(), m_dt, cache_nDynVertX3_bp1.data().get(), nDynVert);
+			CUVec_a_minus_b(cache_nDynVertX3.data().get(), cache_nDynVertX3_bp1.data().get(), cache_nDynVertX3.data().get(), nDynVert);
+			CUVec_a_plus_b(m_Uc_device.data.get(), cache_nDynVertX3.data().get(), m_Uc_device.data.get(), nDynVert);
+			// m_Uc += x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) - p.block(0, 0, nDynVert, 3) * m_dt;
 		}
 	}
 

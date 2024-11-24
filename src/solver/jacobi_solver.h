@@ -38,6 +38,8 @@ struct CuSolverData {
     CuCompactSparseMat sp_mat_device;
     thrust::device_vector<ADU::Real> x_curr_device{};
     thrust::device_vector<ADU::Real> b_curr_device{};
+    thrust::device_vector<ADU::Real> p_device{};
+    thrust::device_vector<ADU::Real> x_0_device{};
 
     thrust::device_vector<ADU::Real> jacobi_buffer_1;
     thrust::device_vector<ADU::Real> jacobi_buffer_2;
@@ -45,7 +47,7 @@ struct CuSolverData {
     thrust::device_vector<ADU::Real> z_buffer;
 
     explicit CuSolverData(const CompactSparseMat& hostData,
-        int jacobi_buffer_size, int x_curr_size, int b_curr_size, int constraint_dim);
+        int jacobi_buffer_size, int x_curr_size, int b_curr_size, int p_size, int constraint_dim);
 
     CuSolverData(const CuSolverData& hostData) = delete;
     CuSolverData& operator=(const CuSolverData& hostData) = delete;

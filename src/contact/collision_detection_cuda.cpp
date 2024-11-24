@@ -103,6 +103,29 @@ void BVH_GPU::update(const ADU::Matf_X3& verts, bool copy_to_host) {
 
     CUDA_SAFE_CALL(cudaMemcpy(d_verts, verts_double.data(), v_num * sizeof(double3), cudaMemcpyHostToDevice));
 
+    bvh_f._vertexes = d_verts;
+    bvh_e._vertexes = d_verts;
+    //bvh_f.init(nullptr, d_verts, d_faces, d_surfVertIdx, d_collisonPairs, d_cpNum, t_num, v_num, d_contact_info);
+    //bvh_e.init(nullptr, d_verts, nullptr, d_edges, d_collisonPairs, d_cpNum, e_num, v_num, d_contact_info);
+
+    // TODO init got memory leak!
+
+    construct(copy_to_host);
+}
+
+void BVH_GPU::update(ADU::Real* verts_device, int vnum, bool copy_to_host) {
+    //auto verts = solver->getVertices();
+    const auto& edges = mesh->surface_edges;
+    const auto& tris = mesh->surface_tris;
+
+    this->v_num = vnum;
+    this->e_num = edges.rows();
+    this->t_num = tris.rows();
+
+    d_verts = reinterpret_cast<double3*>(verts_device);
+
+    bvh_f._vertexes = d_verts;
+    bvh_e._vertexes = d_verts;
     //bvh_f.init(nullptr, d_verts, d_faces, d_surfVertIdx, d_collisonPairs, d_cpNum, t_num, v_num, d_contact_info);
     //bvh_e.init(nullptr, d_verts, nullptr, d_edges, d_collisonPairs, d_cpNum, e_num, v_num, d_contact_info);
 

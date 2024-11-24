@@ -216,6 +216,7 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	std::unique_ptr<CompactSparseMat> m_D_device;
 	std::unique_ptr<CompactSparseMat> m_dt2DTWeTWe_device;
 	std::unique_ptr<CompactSparseMat> m_M_device;
+	std::unique_ptr<CompactSparseMat> m_dt2Wc_device;
 
 
 	std::unique_ptr<TriangleConstraintDevice> triangle_constraint_cu;
@@ -225,10 +226,12 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 
 	thrust::device_vector<ADU::Real> DX_device;
 	thrust::device_vector<ADU::Real> m_Ue_device;
+	thrust::device_vector<ADU::Real> m_Uc_device;
 
 	thrust::device_vector<ADU::Real> M_x_tilde_device;
 
 	thrust::device_vector<ADU::Real> cache_nDynVertX3;
+	thrust::device_vector<ADU::Real> cache_nDynVertX3_bp1;
 	thrust::device_vector<ADU::Real> cache_nCDimX3;
 
 
@@ -238,6 +241,8 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	ADU::Matf_X3 jacobi_buffer;
 
 	ADU::Matf_X3 x_curr;
+
+	ADU::Matf_X3 p;
 
 	ADU::Matf_X3 b_curr;
 

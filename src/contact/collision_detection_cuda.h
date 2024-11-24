@@ -77,6 +77,8 @@ public:
 
     void update(const ADU::Matf_X3& verts, bool copy_to_host = false);
 
+    void update(ADU::Real* verts_device, int vnum, bool copy_to_host = false);
+
     void convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct_info, const ADU::Matf_X3& pos);
 
     void dcd();
