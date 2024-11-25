@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.5) 
+cmake_minimum_required(VERSION 3.24)
 # add_definitions( -DWIN32)
-set(CMAKE_TOOLCHAIN_FILE "C:/codebase/vcpkg/scripts/buildsystems/vcpkg.cmake")
-set(CMAKE_CUDA_ARCHITECTURES "native") 
+set(CMAKE_TOOLCHAIN_FILE "F:/codebase/vcpkg/scripts/buildsystems/vcpkg.cmake")
+set(CMAKE_CUDA_ARCHITECTURES 86)
 
-#SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_BUILD_TYPE Debug)
 
 project(admm_elasticity LANGUAGES C CXX CUDA)  
 

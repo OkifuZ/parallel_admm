@@ -230,8 +230,8 @@ void ADMMParallelSolver::precompute() {
 	m_Uc = Matf_X3(nDynVert, 3);
 	m_Uc.setZero();
 
-	resizeThrust(m_Ue_device, 3*m_nCDim);
-	resizeThrust(m_Uc_device, 3 * nDynVert);
+	resizeThrust(m_Ue_device, 3*m_nCDim, 0);
+	resizeThrust(m_Uc_device, 3 * nDynVert, 0);
 
 	// Gamma_c for PGS
 	if (enable_frictional_contact && prox_query) {
@@ -321,12 +321,12 @@ void ADMMParallelSolver::step() {
 	for (int admm_it = 0; admm_it < admm_max_iter; admm_it++) {
 		Timer per_iteration_timer("per_iteration");
 
-		// TODO make this run in cuda
+
 		// collision
-		if (true && enable_frictional_contact && prox_query && (admm_it % collision_detection_interval == 0)) {
+		if (enable_frictional_contact && prox_query && (admm_it % collision_detection_interval == 0)) {
 			Timer collision_timer("dynamic_collision_detection");
 
-			// bvh->update(x_curr, true);
+			/*// bvh->update(x_curr, true);
 			bvh->update(solver_data_device->x_curr_device.data().get(), m_nVert, true);
 			bvh->dcd();
 			bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
@@ -336,7 +336,7 @@ void ADMMParallelSolver::step() {
 			}
 
 			need_recompute_Scc = true;
-			find_contact_islands(); // TODO
+			find_contact_islands(); // TODO*/
 		}
 
 		{
@@ -363,9 +363,9 @@ void ADMMParallelSolver::step() {
 					{ // frictional contact
 						//Timer local_project_timer("contact_local");
 
-						CUVec_a_minus_b(solver_data_device->x_curr_device.data().get(), solver_data_device->x_0_device.data().get(), cache_nDynVertX3.data.get(), nDynVert);
-						CUVec_a_plus_b(cache_nDynVertX3.data().get(), m_Uc_device.data().get(), cache_nDynVertX3.data.get(), nDynVert);
-						CUVec_scale(cache_nDynVertX3.data.get(), m_dt_inv, solver_data_device->p_device.data().get(), nDynVert);
+						CUVec_a_minus_b(solver_data_device->x_curr_device.data().get(), solver_data_device->x_0_device.data().get(), cache_nDynVertX3.data().get(), nDynVert);
+						CUVec_a_plus_b(cache_nDynVertX3.data().get(), m_Uc_device.data().get(), cache_nDynVertX3.data().get(), nDynVert);
+						CUVec_scale(cache_nDynVertX3.data().get(), m_dt_inv, solver_data_device->p_device.data().get(), nDynVert);
 
 						/*p.block(0, 0, nDynVert, 3) =
 							(x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) + m_Uc) * m_dt_inv; // p as start velocity 
@@ -405,9 +405,9 @@ void ADMMParallelSolver::step() {
 
 			// friction
 			if (enable_frictional_contact) {
-				CUVec_scale(solver_data_device->x_0_device.data().get(), m_dt, cache_nDynVertX3.data().get(), nDynVert);
+				CUVec_scale(solver_data_device->p_device.data().get(), m_dt, cache_nDynVertX3.data().get(), nDynVert);
 				CUVec_a_plus_b(cache_nDynVertX3.data().get(), solver_data_device->x_0_device.data().get(), cache_nDynVertX3.data().get(), nDynVert);
-				CUVec_a_minus_b(cache_nDynVertX3.data().get(), m_Ue_device.data().get(), cache_nDynVertX3.data().get(), nDynVert);
+				CUVec_a_minus_b(cache_nDynVertX3.data().get(), m_Uc_device.data().get(), cache_nDynVertX3.data().get(), nDynVert);
 				CUMat_Ax(*m_dt2Wc_device, cache_nDynVertX3.data().get(), cache_nDynVertX3.data().get());
 				CUVec_a_plus_b(solver_data_device->b_curr_device.data().get(), cache_nDynVertX3.data().get(), solver_data_device->b_curr_device.data().get(), nDynVert);
 				//b_curr += m_dt2Wc * (m_dt * p.block(0, 0, nDynVert, 3) + x_0.block(0, 0, nDynVert, 3) - m_Uc);
@@ -416,7 +416,7 @@ void ADMMParallelSolver::step() {
 			//b_curr += b_ini;
 
             //GS_global(b_curr, x_curr, 45);
-            Jacobi_global(b_curr, x_curr, 10, true);
+            Jacobi_global(b_curr, x_curr, 20, true);
 		}
 
 		CUMat_Ax(*m_D_device, solver_data_device->x_curr_device.data().get(), DX_device.data().get());
@@ -429,7 +429,7 @@ void ADMMParallelSolver::step() {
 			CUVec_a_minus_b(solver_data_device->x_curr_device.data().get(), solver_data_device->x_0_device.data().get(), cache_nDynVertX3.data().get(), nDynVert);
 			CUVec_scale(solver_data_device->p_device.data().get(), m_dt, cache_nDynVertX3_bp1.data().get(), nDynVert);
 			CUVec_a_minus_b(cache_nDynVertX3.data().get(), cache_nDynVertX3_bp1.data().get(), cache_nDynVertX3.data().get(), nDynVert);
-			CUVec_a_plus_b(m_Uc_device.data.get(), cache_nDynVertX3.data().get(), m_Uc_device.data.get(), nDynVert);
+			CUVec_a_plus_b(m_Uc_device.data().get(), cache_nDynVertX3.data().get(), m_Uc_device.data().get(), nDynVert);
 			// m_Uc += x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) - p.block(0, 0, nDynVert, 3) * m_dt;
 		}
 	}

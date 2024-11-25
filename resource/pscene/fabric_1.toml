@@ -5,7 +5,7 @@ show_windows = true
 
 [global]
 dt = 0.01
-pin = [0, 1]
+pin = [0, 1, 2, 3]
 g = 3.98
 
 [solver]
