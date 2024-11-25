@@ -77,7 +77,7 @@ public:
 		dist = result.distance;
 		distSqr = result.sqrDistance;
 
-		if (result.barycentric[2] < -5) {
+		if (result.barycentric[2] < -1) {
 			// ee
 			// C0 = P[0] + s[0] * (P[1] - P[0]) = (1-s[0])*P[0] + s[0]*P[1] for 0 <= s[0] <= 1 
 			// C1 = Q[0] + s[1] * (Q[1] - Q[0]) = (1-s[1])*Q[0] + s[1]*Q[1] for 0 <= s[1] <= 1

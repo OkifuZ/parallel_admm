@@ -60,19 +60,19 @@ k.bending = 1.0
 k.use_limit = false
 density = 4.0
 
-# [[mesh]]
-# f.path = 'flat/flat_v134.obj'
-# f.type = 'tri'
-# f.color = 1
-# t.scale = 2.5
-# t.translate = [0, 1.8, 0]
-# t.rotate = [0, 30, 0]
-# k.stretch = 15000.0
-# k.min_limit = 0.95
-# k.max_limit = 1.05
-# k.bending = 1.0
-# k.use_limit = false
-# density = 4.0
+[[mesh]]
+f.path = 'flat/flat_v134.obj'
+f.type = 'tri'
+f.color = 1
+t.scale = 2.5
+t.translate = [0, 1.8, 0]
+t.rotate = [0, 30, 0]
+k.stretch = 15000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = false
+density = 4.0
 
 # [[mesh]]
 # f.path = 'flat/flat_v134.obj'

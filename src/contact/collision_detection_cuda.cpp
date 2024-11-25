@@ -153,6 +153,7 @@ void BVH_GPU::convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct
 
 
     ct_info.resize(h_cpNum);
+    std::cout << "h_cpNum: " << h_cpNum << std::endl;
     /*if (ct_info.size() < h_cpNum) {
     }*/
 
