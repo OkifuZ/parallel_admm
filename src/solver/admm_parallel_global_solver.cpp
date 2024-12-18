@@ -384,55 +384,6 @@ void ADMMParallelSolver::step() {
 					}*/
 				}
 			}
-
-			// No Parallel!
-			/*tbb::parallel_invoke(
-				[&]() {
-					//Timer local_project_timer("elastic_local");
-					// local
-
-					CUVec_a_plus_b(DX_device.data().get(), m_Ue_device.data().get(), solver_data_device->z_buffer.data().get(), m_nCDim);
-
-					/*DX = m_D * x_curr.block(0, 0, nDynVert, 3); // computed after global, since x_curr never changes between two admm iterations
-					z = DX + m_Ue;#1#
-
-					// TODO device ptr?
-					triangle_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + triangle_constraint_start_row * 3));
-
-					pin_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + pin_constraint_start_row * 3));
-				},
-
-				[&]() {
-					if (enable_frictional_contact)
-					{ // frictional contact
-						//Timer local_project_timer("contact_local");
-
-						CUVec_a_minus_b(solver_data_device->x_curr_device.data().get(), solver_data_device->x_0_device.data().get(), cache_nDynVertX3.data().get(), nDynVert);
-						CUVec_a_plus_b(cache_nDynVertX3.data().get(), m_Uc_device.data().get(), cache_nDynVertX3.data().get(), nDynVert);
-						CUVec_scale(cache_nDynVertX3.data().get(), m_dt_inv, solver_data_device->p_device.data().get(), nDynVert);
-
-						/*p.block(0, 0, nDynVert, 3) =
-							(x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) + m_Uc) * m_dt_inv; // p as start velocity
-							#1#
-
-						// project p into feasible set
-						/*if (use_jacobi) {
-							if (need_recompute_Scc) {
-								ADMMParallelSolver::compute_Scc();
-								need_recompute_Scc = false;
-							}
-							ADMMParallelSolver::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
-						}
-						else {
-							if (need_recompute_Scc) {
-								ADMMSolverFull_RL_damping::compute_Scc();
-								need_recompute_Scc = false;
-							}
-							ADMMSolverFull_RL_damping::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
-						}#1#
-					}
-				}
-			);*/
 		}
 
 		{
