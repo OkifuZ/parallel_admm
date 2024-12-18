@@ -117,8 +117,8 @@ void ProximalQuery::proximal_query_with_CCD(const ADU::Matf_X3& pos_t0, const AD
 
 void ProximalQuery::unique_contact() {
 	using namespace ADU;
-	
-	ContactCompare cmp;
+
+	const ContactCompare cmp;
 	tbb::parallel_sort(this->contact_info_list.begin(), this->contact_info_list.end(), cmp);
 	const auto& unique_end = std::unique(this->contact_info_list.begin(), this->contact_info_list.end());
 	unique_contact_size = unique_end - this->contact_info_list.begin();

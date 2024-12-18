@@ -81,6 +81,8 @@ public:
 
     void convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct_info, const ADU::Matf_X3& pos);
 
+    void unique_contactInfo();
+
     void dcd();
 
 };

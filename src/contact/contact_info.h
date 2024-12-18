@@ -183,7 +183,7 @@ struct ContactCompare {
 		if (c1.point.y() != c2.point.y()) return c1.point.y() < c2.point.y();
 		if (c1.point.x() != c2.point.x()) return c1.point.x() < c2.point.x();
 		if (c1.point.z() != c2.point.z()) return c1.point.z() < c2.point.z();
-		return true;
+		return false;
 		/*for (int i = 0; i < 4; i++) {
 			if (c1.vinds[i] != c2.vinds[i]) return c1.vinds[i] < c2.vinds[i];
 		}

@@ -29,7 +29,10 @@
 #include <thrust/sort.h>
 #include <thrust/sequence.h>
 #include <thrust/device_ptr.h>
+#include <thrust/detail/unique.inl>
+
 #include "mutils/dist_g.cuh"
+#include "contact/contact_util.cuh"
 
 #include "solver/admm_full_solver.h"
 
@@ -142,52 +145,64 @@ void BVH_GPU::dcd() {
     CUDA_SAFE_CALL(cudaMemcpy(&h_cpNum, d_cpNum, sizeof(uint32_t), cudaMemcpyDeviceToHost));
 }
 
+void BVH_GPU::unique_contactInfo() {
+    removeDuplicates(d_collisonPairs, d_contact_info, h_cpNum);
+
+}
+
+
+
 void BVH_GPU::convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct_info, const ADU::Matf_X3& pos) {
     using namespace ADU;
     CUDA_SAFE_CALL(cudaMemcpy(&h_cpNum, d_cpNum, sizeof(uint32_t), cudaMemcpyDeviceToHost));
     h_contact_info.resize(h_cpNum);
     h_collisionPairs.resize(h_cpNum);
 
-    CUDA_SAFE_CALL(cudaMemcpy((void*)h_contact_info.data(), d_contact_info, h_cpNum * sizeof(Result<double>), cudaMemcpyDeviceToHost));
-    CUDA_SAFE_CALL(cudaMemcpy((void*)h_collisionPairs.data(), d_collisonPairs, h_cpNum * sizeof(int4), cudaMemcpyDeviceToHost));
+    CUDA_SAFE_CALL(cudaMemcpy((void*)h_contact_info.data(), (void*)d_contact_info, h_cpNum * sizeof(Result<double>), cudaMemcpyDeviceToHost));
+    CUDA_SAFE_CALL(cudaMemcpy((void*)h_collisionPairs.data(), (void*)d_collisonPairs, h_cpNum * sizeof(int4), cudaMemcpyDeviceToHost));
 
 
     ct_info.resize(h_cpNum);
     std::cout << "h_cpNum: " << h_cpNum << std::endl;
-    /*if (ct_info.size() < h_cpNum) {
-    }*/
-
-    for (int i = 0; i < h_cpNum; i++) {
-        const Result<ADU::Real>& res = h_contact_info[i];
-        int4& inds = h_collisionPairs[i];
-        // point
-        const Vecf_3& v0 = pos.row(inds.x);
-        // triangle
-        const Vecf_3& v1 = pos.row(inds.y);
-        const Vecf_3& v2 = pos.row(inds.z);
-        const Vecf_3& v3 = pos.row(inds.w);
-
-        size_t v0_index = inds.x;
-        size_t v1_index = inds.y;
-        size_t v2_index = inds.z;
-        size_t v3_index = inds.w;
-
-        if (res.barycentric[2] < -1) {
-            // edge edge
-            Vecf_3 normal = (v1 - v0).cross(v3 - v2).normalized();
-            //Vecf_3 pt = 0.5_r * (res.closest[0].cast<ADU::Real>() + res.closest[1].cast<ADU::Real>());
-            Vecf_3 pt = res.closest[0].cast<ADU::Real>();
-            ContactInfo ct(res, v0_index, v1_index, v2_index, v3_index, normal, pt, false);
-            ct_info[i] = ct;
+    if (h_cpNum > 0) {
+        if (h_cpNum == 15) {
+            printf("hit\n");
         }
-        else {  
-            // point traingle
-            Vecf_3 normal = (v2 - v1).cross(v3 - v1).normalized();
-            Vecf_3 pt = 0.5_r * (res.closest[0].cast<ADU::Real>() + res.closest[1].cast<ADU::Real>());
-            ContactInfo ct(res, v0_index, v1_index, v2_index, v3_index, normal, pt, false);
-            ct_info[i] = ct;
+        for (int i = 0; i < h_cpNum; i++) {
+            const Result<ADU::Real>& res = h_contact_info[i];
+            int4& inds = h_collisionPairs[i];
+            // point
+            const Vecf_3& v0 = pos.row(inds.x);
+            // triangle
+            const Vecf_3& v1 = pos.row(inds.y);
+            const Vecf_3& v2 = pos.row(inds.z);
+            const Vecf_3& v3 = pos.row(inds.w);
+
+            size_t v0_index = inds.x;
+            size_t v1_index = inds.y;
+            size_t v2_index = inds.z;
+            size_t v3_index = inds.w;
+
+            if (res.barycentric[2] < -1) {
+                // edge edge
+                Vecf_3 normal = (v1 - v0).cross(v3 - v2).normalized();
+                //Vecf_3 pt = 0.5_r * (res.closest[0].cast<ADU::Real>() + res.closest[1].cast<ADU::Real>());
+                Vecf_3 pt = res.closest[0].cast<ADU::Real>();
+                ContactInfo ct(res, v0_index, v1_index, v2_index, v3_index, normal, pt, false);
+                ct_info[i] = ct;
+            }
+            else {
+                // point traingle
+                Vecf_3 normal = (v2 - v1).cross(v3 - v1).normalized();
+                Vecf_3 pt = 0.5_r * (res.closest[0].cast<ADU::Real>() + res.closest[1].cast<ADU::Real>());
+                ContactInfo ct(res, v0_index, v1_index, v2_index, v3_index, normal, pt, false);
+                ct_info[i] = ct;
+            }
         }
     }
+
+
+
 }
 
 

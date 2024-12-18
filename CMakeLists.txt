@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.24)
 # add_definitions( -DWIN32)
-set(CMAKE_TOOLCHAIN_FILE "F:/codebase/vcpkg/scripts/buildsystems/vcpkg.cmake")
+if(DEFINED ENV{VCPKG_ROOT})
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+else()
+    message(FATAL_ERROR "VCPKG_ROOT environment variable is not set.")
+endif()
 set(CMAKE_CUDA_ARCHITECTURES 86)
 
-SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_BUILD_TYPE Release)
 
 project(admm_elasticity LANGUAGES C CXX CUDA)  
 
@@ -58,6 +62,7 @@ src/mediator/*.cpp
 src/contact/lbvh/*.cu
 src/mutils/*.cu
 src/solver/*.cu
+src/contact/*.cu
 # src/constraint/*.cu
 # src/mutils/*.cu
 # src/contact/*.cu
@@ -85,7 +90,7 @@ src/zensim/math/bit/*.hpp
 src/contact/lbvh/*.cuh
 src/mutils/*.cuh
 src/solver/*.cuh
-
+src/contact/*.cuh
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -121,6 +126,7 @@ ${HEADER_FILES} ${SOURCE_FILES} "src/main.cpp"
         src/constraint/pin_constraint_deivce.cu
         src/constraint/pin_constraint_deivce.cu
         src/constraint/spring_constraint.h
+        src/contact/contact_util.cu
 )
 target_link_libraries(main polyscope igl::core TBB::tbb Eigen3::Eigen mshio::mshio embree tomlplusplus::tomlplusplus argparse ZLIB::ZLIB)
 set_property(TARGET main PROPERTY CUDA_SEPARABLE_COMPILATION ON)

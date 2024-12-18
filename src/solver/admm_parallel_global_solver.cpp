@@ -329,13 +329,15 @@ void ADMMParallelSolver::step() {
 			// bvh->update(x_curr, true);
 			bvh->update(solver_data_device->x_curr_device.data().get(), m_nVert, true);
 			bvh->dcd();
-			bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
 
+			/*bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
+			need_recompute_Scc = true;
 			if (use_unique_contact) {
 				prox_query->unique_contact();
-			}
+			}*/
 
-			need_recompute_Scc = true;
+			// TODO unique  in device
+
 			find_contact_islands(); // TODO
 		}
 

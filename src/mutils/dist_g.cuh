@@ -15,8 +15,8 @@
 template <typename T>
 struct Result
 {
-
-    T distance{}, sqrDistance{};
+    T distance{};
+    T sqrDistance{};
     T barycentric[3]{};
     Eigen::Vector3<T> closest[2]{};
 };
