@@ -4,7 +4,7 @@
 #include "mutils/common_types.h"
 
 
-void removeDuplicates(int4* d_collisionPairs, Result<ADU::Real>* d_contact_info, size_t size);
+size_t removeDuplicates(int4* d_collisionPairs, Result<ADU::Real>* d_contact_info, size_t size);
 
 
 

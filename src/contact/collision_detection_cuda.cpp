@@ -146,8 +146,15 @@ void BVH_GPU::dcd() {
 }
 
 void BVH_GPU::unique_contactInfo() {
-    removeDuplicates(d_collisonPairs, d_contact_info, h_cpNum);
+    size_t new_size = removeDuplicates(d_collisonPairs, d_contact_info, h_cpNum);
 
+    if (new_size != h_cpNum) {
+        printf("new size = %d, old size = %d\n", new_size, h_cpNum);
+    }
+
+    h_cpNum = new_size;
+
+    CUDA_SAFE_CALL(cudaMemcpy(d_cpNum, &h_cpNum, sizeof(uint32_t), cudaMemcpyHostToDevice));
 }
 
 
