@@ -127,6 +127,8 @@ ${HEADER_FILES} ${SOURCE_FILES} "src/main.cpp"
         src/constraint/pin_constraint_deivce.cu
         src/constraint/spring_constraint.h
         src/contact/contact_util.cu
+        src/solver/contact_solver.cu
+        src/solver/contact_solver.cuh
 )
 target_link_libraries(main polyscope igl::core TBB::tbb Eigen3::Eigen mshio::mshio embree tomlplusplus::tomlplusplus argparse ZLIB::ZLIB)
 set_property(TARGET main PROPERTY CUDA_SEPARABLE_COMPILATION ON)
