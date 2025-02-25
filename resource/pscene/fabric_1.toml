@@ -2,6 +2,7 @@ scene_name = "fabric_2"
 out_file = 'D:\data\padmm_result\fabric_2'
 seperate_out = false
 show_windows = true
+GPU = true
 
 [global]
 dt = 0.01

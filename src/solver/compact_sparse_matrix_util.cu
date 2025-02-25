@@ -43,6 +43,11 @@ __global__ void DoAxb(const ADU::Real* data, const int* row_inds, const int* row
     }
 }
 
+void op_Ax(const CompactSparseMat& A, thrust::device_vector<ADU::Real>& x, thrust::device_vector<ADU::Real>& result)
+{
+    CUMat_Ax(A, x.data().get(), result.data().get());
+}
+
 void CUMat_Ax(const CompactSparseMat& A, const ADU::Real* x, ADU::Real* result)
 {
     if (x == nullptr) return;
@@ -75,6 +80,12 @@ __global__ void Do_a_plus_b(const ADU::Real* a, const ADU::Real* b, int num_rows
     }
 }
 
+void op_a_plus_b(const thrust::device_vector<ADU::Real>& a, const thrust::device_vector<ADU::Real>& b, thrust::device_vector<ADU::Real>& result, int rows)
+{
+    CUVec_a_plus_b(a.data().get(), b.data().get(), result.data().get(), rows);
+}
+
+
 void CUVec_a_plus_b(const ADU::Real* a, const ADU::Real* b, ADU::Real* result, int rows)
 {
     if (a == nullptr || b == nullptr) return;
@@ -102,6 +113,13 @@ __global__ void Do_a_minus_b(const ADU::Real* a, const ADU::Real* b, int num_row
     }
 }
 
+
+void op_a_minus_b(const thrust::device_vector<ADU::Real>& a, const thrust::device_vector<ADU::Real>& b, thrust::device_vector<ADU::Real>& result, int rows)
+{
+    CUVec_a_minus_b(a.data().get(), b.data().get(), result.data().get(), rows);
+}
+
+
 void CUVec_a_minus_b(const ADU::Real* a, const ADU::Real* b, ADU::Real* result, int rows)
 {
     if (a == nullptr || b == nullptr) return;
@@ -127,6 +145,11 @@ __global__ void Do_scale(const ADU::Real* a, ADU::Real s, int num_rows, ADU::Rea
         result[row*3+1]= a[row*3 + 1] * s;
         result[row*3+2]= a[row*3 + 2] * s;
     }
+}
+
+void op_scale(const thrust::device_vector<ADU::Real>& a, ADU::Real scale, thrust::device_vector<ADU::Real>& result, int rows)
+{
+    CUVec_scale(a.data().get(), scale, result.data().get(), rows);
 }
 
 void CUVec_scale(const ADU::Real* a, ADU::Real scale, ADU::Real* result, int rows) {

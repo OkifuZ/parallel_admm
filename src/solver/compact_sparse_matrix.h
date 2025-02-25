@@ -76,6 +76,13 @@ void CUVec_a_plus_b(const ADU::Real* a, const ADU::Real* b, ADU::Real* result, i
 void CUVec_a_minus_b(const ADU::Real* a, const ADU::Real* b, ADU::Real* result, int rows);
 void CUVec_scale(const ADU::Real* a, ADU::Real scale, ADU::Real* result, int rows);
 
+// must be single thread
+void op_Ax(const CompactSparseMat& A, thrust::device_vector<ADU::Real>& x, thrust::device_vector<ADU::Real>& result);
+void op_a_plus_b(const thrust::device_vector<ADU::Real>& a, const thrust::device_vector<ADU::Real>& b, thrust::device_vector<ADU::Real>& result, int rows);
+void op_a_minus_b(const thrust::device_vector<ADU::Real>& a, const thrust::device_vector<ADU::Real>& b, thrust::device_vector<ADU::Real>& result, int rows);
+void op_scale(const thrust::device_vector<ADU::Real>& a, ADU::Real scale, thrust::device_vector<ADU::Real>& result, int rows);
+
+
 
 void resizeThrust(thrust::device_vector<ADU::Real>& data, int newSize, ADU::Real defaultVal = 0.0);
 

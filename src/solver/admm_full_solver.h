@@ -223,7 +223,6 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	int triangle_constraint_start_row{};
 	std::unique_ptr<PinConstraintDevice> pin_constraint_cu;
 	int pin_constraint_start_row{};
-
 	thrust::device_vector<ADU::Real> DX_device;
 	thrust::device_vector<ADU::Real> m_Ue_device;
 	thrust::device_vector<ADU::Real> m_Uc_device;
@@ -235,8 +234,9 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	thrust::device_vector<ADU::Real> cache_nCDimX3;
 
 
+
 	void GS_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr, int iter_cnt);
-	void Jacobi_global(const ADU::Matf_X3& b, ADU::Matf_X3& x_curr, int iter_cnt, bool on_device=false);
+	void Jacobi_global(int iter_cnt);
 
 	ADU::Matf_X3 jacobi_buffer;
 

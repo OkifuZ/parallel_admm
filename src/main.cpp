@@ -112,6 +112,7 @@ public:
     std::vector<std::array<size_t, 2>> bvh_edges;
 
 
+
     BVH_GPU* bvh;
 
 };
@@ -436,10 +437,15 @@ int main(int argc, const char* argv[]) {
 
     app.mesh->get_mass(app.mass);
 
-    // app.solver = std::make_unique<ADMMSolverFull_RL_damping>();
-    // ADMMSolverFull_RL_damping* solver = static_cast<ADMMSolverFull_RL_damping*>(app.solver.get());
-    app.solver = std::make_unique<ADMMParallelSolver>();
-    ADMMParallelSolver* solver = static_cast<ADMMParallelSolver*>(app.solver.get());
+    ADMMSolverFull_RL_damping* solver{};
+    if (app_config.use_GPU) {
+        app.solver = std::make_unique<ADMMParallelSolver>();
+        solver = static_cast<ADMMParallelSolver*>(app.solver.get());
+    }
+    else {
+        app.solver = std::make_unique<ADMMSolverFull_RL_damping>();
+        solver = static_cast<ADMMSolverFull_RL_damping*>(app.solver.get());
+    }
 
     solver->static_mesh_id_begin = static_mesh_id_begin;
     solver->static_vert_begin = static_vert_begin;

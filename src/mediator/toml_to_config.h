@@ -21,6 +21,8 @@ struct APPConfig {
     bool out_bin{ false };
     int end_frame{ 2000 };
 
+    bool use_GPU{ true };
+
 
 
     struct Global {
@@ -168,6 +170,11 @@ struct APPConfig {
         auto& collider_config = config["collider"];
         auto& viewer_config = config["viewer"];
 
+        auto& useGPU = config["GPU"];
+        if (useGPU) {
+            app_config.use_GPU = *useGPU.value<bool>();
+        }
+
         // global
         app_config.global.dt = _CTML(global_config["dt"].value<ADU::Real>());
         auto substep_tmp = global_config["sub_step"].value<int>();
@@ -187,6 +194,8 @@ struct APPConfig {
             app_config.xpbd.use_XPBD = _CTML(xpbd_config["enable"].value<bool>());
             app_config.xpbd.XPBD_iter = _CTML(xpbd_config["iter"].value<int>());
         }
+
+
 
         // solver
         app_config.solver.admm.admm_max_iter = _CTML(solver_config["admm_max_iter"].value<int>());
