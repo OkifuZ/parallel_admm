@@ -167,10 +167,33 @@ void CUVec_scale(const ADU::Real* a, ADU::Real scale, ADU::Real* result, int row
     }
 }
 
-void resizeThrust(thrust::device_vector<ADU::Real>& data, int newSize, ADU::Real defaultVal)
+template <typename T>
+void resizeThrust(thrust::device_vector<T>& data, int newSize, T defaultVal)
 {
     data.resize(newSize, defaultVal);
 }
+
+template void resizeThrust<double>(thrust::device_vector<double>&, int, double);
+template void resizeThrust<float>(thrust::device_vector<float>&, int, float);
+template void resizeThrust<float3>(thrust::device_vector<float3>&, int, float3);
+template void resizeThrust<float4>(thrust::device_vector<float4>&, int, float4);
+template void resizeThrust<int>(thrust::device_vector<int>&, int, int);
+
+
+//void resizeThrust(thrust::device_vector<ADU::Real>& data, int newSize, ADU::Real defaultVal)
+//{
+//    data.resize(newSize, defaultVal);
+//}
+//
+//void resizeThrust(thrust::device_vector<float3>& data, int newSize, float3 defaultVal)
+//{
+//    data.resize(newSize, defaultVal);
+//}
+//
+//void resizeThrust(thrust::device_vector<float4>& data, int newSize, float4 defaultVal)
+//{
+//    data.resize(newSize, defaultVal);
+//}
 
 void CompactSparseMat::buildNormalMatrix(const ADU::SpMatf &mat) {
     row_offsets.push_back(0);

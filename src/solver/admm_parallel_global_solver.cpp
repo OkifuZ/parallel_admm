@@ -2,6 +2,7 @@
 #include "mutils/timer.h"
 #include "constraint/pin_constraint.h"
 #include "thrust/device_vector.h"
+#include "solver/contact_solver.cuh"
 
 
 #include <Eigen/SparseCore>
@@ -92,9 +93,9 @@ void ADMMParallelSolver::init() {
 		vi_ct_nums.resize(m_nVert, 0);
 	}
 
-	resizeThrust(this->cache_nCDimX3, m_nCDim*3);
-	resizeThrust(this->cache_nDynVertX3, nDynVert*3);
-	resizeThrust(this->cache_nDynVertX3_bp1, nDynVert*3);
+	resizeThrust<ADU::Real>(this->cache_nCDimX3, m_nCDim * 3, 0);
+	resizeThrust<ADU::Real>(this->cache_nDynVertX3, nDynVert * 3, 0);
+	resizeThrust<ADU::Real>(this->cache_nDynVertX3_bp1, nDynVert*3, 0);
 
 
 	printf("ADMMParallelSolver init done\n");
@@ -230,8 +231,8 @@ void ADMMParallelSolver::precompute() {
 	m_Uc = Matf_X3(nDynVert, 3);
 	m_Uc.setZero();
 
-	resizeThrust(m_Ue_device, 3*m_nCDim, 0);
-	resizeThrust(m_Uc_device, 3 * nDynVert, 0);
+	resizeThrust<ADU::Real>(m_Ue_device, 3*m_nCDim, 0);
+	resizeThrust<ADU::Real>(m_Uc_device, 3 * nDynVert, 0);
 
 	// Gamma_c for PGS
 	if (enable_frictional_contact && prox_query) {
@@ -254,6 +255,9 @@ void ADMMParallelSolver::precompute() {
 	CompactSparseMat c(m_A_damp);
 
 	printf("ADMMParallelSolver done, total vert num = %d\n", nDynVert);
+
+
+	resizeThrust<int>(d_vi_ct_nums, m_nVert, 0);
 }
 
 
@@ -290,7 +294,7 @@ void ADMMParallelSolver::step() {
 	Matf_X3 x_tilde = x_0.block(0, 0, nDynVert, 3) + m_dt * v_0.block(0, 0, nDynVert, 3); // nDynVert * 3
 	Matf_X3 M_x_tilde = m_M * x_tilde; // nDynVert * 3
 
-	resizeThrust(M_x_tilde_device, nDynVert * 3);
+	resizeThrust<ADU::Real>(M_x_tilde_device, nDynVert * 3, 0);
 	copy_mat2thrustvector(M_x_tilde, M_x_tilde_device, nDynVert);
 
 	b_curr.resize(nDynVert, 3);
@@ -306,7 +310,7 @@ void ADMMParallelSolver::step() {
 	z.setZero();
 	Matf_X3 DX(m_nCDim, 3);
 	DX.setZero();
-	resizeThrust(DX_device, m_nCDim * 3);
+	resizeThrust<ADU::Real>(DX_device, m_nCDim * 3, 0);
 
 	if (animator) {
 		animator->animate_all(m_vertices, x_curr, v_0, this->m_dt);
@@ -657,6 +661,8 @@ void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
 	}
 }
 
+
+
 // input: contacts
 // output: Gamma_c, Gamma_i, involved_cid, K_c, delta_u
 void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
@@ -713,5 +719,34 @@ void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
 			K_c[ci] = this->m_dt_inv * ct.h_cN * ct.normal * gamma;
 		}
 		});
+
+}
+
+
+void ADMMParallelSolver::compute_Scc_impl() {
+	using namespace ADU;
+	size_t nContact = bvh->h_cpNum;
+
+	//d_Gamma_c.resize(nContact, Vecf_4::Zero());
+	////Gamma_c.resize(nContact, Vecf_4::Zero());
+	////K_c.resize(nContact, Vecf_3::Zero());
+	//d_K_c.resize(nContact, Vecf_3::Zero());
+	//Real Sc_W{};
+
+	resizeThrust<float4>(d_Gamma_c, nContact, float4{ 0, 0, 0, 0 });
+	resizeThrust<float3>(d_K_c, nContact, float3{ 0, 0, 0 });
+
+
+	for (int vi = 0; vi < m_nVert; vi++) {
+		Gamma_i[vi].clear();
+		involved_cid[vi].clear();
+	}
+	std::fill(vi_ct_nums.begin(), vi_ct_nums.end(), 0);
+	delta_u.resize(nContact, Vecf_3::Zero());
+
+	computeContactCountsWithAtomic(bvh->d_collisonPairs, d_vi_ct_nums, nContact);
+
+
+
 
 }

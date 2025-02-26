@@ -266,7 +266,21 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	std::vector<ADU::Vecf_3> delta_u;
 	std::vector<int> vi_ct_nums;
 
-	virtual void compute_Scc(bool is_XPBD=false);
+	//std::vector<tbb::concurrent_vector<ADU::Real>> Gamma_i;
+	//std::vector<ADU::Vecf_4> Gamma_c_aux; // original gamma_c, being ot divided by ni
+	//std::vector<tbb::concurrent_vector<int>> involved_cid;
+	//std::vector<ADU::Vecf_3> delta_u;
+	thrust::device_vector<int> d_vi_ct_nums;
+
+
+	thrust::device_vector<float4> d_Gamma_c; // 
+	thrust::device_vector<float3> d_K_c;
+	thrust::device_vector<float3> d_delta_u;
+
+	// gamma_i, involved_cid needs special care!!!
+
+	virtual void compute_Scc(bool is_XPBD = false);
+	void compute_Scc_impl();
 
 public:
 	void convert_constraint2device();

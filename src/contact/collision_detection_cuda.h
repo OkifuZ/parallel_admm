@@ -58,7 +58,7 @@ public:
     uint2* d_edges;
     uint3* d_faces;
     uint32_t* d_surfVertIdx;
-    int4* d_collisonPairs;
+    int4* d_collisonPairs; // data 1
     std::vector<int4> h_collisionPairs;
 
 
@@ -66,10 +66,10 @@ public:
     size_t e_num{};
     size_t t_num{};
 
-    Result<ADU::Real>* d_contact_info;
+    Result<ADU::Real>* d_contact_info; // data 2
     std::vector<Result<ADU::Real>> h_contact_info;
     uint32_t* d_cpNum;
-    uint32_t h_cpNum;
+    uint32_t h_cpNum; // data 3
 
     void init();
 

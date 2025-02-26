@@ -84,6 +84,16 @@ void op_scale(const thrust::device_vector<ADU::Real>& a, ADU::Real scale, thrust
 
 
 
-void resizeThrust(thrust::device_vector<ADU::Real>& data, int newSize, ADU::Real defaultVal = 0.0);
+//void resizeThrust(thrust::device_vector<ADU::Real>& data, int newSize, ADU::Real defaultVal = 0.0);
+//void resizeThrust(thrust::device_vector<float4>& data, int newSize, float4 defaultVal);
+//void resizeThrust(thrust::device_vector<float3>& data, int newSize, float3 defaultVal);
 
+template <typename T>
+void resizeThrust(thrust::device_vector<T>& data, int newSize, T defaultVal);
+
+extern template void resizeThrust<float>(thrust::device_vector<float>&, int, float);
+extern template void resizeThrust<double>(thrust::device_vector<double>&, int, double);
+extern template void resizeThrust<float3>(thrust::device_vector<float3>&, int, float3);
+extern template void resizeThrust<float4>(thrust::device_vector<float4>&, int, float4);
+extern template void resizeThrust<int>(thrust::device_vector<int>&, int, int);
 

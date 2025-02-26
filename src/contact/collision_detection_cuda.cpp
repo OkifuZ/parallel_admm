@@ -161,7 +161,6 @@ void BVH_GPU::unique_contactInfo() {
 
 void BVH_GPU::convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct_info, const ADU::Matf_X3& pos) {
     using namespace ADU;
-    CUDA_SAFE_CALL(cudaMemcpy(&h_cpNum, d_cpNum, sizeof(uint32_t), cudaMemcpyDeviceToHost));
     h_contact_info.resize(h_cpNum);
     h_collisionPairs.resize(h_cpNum);
 
