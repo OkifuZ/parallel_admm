@@ -32,8 +32,8 @@ public:
 	ADU::Real dist;
 	ADU::Real distSqr;
 
-	ADU::Vecf_4 bary;
-	ADU::Vecf_4 ini_bary;
+	ADU::Vecf_4 bary; // bary for h (C0 - C1)
+	ADU::Vecf_4 ini_bary; // bary for closest points 0 and 1
 
 	ADU::Real h_cN;
 
@@ -69,6 +69,8 @@ public:
 		// for std::vector
 	};
 
+
+	// We let h = C0 - C1 to be the positive direction, so that normal should be aligned with h. A part of bary values is negatived due to the same reason.
 	ContactInfo(const Result<ADU::Real>& result, size_t v0, size_t v1, size_t v2, size_t v3,
 		const ADU::Vecf_3& normal, const ADU::Vecf_3& point, bool from_CCD) :
 		vinds({ v0, v1, v2, v3 }), pair_type(EE), point(point)
@@ -82,8 +84,7 @@ public:
 			// C0 = P[0] + s[0] * (P[1] - P[0]) = (1-s[0])*P[0] + s[0]*P[1] for 0 <= s[0] <= 1 
 			// C1 = Q[0] + s[1] * (Q[1] - Q[0]) = (1-s[1])*Q[0] + s[1]*Q[1] for 0 <= s[1] <= 1
 			// h = C0 - C1
-			bary = { 1 - result.barycentric[0], result.barycentric[0],
-				result.barycentric[1] - 1, -result.barycentric[1] };
+			bary = { 1 - result.barycentric[0], result.barycentric[0], result.barycentric[1] - 1, -result.barycentric[1] };
 			ini_bary = { 1 - result.barycentric[0], result.barycentric[0], 1 - result.barycentric[1], result.barycentric[1] };
 
 			pair_type = EE;

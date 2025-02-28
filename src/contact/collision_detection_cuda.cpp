@@ -152,7 +152,10 @@ void BVH_GPU::unique_contactInfo() {
         printf("new size = %d, old size = %d\n", new_size, h_cpNum);
     }
 
+    int less_num = h_cpNum - new_size;
+    printf("unique: less %d\n", less_num);
     h_cpNum = new_size;
+
 
     CUDA_SAFE_CALL(cudaMemcpy(d_cpNum, &h_cpNum, sizeof(uint32_t), cudaMemcpyHostToDevice));
 }
@@ -184,21 +187,25 @@ void BVH_GPU::convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct
             const Vecf_3& v2 = pos.row(inds.z);
             const Vecf_3& v3 = pos.row(inds.w);
 
+            /*if (inds.x >= 268 || inds.y >= 268 || inds.z >= 268 || inds.w >= 268 ||
+                inds.x < 0|| inds.y < 0|| inds.z < 0|| inds.w < 0) {
+                printf("hit %d\n", i);
+            }*/
+            // printf("%d %d %d %d\n", inds.x, inds.y, inds.z, inds.w);
+
             size_t v0_index = inds.x;
             size_t v1_index = inds.y;
             size_t v2_index = inds.z;
             size_t v3_index = inds.w;
 
-            if (res.barycentric[2] < -1) {
-                // edge edge
+            if (res.barycentric[2] < -1) { // edge edge
                 Vecf_3 normal = (v1 - v0).cross(v3 - v2).normalized();
-                //Vecf_3 pt = 0.5_r * (res.closest[0].cast<ADU::Real>() + res.closest[1].cast<ADU::Real>());
-                Vecf_3 pt = res.closest[0].cast<ADU::Real>();
+                Vecf_3 pt = 0.5_r * (res.closest[0].cast<ADU::Real>() + res.closest[1].cast<ADU::Real>());
+                //Vecf_3 pt = res.closest[0].cast<ADU::Real>();
                 ContactInfo ct(res, v0_index, v1_index, v2_index, v3_index, normal, pt, false);
                 ct_info[i] = ct;
             }
-            else {
-                // point traingle
+            else { // point traingle
                 Vecf_3 normal = (v2 - v1).cross(v3 - v1).normalized();
                 Vecf_3 pt = 0.5_r * (res.closest[0].cast<ADU::Real>() + res.closest[1].cast<ADU::Real>());
                 ContactInfo ct(res, v0_index, v1_index, v2_index, v3_index, normal, pt, false);

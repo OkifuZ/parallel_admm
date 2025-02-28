@@ -34,3 +34,12 @@ void computeContactCountsWithAtomic(const int4* d_contacts, thrust::device_vecto
     cudaDeviceSynchronize(); // Ensure the kernel finishes
 }
 
+void compute_Scc_impl_cu(const thrust::device_vector<int>& d_vi_ct_nums,  thrust::device_vector<int>& d_start_idx, thrust::device_vector<int>& d_involved_cid)
+{
+    d_start_idx.resize(d_vi_ct_nums.size() + 1);
+    thrust::inclusive_scan(d_vi_ct_nums.begin() + 1, d_vi_ct_nums.end(), d_start_idx.begin());
+    int total_size = d_start_idx[d_start_idx.size() - 1];
+    d_involved_cid.resize(total_size, 0);
+    printf("device: %d\n", total_size);
+
+}

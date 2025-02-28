@@ -1590,22 +1590,46 @@ void lbvh_e::SelfCollitionFullDetect(double dHat, const double3* moveDir, const 
 
 /////////////////////////////////////////////////////////
 
-__device__ void sortThree(uint32_t &a, uint32_t &b, uint32_t &c) {
+//__device__ void sortThree(uint32_t &a, uint32_t &b, uint32_t &c) {
+//    // Compare and swap a and b
+//    uint32_t temp = (a > b) * (a ^ b);
+//    a = a - temp;
+//    b = b + temp;
+//
+//    // Compare and swap b and c
+//    temp = (b > c) * (b ^ c);
+//    b = b - temp;
+//    c = c + temp;
+//
+//    // Compare and swap a and b again
+//    temp = (a > b) * (a ^ b);
+//    a = a - temp;
+//    b = b + temp;
+//}
+
+__device__ void sortThree(uint32_t& a, uint32_t& b, uint32_t& c) {
     // Compare and swap a and b
-    uint32_t temp = (a > b) * (a ^ b);
-    a = a - temp;
-    b = b + temp;
+    if (a > b) {
+        uint32_t temp = a;
+        a = b;
+        b = temp;
+    }
 
     // Compare and swap b and c
-    temp = (b > c) * (b ^ c);
-    b = b - temp;
-    c = c + temp;
+    if (b > c) {
+        uint32_t temp = b;
+        b = c;
+        c = temp;
+    }
 
     // Compare and swap a and b again
-    temp = (a > b) * (a ^ b);
-    a = a - temp;
-    b = b + temp;
+    if (a > b) {
+        uint32_t temp = a;
+        a = b;
+        b = temp;
+    }
 }
+
 
 __device__
 inline bool _checkDCDPointTriangle(const double3* _vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3,
@@ -1626,7 +1650,7 @@ inline bool _checkDCDPointTriangle(const double3* _vertexes, const uint32_t& id0
         uint32_t id1_ = id1;
         uint32_t id2_ = id2;
         uint32_t id3_ = id3;
-        sortThree(id1_, id2_, id3_);
+        //sortThree(id1_, id2_, id3_);
         _collisionPair[cdp_idx] = make_int4(id0, id1_, id2_, id3_);
         contact_info[cdp_idx] = res;
         return true;
@@ -1651,12 +1675,21 @@ inline bool _checkDCDEdgeEdge(const double3* _vertexes, const uint32_t& id0, con
     //Result<double> res = dcdPT(v0, v1, v2, v3);
     if (res.distance < dHat) {
         int cdp_idx = atomicAdd(_cpNum, 1);
-        uint32_t id0_ = id0 > id1 ? id1 : id0;
+        /*uint32_t id0_ = id0 > id1 ? id1 : id0;
         uint32_t id1_ = id0 > id1 ? id0 : id1;
         uint32_t id2_ = id2 > id3 ? id3 : id2;
-        uint32_t id3_ = id2 > id3 ? id2 : id3;;
-         _collisionPair[cdp_idx] = make_int4(id0_, id1_, id2_, id3_);
-         contact_info[cdp_idx] = res;
+        uint32_t id3_ = id2 > id3 ? id2 : id3;
+        if (id0_ > id2_) {
+            uint32_t temp = id0_;
+            id0_ = id2_;
+            id2_ = temp;
+            temp = id1_;
+            id1_ = id3_;
+            id3_ = temp;
+        }
+         _collisionPair[cdp_idx] = make_int4(id0_, id1_, id2_, id3_);*/
+        _collisionPair[cdp_idx] = make_int4(id0, id1, id2, id3); 
+        contact_info[cdp_idx] = res;
         return true;
     }
     return false;

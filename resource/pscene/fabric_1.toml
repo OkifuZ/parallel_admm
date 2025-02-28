@@ -50,7 +50,7 @@ broad.strategy = 'rebuild'
 [[mesh]]
 f.path = 'flat/flat_v134.obj'
 f.type = 'tri'
-f.color = 0
+f.color = 1
 t.scale = 2.5
 t.translate = [0, 0.8, 0]
 t.rotate = [0, 0, 0]

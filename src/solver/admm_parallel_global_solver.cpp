@@ -338,8 +338,8 @@ void ADMMParallelSolver::step() {
 			// bvh->update(x_curr, true);
 			bvh->update(solver_data_device->x_curr_device.data().get(), m_nVert, true);
 			bvh->dcd();
-
-			bvh->unique_contactInfo();
+			// TODO: will this actually work?
+			//bvh->unique_contactInfo();
 			bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
 
 			need_recompute_Scc = true;
@@ -387,11 +387,17 @@ void ADMMParallelSolver::step() {
 					op_a_plus_b(cache_nDynVertX3, m_Uc_device, cache_nDynVertX3, nDynVert);
 					op_scale(cache_nDynVertX3, m_dt_inv, solver_data_device->p_device, nDynVert);
 
+					copy_thrustvector2mat(solver_data_device->p_device, p, nDynVert);
+
 					if (need_recompute_Scc) {
-						ADMMSolverFull_RL_damping::compute_Scc();
+						//ADMMSolverFull_RL_damping::compute_Scc();
+						ADMMParallelSolver::compute_Scc();
 						need_recompute_Scc = false;
 					}
+					//ADMMSolverFull_RL_damping::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
+					ADMMParallelSolver::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
 
+					copy_mat2thrustvector(p, solver_data_device->p_device, nDynVert);
 					/*if (need_recompute_Scc) {
 						ADMMSolverFull_RL_damping::compute_Scc();
 						need_recompute_Scc = false;
@@ -688,6 +694,12 @@ void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
 		vi_ct_nums[c.vinds[3]]++;
 	}
 
+	/*int total_size = 0;
+	for (int i = 0; i < vi_ct_nums.size(); i++) {
+		total_size += vi_ct_nums[i];
+	}
+	printf("host: %d\n", total_size);*/
+
 	tbb::parallel_for(tbb::blocked_range<size_t>(0, nContact), [&](const tbb::blocked_range<size_t>& r) {
 		Real Sc{};
 		for (size_t ci = r.begin(); ci < r.end(); ci++) {
@@ -720,6 +732,7 @@ void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
 		}
 		});
 
+	//compute_Scc_impl();
 }
 
 
@@ -736,7 +749,6 @@ void ADMMParallelSolver::compute_Scc_impl() {
 	resizeThrust<float4>(d_Gamma_c, nContact, float4{ 0, 0, 0, 0 });
 	resizeThrust<float3>(d_K_c, nContact, float3{ 0, 0, 0 });
 
-
 	for (int vi = 0; vi < m_nVert; vi++) {
 		Gamma_i[vi].clear();
 		involved_cid[vi].clear();
@@ -746,6 +758,10 @@ void ADMMParallelSolver::compute_Scc_impl() {
 
 	computeContactCountsWithAtomic(bvh->d_collisonPairs, d_vi_ct_nums, nContact);
 
+	thrust::device_vector<int> d_start_idx;
+	thrust::device_vector<int> d_involved_cid;
+
+	compute_Scc_impl_cu(d_vi_ct_nums, d_start_idx, d_involved_cid);
 
 
 
