@@ -272,6 +272,7 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	//std::vector<ADU::Vecf_3> delta_u;
 	thrust::device_vector<int> d_vi_ct_nums;
 
+	thrust::device_vector<float4> d_bary;
 
 	thrust::device_vector<float4> d_Gamma_c; // 
 	thrust::device_vector<float3> d_K_c;
@@ -280,6 +281,12 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	// gamma_i, involved_cid needs special care!!!
 
 	virtual void compute_Scc(bool is_XPBD = false);
+
+
+	thrust::device_vector<ADU::Real> d_Gamma_i;
+	thrust::device_vector<int> d_start_idx;
+	thrust::device_vector<int> d_involved_cid;
+
 	void compute_Scc_impl();
 
 public:

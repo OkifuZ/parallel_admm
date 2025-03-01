@@ -340,6 +340,7 @@ void ADMMParallelSolver::step() {
 			bvh->dcd();
 			// TODO: will this actually work?
 			//bvh->unique_contactInfo();
+			resizeThrust(d_bary, (int)bvh->h_cpNum, float4{ 0 });
 			bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
 
 			need_recompute_Scc = true;
@@ -576,6 +577,9 @@ void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
 	// notion: r_c lies in contact_info
 	using namespace ADU;
 
+	// CT: vinds, r_c, bary, normal
+	// admm: delta_u
+
 	size_t nContact = contacts.size();
 	tbb::parallel_for(tbb::blocked_range<size_t>(0, nContact), [&](const tbb::blocked_range<size_t>& r) {
 		for (int ci = r.begin(); ci < r.end(); ci++) {
@@ -694,11 +698,11 @@ void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
 		vi_ct_nums[c.vinds[3]]++;
 	}
 
-	/*int total_size = 0;
+	int total_size = 0;
 	for (int i = 0; i < vi_ct_nums.size(); i++) {
 		total_size += vi_ct_nums[i];
 	}
-	printf("host: %d\n", total_size);*/
+	printf("host: %d\n", total_size);
 
 	tbb::parallel_for(tbb::blocked_range<size_t>(0, nContact), [&](const tbb::blocked_range<size_t>& r) {
 		Real Sc{};
@@ -732,7 +736,7 @@ void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
 		}
 		});
 
-	//compute_Scc_impl();
+	compute_Scc_impl();
 }
 
 
@@ -753,15 +757,15 @@ void ADMMParallelSolver::compute_Scc_impl() {
 		Gamma_i[vi].clear();
 		involved_cid[vi].clear();
 	}
+
 	std::fill(vi_ct_nums.begin(), vi_ct_nums.end(), 0);
 	delta_u.resize(nContact, Vecf_3::Zero());
 
 	computeContactCountsWithAtomic(bvh->d_collisonPairs, d_vi_ct_nums, nContact);
 
-	thrust::device_vector<int> d_start_idx;
-	thrust::device_vector<int> d_involved_cid;
-
-	compute_Scc_impl_cu(d_vi_ct_nums, d_start_idx, d_involved_cid);
+	compute_Scc_impl_cu(bvh, d_vi_ct_nums, d_bary, nContact, 
+		d_start_idx, d_involved_cid, d_Gamma_i,
+		d_Gamma_c, d_K_c, d_delta_u);
 
 
 
