@@ -97,3 +97,13 @@ extern template void resizeThrust<float3>(thrust::device_vector<float3>&, int, f
 extern template void resizeThrust<float4>(thrust::device_vector<float4>&, int, float4);
 extern template void resizeThrust<int>(thrust::device_vector<int>&, int, int);
 
+
+
+template <typename T>
+void copyThrust(thrust::device_vector<T>& data_dst, std::vector<T>& data_src, int size);
+
+extern template void copyThrust<double>(thrust::device_vector<double>& data_dst, std::vector<double>& data_src, int size);
+extern template void copyThrust<float>(thrust::device_vector<float>& data_dst, std::vector<float>& data_src, int size);
+extern template void copyThrust<float3>(thrust::device_vector<float3>& data_dst, std::vector<float3>& data_src, int size);
+extern template void copyThrust<float4>(thrust::device_vector<float4>& data_dst, std::vector<float4>& data_src, int size);
+extern template void copyThrust<int>(thrust::device_vector<int>& data_dst, std::vector<int>& data_src, int size);

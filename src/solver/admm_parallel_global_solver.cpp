@@ -258,6 +258,8 @@ void ADMMParallelSolver::precompute() {
 
 
 	resizeThrust<int>(d_vi_ct_nums, m_nVert, 0);
+	resizeThrust<ADU::Real>(d_contact_W_list, nDynVert, 0);
+	copy_vec2thrustvector(contact_w_list, d_contact_W_list, nDynVert);
 }
 
 
@@ -340,8 +342,8 @@ void ADMMParallelSolver::step() {
 			bvh->dcd();
 			// TODO: will this actually work?
 			//bvh->unique_contactInfo();
-			resizeThrust(d_bary, (int)bvh->h_cpNum, float4{ 0 });
-			bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
+			convert_DCD_info(bvh, solver_data_device->x_curr_device, d_bary, d_normal, d_point, d_h_cN, d_pair_type);
+			// bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
 
 			need_recompute_Scc = true;
 
@@ -396,9 +398,9 @@ void ADMMParallelSolver::step() {
 						need_recompute_Scc = false;
 					}
 					//ADMMSolverFull_RL_damping::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
-					ADMMParallelSolver::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
+					// ADMMParallelSolver::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
 
-					copy_mat2thrustvector(p, solver_data_device->p_device, nDynVert);
+					// copy_mat2thrustvector(p, solver_data_device->p_device, nDynVert);
 					/*if (need_recompute_Scc) {
 						ADMMSolverFull_RL_damping::compute_Scc();
 						need_recompute_Scc = false;
@@ -676,6 +678,9 @@ void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
 // input: contacts
 // output: Gamma_c, Gamma_i, involved_cid, K_c, delta_u
 void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
+	compute_Scc_impl();
+	return;
+
 	using namespace ADU;
 	auto& contacts = prox_query->contact_info_list;
 	size_t nContact = contacts.size();
@@ -698,11 +703,10 @@ void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
 		vi_ct_nums[c.vinds[3]]++;
 	}
 
-	int total_size = 0;
+	/*int total_size = 0;
 	for (int i = 0; i < vi_ct_nums.size(); i++) {
 		total_size += vi_ct_nums[i];
-	}
-	printf("host: %d\n", total_size);
+	}*/
 
 	tbb::parallel_for(tbb::blocked_range<size_t>(0, nContact), [&](const tbb::blocked_range<size_t>& r) {
 		Real Sc{};
@@ -721,6 +725,7 @@ void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
 				int vi = ct.vinds[i];
 				if (contact_w_list(ct.vinds[i]) > 1e7_r) {
 					Gamma_c[ci](i) = 0;
+					Gamma_i[vi].emplace_back(0);
 				}
 				else {
 					Gamma_c[ci](i) = ct.bary[i] / (Sc * contact_w_list(vi));
@@ -736,7 +741,6 @@ void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
 		}
 		});
 
-	compute_Scc_impl();
 }
 
 
@@ -744,29 +748,11 @@ void ADMMParallelSolver::compute_Scc_impl() {
 	using namespace ADU;
 	size_t nContact = bvh->h_cpNum;
 
-	//d_Gamma_c.resize(nContact, Vecf_4::Zero());
-	////Gamma_c.resize(nContact, Vecf_4::Zero());
-	////K_c.resize(nContact, Vecf_3::Zero());
-	//d_K_c.resize(nContact, Vecf_3::Zero());
-	//Real Sc_W{};
+	computeContactCountsWithAtomic(bvh->d_collisonPairs, d_vi_ct_nums, nContact, m_nVert);
 
-	resizeThrust<float4>(d_Gamma_c, nContact, float4{ 0, 0, 0, 0 });
-	resizeThrust<float3>(d_K_c, nContact, float3{ 0, 0, 0 });
-
-	for (int vi = 0; vi < m_nVert; vi++) {
-		Gamma_i[vi].clear();
-		involved_cid[vi].clear();
-	}
-
-	std::fill(vi_ct_nums.begin(), vi_ct_nums.end(), 0);
-	delta_u.resize(nContact, Vecf_3::Zero());
-
-	computeContactCountsWithAtomic(bvh->d_collisonPairs, d_vi_ct_nums, nContact);
-
-	compute_Scc_impl_cu(bvh, d_vi_ct_nums, d_bary, nContact, 
+	compute_Scc_impl_cu(bvh, d_vi_ct_nums, d_bary, d_contact_W_list, d_h_cN,
+		nContact, this->m_dt_inv, 
+		d_vi_ct_count, 
 		d_start_idx, d_involved_cid, d_Gamma_i,
 		d_Gamma_c, d_K_c, d_delta_u);
-
-
-
 }

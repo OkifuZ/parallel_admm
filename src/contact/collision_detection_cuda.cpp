@@ -213,9 +213,6 @@ void BVH_GPU::convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct
             }
         }
     }
-
-
-
 }
 
 

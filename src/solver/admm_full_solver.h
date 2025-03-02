@@ -271,8 +271,14 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	//std::vector<tbb::concurrent_vector<int>> involved_cid;
 	//std::vector<ADU::Vecf_3> delta_u;
 	thrust::device_vector<int> d_vi_ct_nums;
+	thrust::device_vector<int> d_vi_ct_count;
 
 	thrust::device_vector<float4> d_bary;
+	thrust::device_vector<float3> d_normal;
+	thrust::device_vector<float3> d_point;
+	thrust::device_vector<ADU::Real> d_h_cN;
+	thrust::device_vector<ADU::Real> d_dist;
+	thrust::device_vector<int> d_pair_type;
 
 	thrust::device_vector<float4> d_Gamma_c; // 
 	thrust::device_vector<float3> d_K_c;
@@ -286,6 +292,9 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	thrust::device_vector<ADU::Real> d_Gamma_i;
 	thrust::device_vector<int> d_start_idx;
 	thrust::device_vector<int> d_involved_cid;
+
+	thrust::device_vector<ADU::Real> d_contact_W_list;
+
 
 	void compute_Scc_impl();
 
