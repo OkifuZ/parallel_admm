@@ -157,6 +157,8 @@ public:
 		ProximalQuery::ContactInfoList& contacts,
 		ADU::Real mu, size_t max_jacobi_iter);
 
+
+
 	std::unordered_set<int> vinds_surf_set;
 
 	ADU::Matf_X3 x_prev; 

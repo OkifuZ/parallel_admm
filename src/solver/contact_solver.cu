@@ -9,6 +9,7 @@
 #include "mutils/dist_g.cuh"
 
 #include "solver/contact_solver.cuh"
+#include "parallel_solver.h"
 
 
 using namespace  ADU;
@@ -80,18 +81,16 @@ __global__ void convert_DCD_info_kernel(const int nContact, const Result<ADU::Re
 
 
 void convert_DCD_info(const BVH_GPU* bvh,
-    const thrust::device_vector<ADU::Real>& d_pos, 
-    thrust::device_vector<float4>& d_bary,
-    thrust::device_vector<float3>& d_normal, thrust::device_vector<float3>& d_point,
-    thrust::device_vector<ADU::Real>& d_h_cN, thrust::device_vector<int>& d_pair_type
+    const thrust::device_vector<ADU::Real>& d_pos,
+    ContactDataDevice* ct_data_device
 ) {
     int nContact = bvh->h_cpNum;
 
-    d_bary.resize(nContact, float4{});
-    d_normal.resize(nContact, float3{});
-    d_point.resize(nContact, float3{});
-    d_h_cN.resize(nContact, 0);
-    d_pair_type.resize(nContact, 0);
+    ct_data_device->d_bary.resize(nContact, float4{});
+    ct_data_device->d_normal.resize(nContact, float3{});
+    ct_data_device->d_point.resize(nContact, float3{});
+    ct_data_device->d_h_cN.resize(nContact, 0);
+    ct_data_device->d_pair_type.resize(nContact, 0);
 
     
     // Launch kernel with a sufficient number of threads per block
@@ -100,13 +99,14 @@ void convert_DCD_info(const BVH_GPU* bvh,
     convert_DCD_info_kernel << <numBlocks, blockSize >> > 
         (
         nContact, bvh->d_contact_info, thrust::raw_pointer_cast(d_pos.data()), bvh->d_collisonPairs, ContactParameter::get_thickness(), 
-            thrust::raw_pointer_cast(d_bary.data()), thrust::raw_pointer_cast(d_normal.data()), thrust::raw_pointer_cast(d_point.data()), 
-            thrust::raw_pointer_cast(d_h_cN.data()), thrust::raw_pointer_cast(d_pair_type.data())
+            thrust::raw_pointer_cast(ct_data_device->d_bary.data()), thrust::raw_pointer_cast(ct_data_device->d_normal.data()), thrust::raw_pointer_cast(ct_data_device->d_point.data()),
+            thrust::raw_pointer_cast(ct_data_device->d_h_cN.data()), thrust::raw_pointer_cast(ct_data_device->d_pair_type.data())
         );
 }
 
 
-__global__ void compute_Scc_kernel(const int4* d_contacts, const Result<ADU::Real>* d_contact_info, const int* d_start_idx, const float4* d_bary, const int* d_v_ct_nums, const ADU::Real* d_contact_W_list, const ADU::Real* d_h_cN,
+__global__ void compute_Scc_kernel(const int4* d_contacts, const Result<ADU::Real>* d_contact_info, const int* d_start_idx, const float4* d_bary, const int* d_v_ct_nums, const ADU::Real* d_contact_W_list, 
+    const ADU::Real* d_h_cN, const float3* d_noraml, const ADU::Real gamma,
     const int nContact, const ADU::Real m_dt_inv,
     int* d_v_ct_count, // aux
     int* d_involved_cid, ADU::Real* d_Gamma_i,
@@ -142,51 +142,71 @@ __global__ void compute_Scc_kernel(const int4* d_contacts, const Result<ADU::Rea
         const int v_cidx_4 = atomicAdd(&d_v_ct_count[c.w], 1); d_involved_cid[d_start_idx[c.w] + v_cidx_4] = idx;*/
 
         // TODO K_c
+        float k_c = m_dt_inv * gamma * d_h_cN[idx];
+        const auto& norm = d_noraml[idx];
+        d_K_c[idx] = float3{ k_c * norm.x, k_c * norm.y, k_c * norm.z };
     }
 }
 
 
-void compute_Scc_impl_cu(const BVH_GPU* bvh, const thrust::device_vector<int>& d_vi_ct_nums, const  thrust::device_vector<float4>& d_bary, const  thrust::device_vector<ADU::Real>& d_contact_W_list, const thrust::device_vector<ADU::Real>& d_h_cN,
-    const int nContact, const ADU::Real m_dt_inv,
-    thrust::device_vector<int>& d_vi_ct_count,
-    thrust::device_vector<int>& d_start_idx, thrust::device_vector<int>& d_involved_cid, thrust::device_vector<ADU::Real>& d_Gamma_i, 
-    thrust::device_vector<float4>& d_Gamma_c, thrust::device_vector<float3>& d_K_c, thrust::device_vector<float3>& d_delta_u)
+void compute_Scc_impl_cu(const BVH_GPU* bvh, 
+    const int nContact, const ADU::Real m_dt_inv, const ADU::Real gamma,
+    ContactDataDevice* ct_data_device)
 {
 
-    d_Gamma_c.resize(nContact, float4{});
-    d_K_c.resize(nContact, float3{});
-    d_delta_u.resize(nContact, float3{});
+    ct_data_device->d_Gamma_c.resize(nContact, float4{});
+    ct_data_device->d_K_c.resize(nContact, float3{});
+    ct_data_device->d_delta_u.resize(nContact, float3{});
+    ct_data_device->d_r_c.resize(nContact, float3{});
 
-    d_start_idx.resize(d_vi_ct_nums.size() + 1, 0);
-    thrust::inclusive_scan(d_vi_ct_nums.begin(), d_vi_ct_nums.end(), d_start_idx.begin() + 1);
+    ct_data_device->d_start_idx.resize(ct_data_device->d_vi_ct_nums.size() + 1, 0);
+    thrust::inclusive_scan(ct_data_device->d_vi_ct_nums.begin(), ct_data_device->d_vi_ct_nums.end(), ct_data_device->d_start_idx.begin() + 1);
     int total_size{};
     // total_size = d_start_idx.back(); // this should work and indeed work, but use the following line for safety (mentally)
-    CUDA_SAFE_CALL(cudaMemcpy((void*)&total_size, thrust::raw_pointer_cast(d_start_idx.data() + d_start_idx.size() - 1), sizeof(int), cudaMemcpyDeviceToHost));
+    CUDA_SAFE_CALL(cudaMemcpy((void*)&total_size, thrust::raw_pointer_cast(ct_data_device->d_start_idx.data() + ct_data_device->d_start_idx.size() - 1), sizeof(int), cudaMemcpyDeviceToHost));
 
-    d_vi_ct_count.resize(d_vi_ct_nums.size(), 0);
-    d_involved_cid.resize(total_size, 0);
-    d_Gamma_i.resize(total_size, 0);
+    ct_data_device->d_vi_ct_count.resize(ct_data_device->d_vi_ct_nums.size(), 0);
+    ct_data_device->d_involved_cid.resize(total_size, 0);
+    ct_data_device->d_Gamma_i.resize(total_size, 0);
 
     int blockSize = 256; // This can be adjusted
     int numBlocks = (nContact + blockSize - 1) / blockSize; 
     compute_Scc_kernel
         << <numBlocks, blockSize >> > 
         (
-        bvh->d_collisonPairs, bvh->d_contact_info, thrust::raw_pointer_cast(d_start_idx.data()), thrust::raw_pointer_cast(d_bary.data()), thrust::raw_pointer_cast(d_vi_ct_nums.data()), thrust::raw_pointer_cast(d_contact_W_list.data()), thrust::raw_pointer_cast(d_h_cN.data()),
-        nContact, m_dt_inv,
-        thrust::raw_pointer_cast(d_vi_ct_count.data()), 
-        thrust::raw_pointer_cast(d_involved_cid.data()), thrust::raw_pointer_cast(d_Gamma_i.data()), 
-        thrust::raw_pointer_cast(d_Gamma_c.data()), thrust::raw_pointer_cast(d_K_c.data()), thrust::raw_pointer_cast(d_delta_u.data())
+        bvh->d_collisonPairs, bvh->d_contact_info, 
+        thrust::raw_pointer_cast(ct_data_device->d_start_idx.data()), 
+            thrust::raw_pointer_cast(ct_data_device->d_bary.data()), 
+            thrust::raw_pointer_cast(ct_data_device->d_vi_ct_nums.data()), 
+            thrust::raw_pointer_cast(ct_data_device->d_contact_W_list.data()), 
+            thrust::raw_pointer_cast(ct_data_device->d_h_cN.data()),
+            thrust::raw_pointer_cast(ct_data_device->d_normal.data()), gamma,
+        nContact, m_dt_inv, 
+        thrust::raw_pointer_cast(ct_data_device->d_vi_ct_count.data()),
+        thrust::raw_pointer_cast(ct_data_device->d_involved_cid.data()), thrust::raw_pointer_cast(ct_data_device->d_Gamma_i.data()),
+        thrust::raw_pointer_cast(ct_data_device->d_Gamma_c.data()), thrust::raw_pointer_cast(ct_data_device->d_K_c.data()), thrust::raw_pointer_cast(ct_data_device->d_delta_u.data())
         );
 
-    std::vector<int> v_ct_count(d_vi_ct_nums.size(), 0);
-    std::vector<int> v_ct_num(d_vi_ct_nums.size(), 0);
-    thrust::copy(d_vi_ct_count.begin(), d_vi_ct_count.end(), v_ct_count.begin());
-    thrust::copy(d_vi_ct_nums.begin(), d_vi_ct_nums.end(), v_ct_num.begin());
-    for (int i = 0; i < v_ct_count.size(); i++) {
+    std::vector<int> v_ct_count(ct_data_device->d_vi_ct_nums.size(), 0);
+    std::vector<int> v_ct_num(ct_data_device->d_vi_ct_nums.size(), 0);
+    thrust::copy(ct_data_device->d_vi_ct_count.begin(), ct_data_device->d_vi_ct_count.end(), v_ct_count.begin());
+    thrust::copy(ct_data_device->d_vi_ct_nums.begin(), ct_data_device->d_vi_ct_nums.end(), v_ct_num.begin());
+    /*for (int i = 0; i < v_ct_count.size(); i++) {
         if (v_ct_num[i] != v_ct_count[i]) {
             printf("%d %d\n", v_ct_count[i], v_ct_num[i]);
             printf("error compute_Scc_impl_cu involve_cid! vid %d\n", i);
         }
+    }*/
+}
+
+void project_impl(const BVH_GPU* bvh, ContactDataDevice* ct_data_device, CuSolverData* solver_data, int max_iter) 
+{
+    // kernel 1: p + r_c
+
+    for (int i = 0; i < max_iter; i++) {
+        // kernel 2: delta_u
+
+        // kernel 3: update p
+
     }
 }

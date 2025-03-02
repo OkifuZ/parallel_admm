@@ -18,6 +18,9 @@ public:
 	thrust::device_vector<float3> d_K_c;
 	thrust::device_vector<float3> d_delta_u;
 
+	thrust::device_vector<float3> d_r_c;
+
+
 	thrust::device_vector<ADU::Real> d_Gamma_i;
 	thrust::device_vector<int> d_start_idx;
 	thrust::device_vector<int> d_involved_cid;
@@ -40,6 +43,7 @@ public:
 		d_Gamma_c.reserve(max_Contact);
 		d_K_c.reserve(max_Contact);
 		d_delta_u.reserve(max_Contact);
+		d_r_c.reserve(max_Contact);
 
 		// size of total_contact
 		d_involved_cid.reserve(max_Vert * 20);
@@ -98,6 +102,9 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	void _project_feasible_plain(ADU::Matf_X3& p,
 		ProximalQuery::ContactInfoList& contacts,
 		ADU::Real mu, size_t max_jacobi_iter) override;
+
+
+	void _project_feasible_impl();
 
 	std::vector<tbb::concurrent_vector<ADU::Real>> Gamma_i;
 	std::vector<ADU::Vecf_4> Gamma_c_aux; // original gamma_c, being ot divided by ni

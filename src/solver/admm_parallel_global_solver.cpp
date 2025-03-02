@@ -343,7 +343,7 @@ void ADMMParallelSolver::step() {
 			bvh->dcd();
 			// TODO: will this actually work?
 			//bvh->unique_contactInfo();
-			convert_DCD_info(bvh, solver_data_device->x_curr_device, ct_data_device->d_bary, ct_data_device->d_normal, ct_data_device->d_point, ct_data_device->d_h_cN, ct_data_device->d_pair_type);
+			convert_DCD_info(bvh, solver_data_device->x_curr_device, ct_data_device.get());
 			// bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
 
 			need_recompute_Scc = true;
@@ -399,10 +399,11 @@ void ADMMParallelSolver::step() {
 						need_recompute_Scc = false;
 					}
 					//ADMMSolverFull_RL_damping::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
-					// ADMMParallelSolver::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
+					ADMMParallelSolver::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
 
-					// copy_mat2thrustvector(p, solver_data_device->p_device, nDynVert);
-					/*if (need_recompute_Scc) {
+					 copy_mat2thrustvector(p, solver_data_device->p_device, nDynVert);
+					
+					 /*if (need_recompute_Scc) {
 						ADMMSolverFull_RL_damping::compute_Scc();
 						need_recompute_Scc = false;
 					}
@@ -568,8 +569,16 @@ void ADMMParallelSolver::project_feasible(ADU::Matf_X3& p,
 	ProximalQuery::ContactInfoList& contacts,
 	ADU::Real mu, size_t max_GS_iter)
 {
+	ADMMParallelSolver::_project_feasible_impl();
 	ADMMParallelSolver::_project_feasible_plain(p, contacts, mu, max_GS_iter);
 	//ADMMParallelSolver::_project_feasible_plain_2(p, contacts, mu, max_GS_iter);
+}
+
+void ADMMParallelSolver::_project_feasible_impl() 
+{
+	using namespace ADU;
+	size_t nContact = bvh->h_cpNum;
+
 }
 
 void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
@@ -676,11 +685,12 @@ void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
 
 
 
+
 // input: contacts
 // output: Gamma_c, Gamma_i, involved_cid, K_c, delta_u
 void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
-	compute_Scc_impl();
-	return;
+	/*compute_Scc_impl();
+	return;*/
 
 	using namespace ADU;
 	auto& contacts = prox_query->contact_info_list;
@@ -733,7 +743,6 @@ void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
 					Gamma_i[vi].emplace_back(ct.bary[i] / (Sc * contact_w_list(vi)));
 				}
 				involved_cid[vi].push_back(ci);
-
 			}
 			
 			// precompute k
@@ -749,11 +758,9 @@ void ADMMParallelSolver::compute_Scc_impl() {
 	using namespace ADU;
 	size_t nContact = bvh->h_cpNum;
 
-	computeContactCountsWithAtomic(bvh->d_collisonPairs, d_vi_ct_nums, nContact, m_nVert);
+	computeContactCountsWithAtomic(bvh->d_collisonPairs, ct_data_device->d_vi_ct_nums, nContact, m_nVert);
 
-	compute_Scc_impl_cu(bvh, d_vi_ct_nums, d_bary, d_contact_W_list, d_h_cN,
-		nContact, this->m_dt_inv, 
-		d_vi_ct_count, 
-		d_start_idx, d_involved_cid, d_Gamma_i,
-		d_Gamma_c, d_K_c, d_delta_u);
+	compute_Scc_impl_cu(bvh,
+		nContact, this->m_dt_inv, gamma,
+		ct_data_device.get());
 }
