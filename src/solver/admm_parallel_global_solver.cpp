@@ -1,4 +1,4 @@
-#include "solver/admm_full_solver.h"
+#include "solver/parallel_solver.h"
 #include "mutils/timer.h"
 #include "constraint/pin_constraint.h"
 #include "thrust/device_vector.h"
@@ -61,6 +61,7 @@ void ADMMParallelSolver::convert_constraint2device() {
 void ADMMParallelSolver::init() {
 	printf("ADMMParallelSolver::init start\n");
 
+	ct_data_device = std::make_shared<ContactDataDevice>(m_nVert, prox_query->max_collision_num);
 
 	precompute();
 
@@ -257,9 +258,9 @@ void ADMMParallelSolver::precompute() {
 	printf("ADMMParallelSolver done, total vert num = %d\n", nDynVert);
 
 
-	resizeThrust<int>(d_vi_ct_nums, m_nVert, 0);
-	resizeThrust<ADU::Real>(d_contact_W_list, nDynVert, 0);
-	copy_vec2thrustvector(contact_w_list, d_contact_W_list, nDynVert);
+	resizeThrust<int>(ct_data_device->d_vi_ct_nums, m_nVert, 0);
+	resizeThrust<ADU::Real>(ct_data_device->d_contact_W_list, nDynVert, 0);
+	copy_vec2thrustvector(contact_w_list, ct_data_device->d_contact_W_list, nDynVert);
 }
 
 
@@ -342,7 +343,7 @@ void ADMMParallelSolver::step() {
 			bvh->dcd();
 			// TODO: will this actually work?
 			//bvh->unique_contactInfo();
-			convert_DCD_info(bvh, solver_data_device->x_curr_device, d_bary, d_normal, d_point, d_h_cN, d_pair_type);
+			convert_DCD_info(bvh, solver_data_device->x_curr_device, ct_data_device->d_bary, ct_data_device->d_normal, ct_data_device->d_point, ct_data_device->d_h_cN, ct_data_device->d_pair_type);
 			// bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
 
 			need_recompute_Scc = true;

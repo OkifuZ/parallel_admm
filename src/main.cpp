@@ -14,6 +14,7 @@
 #include "src_config.h"
 #include "mesh/mesh_container.h"
 #include "solver/admm_full_solver.h"
+#include "solver/parallel_solver.h"
 #include "solver/PBD_solver.h"
 #include "solver/XPBD_solver.h"
 
