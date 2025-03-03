@@ -344,7 +344,7 @@ void ADMMParallelSolver::step() {
 			// TODO: will this actually work?
 			//bvh->unique_contactInfo();
 			convert_DCD_info(bvh, solver_data_device->x_curr_device, ct_data_device.get());
-			// bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
+			//bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
 
 			need_recompute_Scc = true;
 
@@ -391,7 +391,7 @@ void ADMMParallelSolver::step() {
 					op_a_plus_b(cache_nDynVertX3, m_Uc_device, cache_nDynVertX3, nDynVert);
 					op_scale(cache_nDynVertX3, m_dt_inv, solver_data_device->p_device, nDynVert);
 
-					copy_thrustvector2mat(solver_data_device->p_device, p, nDynVert);
+					 //copy_thrustvector2mat(solver_data_device->p_device, p, nDynVert);
 
 					if (need_recompute_Scc) {
 						//ADMMSolverFull_RL_damping::compute_Scc();
@@ -401,7 +401,7 @@ void ADMMParallelSolver::step() {
 					//ADMMSolverFull_RL_damping::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
 					ADMMParallelSolver::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
 
-					 copy_mat2thrustvector(p, solver_data_device->p_device, nDynVert);
+					  //copy_mat2thrustvector(p, solver_data_device->p_device, nDynVert);
 					
 					 /*if (need_recompute_Scc) {
 						ADMMSolverFull_RL_damping::compute_Scc();
@@ -569,8 +569,8 @@ void ADMMParallelSolver::project_feasible(ADU::Matf_X3& p,
 	ProximalQuery::ContactInfoList& contacts,
 	ADU::Real mu, size_t max_GS_iter)
 {
-	ADMMParallelSolver::_project_feasible_impl();
-	ADMMParallelSolver::_project_feasible_plain(p, contacts, mu, max_GS_iter);
+	 ADMMParallelSolver::_project_feasible_impl();
+	//ADMMParallelSolver::_project_feasible_plain(p, contacts, mu, max_GS_iter);
 	//ADMMParallelSolver::_project_feasible_plain_2(p, contacts, mu, max_GS_iter);
 }
 
@@ -578,7 +578,7 @@ void ADMMParallelSolver::_project_feasible_impl()
 {
 	using namespace ADU;
 	size_t nContact = bvh->h_cpNum;
-
+	project_impl(bvh, ct_data_device.get(), solver_data_device.get(), gs_max_iter, static_vert_begin, mu, m_nVert);
 }
 
 void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
@@ -593,7 +593,16 @@ void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
 	// admm: delta_u
 
 	size_t nContact = contacts.size();
-	tbb::parallel_for(tbb::blocked_range<size_t>(0, nContact), [&](const tbb::blocked_range<size_t>& r) {
+	for (int ci = 0; ci < nContact; ci++) {
+		const auto& ct = contacts[ci];
+		for (size_t k = 0; k < 4; k++) {
+			size_t j = ct.vinds[k];
+			if (j < static_vert_begin) {
+				p.row(j) += Gamma_c[ci](k) * ct.r_c;
+			}
+		}
+	}
+	/*tbb::parallel_for(tbb::blocked_range<size_t>(0, nContact), [&](const tbb::blocked_range<size_t>& r) {
 		for (int ci = r.begin(); ci < r.end(); ci++) {
 			const auto& ct = contacts[ci];
 			for (size_t k = 0; k < 4; k++) {
@@ -603,7 +612,7 @@ void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
 				}
 			}
 		}
-		});
+		});*/
 
 
 	// pure Jacobi

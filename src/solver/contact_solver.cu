@@ -14,6 +14,80 @@
 
 using namespace  ADU;
 
+// Addition
+__host__ __device__ inline float3 operator+(const float3& a, const float3& b) {
+    return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
+}
+
+// Subtraction
+__host__ __device__ inline float3 operator-(const float3& a, const float3& b) {
+    return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+
+// Scalar Multiplication
+__host__ __device__ inline float3 operator*(const float3& a, float scalar) {
+    return make_float3(a.x * scalar, a.y * scalar, a.z * scalar);
+}
+
+__host__ __device__ inline float3 operator*(float scalar, const float3& a) {
+    return make_float3(a.x * scalar, a.y * scalar, a.z * scalar);
+}
+
+// Dot Product
+__host__ __device__ inline float dot(const float3& a, const float3& b) {
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+__host__ __device__ inline float fnorm(const float3& v) {
+    return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+
+// Define a traits struct to infer the correct element type
+template <typename T>
+struct element_type;
+
+// Specializations for float3 and float4
+template <>
+struct element_type<float3> {
+    using type = float;
+};
+
+template <>
+struct element_type<float4> {
+    using type = float;
+};
+
+// Specialization for int4
+template <>
+struct element_type<int4> {
+    using type = int;
+};
+
+// Universal function for retrieving the i-th element with automatic type deduction
+template <typename T>
+__host__ __device__ inline typename element_type<T>::type& ele(T& vec, int i) {
+    return reinterpret_cast<typename element_type<T>::type*>(&vec)[i];
+}
+
+// Const version for read-only access
+template <typename T>
+__host__ __device__ inline const typename element_type<T>::type& ele(const T& vec, int i) {
+    return reinterpret_cast<const typename element_type<T>::type*>(&vec)[i];
+}
+
+
+__host__ __device__ inline float3 load_float3(const ADU::Real* ptr) {
+    return make_float3((float)ptr[0], (float)ptr[1], (float)ptr[2]);
+}
+
+
+__device__ inline void atomicAdd_F3(float3* address, const float3& value) {
+    atomicAdd(&(address->x), value.x);
+    atomicAdd(&(address->y), value.y);
+    atomicAdd(&(address->z), value.z);
+}
+
 __global__ void updateContactCounts(const int4* contacts, int* vi_ct_nums, int nContact) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < nContact) {
@@ -199,14 +273,121 @@ void compute_Scc_impl_cu(const BVH_GPU* bvh,
     }*/
 }
 
-void project_impl(const BVH_GPU* bvh, ContactDataDevice* ct_data_device, CuSolverData* solver_data, int max_iter) 
+
+__global__ void update_p_kernel(const int nContact, const int4* d_contact, const float4* d_Gamma_c, ADU::Real* d_p, float3* d_r_c, int static_vert_begin)
 {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (idx < nContact) 
+    {
+        const int4& ct = d_contact[idx];
+        const float4& gamma_c = d_Gamma_c[idx];
+        for (int vid = 0; vid < 4; vid++) {
+            int vind = *((int*)&ct + vid);  
+            if (vind < static_vert_begin) {
+                float gamma_cvi = *((float*)&gamma_c + vid);
+                float3 r_c = gamma_cvi * d_r_c[idx];
+                atomicAdd(&d_p[vind] + 0, r_c.x);
+                atomicAdd(&d_p[vind] + 1, r_c.y);
+                atomicAdd(&d_p[vind] + 2, r_c.z);
+            }
+        }
+    }
+}
+
+__global__ void get_delta_u_kernel(const int nContact, const ADU::Real mu,
+    const int4* d_contact, const float4* d_bary, const ADU::Real* d_p, const float3* d_K_c, const float3* d_normal,
+    float3* d_delta_u, float3* d_r_c
+) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (idx < nContact)
+    {
+        float3 u{};
+        const int4& ct = d_contact[idx];
+        //int vinds[4]{ ct.x, ct.y, ct.z, ct.w };
+        u = ct.x * load_float3(d_p + 3 * ct.x) + 
+            ct.y * load_float3(d_p + 3 * ct.y) + 
+            ct.z * load_float3(d_p + 3 * ct.z) + 
+            ct.w * load_float3(d_p + 3 * ct.w);
+
+        u = u + d_K_c[idx];
+        const float3& normal = d_normal[idx];
+        float3 u_star = u - d_r_c[idx];
+        float u_star_N = dot(normal, u_star);
+        float3 u_star_T = u_star - u_star_N * normal;
+
+        float tau, alpha;
+        if (u_star_N < 0) {
+            tau = fnorm(u_star);
+            alpha = -mu * u_star_N;
+            u_star_N = 0;
+            if (tau <= alpha) {
+                u_star_T = float3{ 0,0,0 };
+            }
+            else {
+                u_star_T = (1.0f - alpha / tau) * u_star_T;
+            }
+        }
+
+        float3 u_star_new = u_star_N * normal + u_star_T;
+        d_delta_u[idx] = u_star_new - u;
+        d_r_c[idx] = d_r_c[idx] + d_delta_u[idx];
+        //printf("(%f %f %f)", d_delta_u[idx].x, d_delta_u[idx].y, d_delta_u[idx].z);
+
+    }
+}
+
+__global__ void update_p(const int nVert, const int* involved_cid, const int* start, const ADU::Real* gamma_i, const float3* delta_u, ADU::Real* d_p) 
+{
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (idx < nVert)
+    {
+        float3 delta_pi{ 0,0,0 };
+        int start_idx = start[idx];
+        int end_idx = start[idx + 1]; 
+        //printf("%d %d, ", start_idx, end_idx); // empty BUG!
+        for (int i = start_idx; i < end_idx; i++) {
+            int cid = involved_cid[i];
+            delta_pi = delta_pi + delta_u[cid] * gamma_i[i];
+        }
+        //if (delta_pi.y != 0) printf("(%d: %f %f %f) ", idx, delta_pi.x, delta_pi.y, delta_pi.z);
+        d_p[idx * 3 + 0] += delta_pi.x;
+        d_p[idx * 3 + 1] += delta_pi.y;
+        d_p[idx * 3 + 2] += delta_pi.z;
+    }
+    
+}
+
+
+void project_impl(const BVH_GPU* bvh, ContactDataDevice* ct_data_device, CuSolverData* solver_data, int max_iter, int static_vert_begin, ADU::Real mu, int nVert)
+{
+    int nContact = bvh->h_cpNum;
     // kernel 1: p + r_c
+    int blockSize = 256; // This can be adjusted
+    int numBlocks = (nContact + blockSize - 1) / blockSize;
+    update_p_kernel 
+        << <numBlocks, blockSize >> > 
+        (nContact, bvh->d_collisonPairs, thrust::raw_pointer_cast(ct_data_device->d_Gamma_c.data()),
+        thrust::raw_pointer_cast(solver_data->p_device.data()), thrust::raw_pointer_cast(ct_data_device->d_r_c.data()), static_vert_begin);
 
     for (int i = 0; i < max_iter; i++) {
         // kernel 2: delta_u
+        get_delta_u_kernel
+        << <numBlocks, blockSize >> >
+        (nContact, mu, bvh->d_collisonPairs, thrust::raw_pointer_cast(ct_data_device->d_bary.data()), 
+            thrust::raw_pointer_cast(solver_data->p_device.data()), thrust::raw_pointer_cast(ct_data_device->d_K_c.data()), 
+            thrust::raw_pointer_cast(ct_data_device->d_normal.data()), thrust::raw_pointer_cast(ct_data_device->d_delta_u.data()), 
+            thrust::raw_pointer_cast(ct_data_device->d_r_c.data()));
 
         // kernel 3: update p
-
+        blockSize = 256; // This can be adjusted
+        int numBlocks = (nVert + blockSize - 1) / blockSize;
+        update_p
+            << <numBlocks, blockSize >> >
+        (nVert, thrust::raw_pointer_cast(ct_data_device->d_involved_cid.data()), 
+            thrust::raw_pointer_cast(ct_data_device->d_start_idx.data()), thrust::raw_pointer_cast(ct_data_device->d_Gamma_i.data()), 
+            thrust::raw_pointer_cast(ct_data_device->d_delta_u.data()), thrust::raw_pointer_cast(solver_data->p_device.data()));
     }
 }

@@ -23,4 +23,4 @@ void convert_DCD_info(const BVH_GPU* bvh,
 // bool: pair_type
 
 
-void project_impl(const BVH_GPU* bvh, ContactDataDevice* ct_data_device, CuSolverData* solver_data);
+void project_impl(const BVH_GPU* bvh, ContactDataDevice* ct_data_device, CuSolverData* solver_data, int max_iter, int static_vert_begin, ADU::Real mu, int nVert);
