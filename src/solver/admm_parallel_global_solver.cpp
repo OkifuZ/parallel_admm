@@ -399,7 +399,8 @@ void ADMMParallelSolver::step() {
 						need_recompute_Scc = false;
 					}
 					//ADMMSolverFull_RL_damping::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
-					ADMMParallelSolver::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
+					//ADMMParallelSolver::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
+					ADMMParallelSolver::project_feasible_parallel();
 
 					  //copy_mat2thrustvector(p, solver_data_device->p_device, nDynVert);
 					
@@ -565,9 +566,7 @@ void ADMMParallelSolver::Jacobi_global(int iter_cnt) {
 
 }
 
-void ADMMParallelSolver::project_feasible(ADU::Matf_X3& p,
-	ProximalQuery::ContactInfoList& contacts,
-	ADU::Real mu, size_t max_GS_iter)
+void ADMMParallelSolver::project_feasible_parallel()
 {
 	 ADMMParallelSolver::_project_feasible_impl();
 	//ADMMParallelSolver::_project_feasible_plain(p, contacts, mu, max_GS_iter);
@@ -698,8 +697,8 @@ void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
 // input: contacts
 // output: Gamma_c, Gamma_i, involved_cid, K_c, delta_u
 void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
-	/*compute_Scc_impl();
-	return;*/
+	compute_Scc_impl();
+	return;
 
 	using namespace ADU;
 	auto& contacts = prox_query->contact_info_list;

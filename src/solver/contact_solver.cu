@@ -139,7 +139,7 @@ __global__ void convert_DCD_info_kernel(const int nContact, const Result<ADU::Re
             float4{ 1 - (float)res.barycentric[0], (float)res.barycentric[0], (float)res.barycentric[1] - 1, -(float)res.barycentric[1] } :
             float4{ 1, -(float)res.barycentric[0], -(float)res.barycentric[1], -(float)res.barycentric[2] };
 
-        Vecf_3 normal = (res.barycentric[2] < -1) ? (v1 - v0).cross(v3 - v2).normalized() : normal = (v2 - v1).cross(v3 - v1).normalized();
+        Vecf_3 normal = (pair_tp == 0) ? (v1 - v0).cross(v3 - v2).normalized() : (v2 - v1).cross(v3 - v1).normalized();
         Vecf_3 h = res.closest[0] - res.closest[1];
         Real h_CN = h.dot(normal);
         if (h_CN < 0) {
@@ -197,16 +197,18 @@ __global__ void compute_Scc_kernel(const int4* d_contacts, const Result<ADU::Rea
             bary.y * bary.y * d_v_ct_nums[c.y] * d_contact_W_list[c.y] +
             bary.z * bary.z * d_v_ct_nums[c.z] * d_contact_W_list[c.z] +
             bary.w + bary.w * d_v_ct_nums[c.w] * d_contact_W_list[c.w];
-
+        //printf("%f %f %f %f\n", d_contact_W_list[c.x], d_contact_W_list[c.y], d_contact_W_list[c.z], d_contact_W_list[c.w]);
         for (int vi = 0; vi < 4; vi++) {
-            int vind = *((int*)(&c) + vi);
+            //int vind = *((int*)(&c) + vi);
+            int vind = ele(c, vi);
             ADU::Real  w = d_contact_W_list[vind];
             int v_coffset = atomicAdd(&d_v_ct_count[vind], 1);
             int v_cidx = d_start_idx[vind] + v_coffset;
             
-            *((float*)&(d_Gamma_c[idx]) + vi) = bary.x / (Sc * w);
+            ele(d_Gamma_c[idx], vi) = ele(bary, vi) / (Sc * w);
+            //*((float*)&(d_Gamma_c[idx]) + vi) = ele(bary, vi) / (Sc * w);
             // no need to check, 1e7 is large enough
-            d_Gamma_i[v_cidx] = bary.x / (Sc * w);
+            d_Gamma_i[v_cidx] = ele(bary, vi) / (Sc * w);
             d_involved_cid[v_cidx] = idx;
         }
        
@@ -216,9 +218,10 @@ __global__ void compute_Scc_kernel(const int4* d_contacts, const Result<ADU::Rea
         const int v_cidx_4 = atomicAdd(&d_v_ct_count[c.w], 1); d_involved_cid[d_start_idx[c.w] + v_cidx_4] = idx;*/
 
         // TODO K_c
-        float k_c = m_dt_inv * gamma * d_h_cN[idx];
-        const auto& norm = d_noraml[idx];
-        d_K_c[idx] = float3{ k_c * norm.x, k_c * norm.y, k_c * norm.z };
+        //float k_c = m_dt_inv * gamma * d_h_cN[idx];
+        //const auto& norm = d_noraml[idx];
+        d_K_c[idx] = m_dt_inv * gamma * d_h_cN[idx] * d_noraml[idx];
+        //printf("%f %f %f, ", d_noraml[idx].x, d_noraml[idx].y, d_noraml[idx].z);
     }
 }
 
@@ -261,11 +264,11 @@ void compute_Scc_impl_cu(const BVH_GPU* bvh,
         thrust::raw_pointer_cast(ct_data_device->d_Gamma_c.data()), thrust::raw_pointer_cast(ct_data_device->d_K_c.data()), thrust::raw_pointer_cast(ct_data_device->d_delta_u.data())
         );
 
-    std::vector<int> v_ct_count(ct_data_device->d_vi_ct_nums.size(), 0);
+    /*std::vector<int> v_ct_count(ct_data_device->d_vi_ct_nums.size(), 0);
     std::vector<int> v_ct_num(ct_data_device->d_vi_ct_nums.size(), 0);
     thrust::copy(ct_data_device->d_vi_ct_count.begin(), ct_data_device->d_vi_ct_count.end(), v_ct_count.begin());
     thrust::copy(ct_data_device->d_vi_ct_nums.begin(), ct_data_device->d_vi_ct_nums.end(), v_ct_num.begin());
-    /*for (int i = 0; i < v_ct_count.size(); i++) {
+    for (int i = 0; i < v_ct_count.size(); i++) {
         if (v_ct_num[i] != v_ct_count[i]) {
             printf("%d %d\n", v_ct_count[i], v_ct_num[i]);
             printf("error compute_Scc_impl_cu involve_cid! vid %d\n", i);
@@ -283,13 +286,13 @@ __global__ void update_p_kernel(const int nContact, const int4* d_contact, const
         const int4& ct = d_contact[idx];
         const float4& gamma_c = d_Gamma_c[idx];
         for (int vid = 0; vid < 4; vid++) {
-            int vind = *((int*)&ct + vid);  
+            int vind = ele(ct, vid);  
             if (vind < static_vert_begin) {
                 float gamma_cvi = *((float*)&gamma_c + vid);
                 float3 r_c = gamma_cvi * d_r_c[idx];
-                atomicAdd(&d_p[vind] + 0, r_c.x);
-                atomicAdd(&d_p[vind] + 1, r_c.y);
-                atomicAdd(&d_p[vind] + 2, r_c.z);
+                atomicAdd(&d_p[vind * 3 + 0], r_c.x);
+                atomicAdd(&d_p[vind * 3 + 1], r_c.y);
+                atomicAdd(&d_p[vind * 3 + 2], r_c.z);
             }
         }
     }
@@ -347,12 +350,11 @@ __global__ void update_p(const int nVert, const int* involved_cid, const int* st
         float3 delta_pi{ 0,0,0 };
         int start_idx = start[idx];
         int end_idx = start[idx + 1]; 
-        //printf("%d %d, ", start_idx, end_idx); // empty BUG!
+        //if (start_idx != end_idx) printf("%d: %d %d, ", idx, start_idx, end_idx); // empty BUG!
         for (int i = start_idx; i < end_idx; i++) {
             int cid = involved_cid[i];
             delta_pi = delta_pi + delta_u[cid] * gamma_i[i];
         }
-        //if (delta_pi.y != 0) printf("(%d: %f %f %f) ", idx, delta_pi.x, delta_pi.y, delta_pi.z);
         d_p[idx * 3 + 0] += delta_pi.x;
         d_p[idx * 3 + 1] += delta_pi.y;
         d_p[idx * 3 + 2] += delta_pi.z;

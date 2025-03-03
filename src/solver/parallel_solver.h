@@ -95,15 +95,15 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	ADU::Matf_X3 b_curr;
 
 
-	void project_feasible(ADU::Matf_X3& p,
+	/*void project_feasible(ADU::Matf_X3& p,
 		ProximalQuery::ContactInfoList& contacts,
-		ADU::Real mu, size_t max_jacobi_iter) override;
+		ADU::Real mu, size_t max_jacobi_iter) override;*/
 
 	void _project_feasible_plain(ADU::Matf_X3& p,
 		ProximalQuery::ContactInfoList& contacts,
 		ADU::Real mu, size_t max_jacobi_iter) override;
 
-
+	void project_feasible_parallel();
 	void _project_feasible_impl();
 
 	std::vector<tbb::concurrent_vector<ADU::Real>> Gamma_i;
