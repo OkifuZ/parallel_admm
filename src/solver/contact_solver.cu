@@ -112,12 +112,12 @@ void computeContactCountsWithAtomic(const int4* d_contacts, thrust::device_vecto
     updateContactCounts << <numBlocks, blockSize >> > (d_contacts, thrust::raw_pointer_cast(d_vi_ct_nums.data()), nContact);
     cudaDeviceSynchronize(); // Ensure the kernel finishes
 
-    std::vector<int> v_ct_num(d_vi_ct_nums.size(), 0);
+    /*std::vector<int> v_ct_num(d_vi_ct_nums.size(), 0);
     thrust::copy(d_vi_ct_nums.begin(), d_vi_ct_nums.end(), v_ct_num.begin());
     for (int i = 0; i < d_vi_ct_nums.size(); i++) {
         printf("%d ", v_ct_num[i]);
     }
-    printf("\n");
+    printf("\n");*/
 }
 
 
@@ -243,12 +243,13 @@ void compute_Scc_impl_cu(const BVH_GPU* bvh,
 
     ct_data_device->d_start_idx.resize(ct_data_device->d_vi_ct_nums.size() + 1, 0);
     thrust::inclusive_scan(ct_data_device->d_vi_ct_nums.begin(), ct_data_device->d_vi_ct_nums.end(), ct_data_device->d_start_idx.begin() + 1);
-    std::vector<int> v_ct_num(ct_data_device->d_vi_ct_nums.size(), 0);
+    
+    /*std::vector<int> v_ct_num(ct_data_device->d_vi_ct_nums.size(), 0);
     thrust::copy(ct_data_device->d_vi_ct_nums.begin(), ct_data_device->d_vi_ct_nums.end(), v_ct_num.begin());
     for (int i = 0; i < ct_data_device->d_vi_ct_nums.size(); i++) {
         printf("%d ", v_ct_num[i]);
     }
-    printf("\n");
+    printf("\n");*/
     int total_size{};
      total_size = ct_data_device->d_start_idx.back(); // this should work and indeed work, but use the following line for safety (mentally)
     //CUDA_SAFE_CALL(cudaMemcpy((void*)&total_size, thrust::raw_pointer_cast(ct_data_device->d_start_idx.data() + ct_data_device->d_start_idx.size() - 1), sizeof(int), cudaMemcpyDeviceToHost));
