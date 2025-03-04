@@ -48,7 +48,7 @@ broad.strategy = 'rebuild'
 # density = 4.0
 
 [[mesh]]
-f.path = 'flat/flat.obj'
+f.path = 'flat/flat_v134.obj'
 f.type = 'tri'
 f.color = 0
 t.scale = 2.5
@@ -62,7 +62,7 @@ k.use_limit = false
 density = 4.0
 
 [[mesh]]
-f.path = 'flat/flat.obj'
+f.path = 'flat/flat_v134.obj'
 f.type = 'tri'
 f.color = 1
 t.scale = 2.5
