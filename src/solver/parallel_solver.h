@@ -135,7 +135,7 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	// gamma_i, involved_cid needs special care!!!
 
 	virtual void compute_Scc(bool is_XPBD = false);
-
+	void compute_Scc_parallel();
 
 	/*thrust::device_vector<ADU::Real> d_Gamma_i;
 	thrust::device_vector<int> d_start_idx;

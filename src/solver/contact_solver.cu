@@ -174,7 +174,12 @@ void convert_DCD_info(const BVH_GPU* bvh,
     ct_data_device->d_h_cN.resize(nContact, 0);
     ct_data_device->d_pair_type.resize(nContact, 0);
 
-    
+    /*thrust::fill(ct_data_device->d_bary.begin(), ct_data_device->d_bary.end(), float4{ 0 });
+    thrust::fill(ct_data_device->d_normal.begin(), ct_data_device->d_normal.end(), float3{ 0 });
+    thrust::fill(ct_data_device->d_point.begin(), ct_data_device->d_point.end(), float3{ 0 });
+    thrust::fill(ct_data_device->d_h_cN.begin(), ct_data_device->d_h_cN.end(), 0);
+    thrust::fill(ct_data_device->d_pair_type.begin(), ct_data_device->d_pair_type.end(), 0);*/
+
     // Launch kernel with a sufficient number of threads per block
     int blockSize = 256; // This can be adjusted
     int numBlocks = (nContact + blockSize - 1) / blockSize;
@@ -201,22 +206,32 @@ __global__ void compute_Scc_kernel(const int4* d_contacts, const Result<ADU::Rea
     if (idx < nContact) {
         const auto& c = d_contacts[idx];
         const float4& bary = d_bary[idx];
-        Real Sc = epslon +
-            bary.x * bary.x * d_v_ct_nums[c.x] * d_contact_W_inv_list[c.x] +
-            bary.y * bary.y * d_v_ct_nums[c.y] * d_contact_W_inv_list[c.y] +
-            bary.z * bary.z * d_v_ct_nums[c.z] * d_contact_W_inv_list[c.z] +
-            bary.w + bary.w * d_v_ct_nums[c.w] * d_contact_W_inv_list[c.w];
+        float Sc = epslon + 
+            bary.x * bary.x  * d_contact_W_inv_list[c.x] * d_v_ct_nums[c.x] +
+            bary.y * bary.y  * d_contact_W_inv_list[c.y] * d_v_ct_nums[c.y] +
+            bary.z * bary.z * d_contact_W_inv_list[c.z] * d_v_ct_nums[c.z] +
+            bary.w + bary.w * d_contact_W_inv_list[c.w] * d_v_ct_nums[c.w];
+        
+        printf("(%d %f) ", idx, Sc);
+        /*printf("(%d %.8f %.8f %.8f %.8f) ", idx, d_contact_W_inv_list[c.x], 
+            d_contact_W_inv_list[c.y], 
+            d_contact_W_inv_list[c.z], 
+            d_contact_W_inv_list[c.w]);*/
+        //printf("(%d %d %d %d %d) ", idx, d_v_ct_nums[c.x], d_v_ct_nums[c.y], d_v_ct_nums[c.z], d_v_ct_nums[c.w]);
         //printf("%f %f %f %f\n", d_contact_W_list[c.x], d_contact_W_list[c.y], d_contact_W_list[c.z], d_contact_W_list[c.w]);
         //if (ele(c, 0) != c.x || ele(c, 0) != c.y || ele(c, 2) != c.z || ele(c, 3) != c.w) printf("herehit, \n");
         for (int vi = 0; vi < 4; vi++) {
             //int vind = *((int*)(&c) + vi);
             int vind = ele(c, vi);
-            ADU::Real  w = d_contact_W_list[vind];
+            float w = d_contact_W_list[vind];
             int v_coffset = atomicAdd(&d_v_ct_count[vind], 1);
             int v_cidx = d_start_idx[vind] + v_coffset;
             //printf("%d; ", v_cidx);
             
-            ele(d_Gamma_c[idx], vi) = ele(bary, vi) / (Sc * w);
+            float4& gamma_c = d_Gamma_c[idx];
+            
+            //ele(gamma_c, vi) = ele(bary, vi) / (Sc * w);
+            *((float*)(d_Gamma_c + idx) + vi) = ele(bary, vi) / (Sc * w);
             //*((float*)&(d_Gamma_c[idx]) + vi) = ele(bary, vi) / (Sc * w);
             // no need to check, 1e7 is large enough
             d_Gamma_i[v_cidx] = ele(bary, vi) / (Sc * w);
@@ -243,9 +258,10 @@ void compute_Scc_impl_cu(const BVH_GPU* bvh,
     thrust::fill(ct_data_device->d_Gamma_c.begin(), ct_data_device->d_Gamma_c.end(), float4{ 0,0,0 ,0});
     thrust::fill(ct_data_device->d_K_c.begin(), ct_data_device->d_K_c.end(), float3{ 0,0,0 });
     thrust::fill(ct_data_device->d_delta_u.begin(), ct_data_device->d_delta_u.end(), float3{ 0,0,0 });
-    thrust::fill(ct_data_device->d_r_c.begin(), ct_data_device->d_r_c.end(), float3{0,0,0});
+    thrust::fill(ct_data_device->d_r_c.begin(), ct_data_device->d_r_c.end(), float3{ 0,0,0 });
 
     ct_data_device->d_start_idx.resize(ct_data_device->d_vi_ct_nums.size() + 1, 0);
+    thrust::fill(ct_data_device->d_start_idx.begin(), ct_data_device->d_start_idx.end(), 0);
     thrust::inclusive_scan(ct_data_device->d_vi_ct_nums.begin(), ct_data_device->d_vi_ct_nums.end(), ct_data_device->d_start_idx.begin() + 1);
     
     /*std::vector<int> v_ct_num(ct_data_device->d_vi_ct_nums.size(), 0);
@@ -257,8 +273,7 @@ void compute_Scc_impl_cu(const BVH_GPU* bvh,
     int total_size{};
      total_size = ct_data_device->d_start_idx.back(); // this should work and indeed work, but use the following line for safety (mentally)
     //CUDA_SAFE_CALL(cudaMemcpy((void*)&total_size, thrust::raw_pointer_cast(ct_data_device->d_start_idx.data() + ct_data_device->d_start_idx.size() - 1), sizeof(int), cudaMemcpyDeviceToHost));
-     printf("total size: %d, ncontact: %d \n", total_size, nContact);
-
+     //printf("total size: %d, ncontact: %d \n", total_size, nContact);
 
     ct_data_device->d_vi_ct_count.resize(ct_data_device->d_vi_ct_nums.size(), 0);
     ct_data_device->d_involved_cid.resize(total_size, 0);
@@ -369,12 +384,12 @@ __global__ void get_delta_u_kernel(const int nContact, const ADU::Real mu,
             tau = fnorm(u_star_T);
             alpha = -mu * u_star_N;
             u_star_N = 0;
-            if (tau <= alpha) {
+            /*if (tau <= alpha) {
                 u_star_T = float3{ 0,0,0 };
             }
             else {
                 u_star_T = (1.0f - alpha / tau) * u_star_T;
-            }
+            }*/
         }
 
         float3 u_star_new = u_star_N * normal + u_star_T;

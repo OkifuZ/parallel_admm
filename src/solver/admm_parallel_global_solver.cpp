@@ -261,8 +261,8 @@ void ADMMParallelSolver::precompute() {
 	resizeThrust<int>(ct_data_device->d_vi_ct_nums, m_nVert, 0);
 	resizeThrust<ADU::Real>(ct_data_device->d_contact_W_list, m_nVert, 0);
 	resizeThrust<ADU::Real>(ct_data_device->d_contact_W_inv_list, m_nVert, 0);
-	copy_vec2thrustvector(contact_w_list, ct_data_device->d_contact_W_list, nDynVert);
-	copy_vec2thrustvector(contact_w_inv_list, ct_data_device->d_contact_W_inv_list, nDynVert);
+	copy_vec2thrustvector(contact_w_list, ct_data_device->d_contact_W_list, m_nVert);
+	copy_vec2thrustvector(contact_w_inv_list, ct_data_device->d_contact_W_inv_list, m_nVert);
 }
 
 
@@ -346,7 +346,7 @@ void ADMMParallelSolver::step() {
 			// TODO: will this actually work?
 			//bvh->unique_contactInfo();
 			convert_DCD_info(bvh, solver_data_device->x_curr_device, ct_data_device.get());
-			//bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
+			bvh->convert_contactInfo_device2host(prox_query->contact_info_list, x_curr);
 
 			need_recompute_Scc = true;
 
@@ -393,18 +393,19 @@ void ADMMParallelSolver::step() {
 					op_a_plus_b(cache_nDynVertX3, m_Uc_device, cache_nDynVertX3, nDynVert);
 					op_scale(cache_nDynVertX3, m_dt_inv, solver_data_device->p_device, nDynVert);
 
-					 //copy_thrustvector2mat(solver_data_device->p_device, p, nDynVert);
+					copy_thrustvector2mat(solver_data_device->p_device, p, nDynVert);
 
 					if (need_recompute_Scc) {
 						//ADMMSolverFull_RL_damping::compute_Scc();
 						ADMMParallelSolver::compute_Scc();
+						ADMMParallelSolver::compute_Scc_parallel();
 						need_recompute_Scc = false;
 					}
 					//ADMMSolverFull_RL_damping::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
-					//ADMMParallelSolver::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
-					ADMMParallelSolver::project_feasible_parallel();
+					ADMMParallelSolver::project_feasible(p, prox_query->contact_info_list, this->mu, gs_max_iter);
+					// ADMMParallelSolver::project_feasible_parallel();
 
-					  //copy_mat2thrustvector(p, solver_data_device->p_device, nDynVert);
+					  copy_mat2thrustvector(p, solver_data_device->p_device, nDynVert);
 					
 					 /*if (need_recompute_Scc) {
 						ADMMSolverFull_RL_damping::compute_Scc();
@@ -579,7 +580,7 @@ void ADMMParallelSolver::_project_feasible_impl()
 {
 	using namespace ADU;
 	size_t nContact = bvh->h_cpNum;
-	project_impl(bvh, ct_data_device.get(), solver_data_device.get(), gs_max_iter, static_vert_begin, mu, m_nVert);
+	project_impl(bvh, ct_data_device.get(), solver_data_device.get(), gs_max_iter, static_vert_begin, mu, static_vert_begin);
 }
 
 void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
@@ -694,13 +695,15 @@ void ADMMParallelSolver::_project_feasible_plain(ADU::Matf_X3& p,
 }
 
 
-
+void  ADMMParallelSolver::compute_Scc_parallel() {
+	compute_Scc_impl();
+	return;
+}
 
 // input: contacts
 // output: Gamma_c, Gamma_i, involved_cid, K_c, delta_u
 void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
-	compute_Scc_impl();
-	return;
+	
 
 	using namespace ADU;
 	auto& contacts = prox_query->contact_info_list;
@@ -742,8 +745,16 @@ void ADMMParallelSolver::compute_Scc(bool is_XPBD) {
 				size_t vi = ct.vinds[i];
 				Sc += ct.bary[i] * ct.bary[i] * contact_w_inv_list(vi) * vi_ct_nums[vi];
 			}
+			printf("[%d %f] ", ci, Sc);
+			//printf("[%d %f %f %f %f] ", ci, ct.bary[0], ct.bary[1], ct.bary[2], ct.bary[3]);
+			/*printf("[%d %.8f %.8f %.8f %.8f] ", ci, contact_w_inv_list(ct.vinds[0]), 
+				contact_w_inv_list(ct.vinds[1]), contact_w_inv_list(ct.vinds[2]), contact_w_inv_list(ct.vinds[3]));*/
+			//printf("[%d %d %d %d %d)] ", ci, vi_ct_nums[ct.vinds[0]], vi_ct_nums[ct.vinds[1]], vi_ct_nums[ct.vinds[2]], vi_ct_nums[ct.vinds[3]]);
+
 			for (int i = 0; i < 4; i++) {
 				int vi = ct.vinds[i];
+				/*Gamma_c[ci](i) = ct.bary[i] / (Sc * contact_w_list(vi));
+				Gamma_i[vi].emplace_back(ct.bary[i] / (Sc * contact_w_list(vi)));*/
 				if (contact_w_list(ct.vinds[i]) > 1e7_r) {
 					Gamma_c[ci](i) = 0;
 					Gamma_i[vi].emplace_back(0);
@@ -773,4 +784,45 @@ void ADMMParallelSolver::compute_Scc_impl() {
 	compute_Scc_impl_cu(bvh,
 		nContact, this->m_dt_inv, gamma, epsilon,
 		ct_data_device.get());
+
+	// copy gamma_i, gamma_c, k_c, involved_cid to CPU
+
+	std::vector<int> iv_cid(ct_data_device->d_involved_cid.size(), 0);
+	std::vector<ADU::Real> gm_i(ct_data_device->d_involved_cid.size(), 0);
+	std::vector<int> st_cid(ct_data_device->d_start_idx.size(), 0);
+
+	thrust::copy(ct_data_device->d_involved_cid.begin(), ct_data_device->d_involved_cid.end(), iv_cid.begin());
+	thrust::copy(ct_data_device->d_Gamma_i.begin(), ct_data_device->d_Gamma_i.end(), gm_i.begin());
+	thrust::copy(ct_data_device->d_start_idx.begin(), ct_data_device->d_start_idx.end(), st_cid.begin());
+	for (int i = 0; i < st_cid.size() - 1; i++) {
+		int st = st_cid[i];
+		int ed = st_cid[i+1];
+		involved_cid[i].clear();
+		Gamma_i[i].clear();
+		for (int j = st; j < ed; j++) {
+			involved_cid[i].push_back(iv_cid[j]);
+			Gamma_i[i].push_back(gm_i[j]);
+		}
+	}
+
+	std::vector<float4> gm_c(nContact, float4{});
+	std::vector<float3> kc_m(nContact, float3{});
+	thrust::copy(ct_data_device->d_Gamma_c.begin(), ct_data_device->d_Gamma_c.end(), gm_c.begin());
+	thrust::copy(ct_data_device->d_K_c.begin(), ct_data_device->d_K_c.end(), kc_m.begin());
+	//Gamma_c.clear();
+	//K_c.clear();
+	for (int i = 0; i < nContact; i++) {
+		//Gamma_c.push_back({ gm_c[i].x, gm_c[i].y, gm_c[i].z, gm_c[i].w });
+		//K_c.push_back({ kc_m [i].x, kc_m [i].y, kc_m [i].z});
+	}
+
+	//for (int i = 0; i < nContact; i++) {
+	//	printf("[(%f, %f, %f, %f):(%f, %f, %f, %f)]  ", Gamma_c[i].x(), Gamma_c[i].y(), Gamma_c[i].z(), Gamma_c[i].w(), gm_c[i].x, gm_c[i].y, gm_c[i].z, gm_c[i].w);
+	//	//printf("[(%f, %f, %f):(%f, %f, %f)]  ", K_c[i].x(), K_c[i].y(), K_c[i].z(), kc_m[i].x, kc_m[i].y, kc_m[i].z);
+	//}
+	
+
+	vi_ct_nums.resize(m_nVert);
+	thrust::copy(ct_data_device->d_vi_ct_nums.begin(), ct_data_device->d_vi_ct_nums.end(), vi_ct_nums.begin());
+
 }
