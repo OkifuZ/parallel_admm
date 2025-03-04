@@ -259,8 +259,10 @@ void ADMMParallelSolver::precompute() {
 
 
 	resizeThrust<int>(ct_data_device->d_vi_ct_nums, m_nVert, 0);
-	resizeThrust<ADU::Real>(ct_data_device->d_contact_W_list, nDynVert, 0);
+	resizeThrust<ADU::Real>(ct_data_device->d_contact_W_list, m_nVert, 0);
+	resizeThrust<ADU::Real>(ct_data_device->d_contact_W_inv_list, m_nVert, 0);
 	copy_vec2thrustvector(contact_w_list, ct_data_device->d_contact_W_list, nDynVert);
+	copy_vec2thrustvector(contact_w_inv_list, ct_data_device->d_contact_W_inv_list, nDynVert);
 }
 
 

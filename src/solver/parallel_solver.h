@@ -26,6 +26,7 @@ public:
 	thrust::device_vector<int> d_involved_cid;
 
 	thrust::device_vector<ADU::Real> d_contact_W_list;
+	thrust::device_vector<ADU::Real> d_contact_W_inv_list;
 
 	ContactDataDevice(int max_Vert, int max_Contact) {
 		// size of vert
@@ -33,6 +34,7 @@ public:
 		d_vi_ct_nums.reserve(max_Vert + 10);
 		d_start_idx.reserve(max_Vert + 10);
 		d_contact_W_list.reserve(max_Vert + 10);
+		d_contact_W_inv_list.reserve(max_Vert + 10);
 
 		// size of contact
 		d_bary.reserve(max_Contact);

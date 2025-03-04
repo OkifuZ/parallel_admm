@@ -187,7 +187,8 @@ void convert_DCD_info(const BVH_GPU* bvh,
 }
 
 
-__global__ void compute_Scc_kernel(const int4* d_contacts, const Result<ADU::Real>* d_contact_info, const int* d_start_idx, const float4* d_bary, const int* d_v_ct_nums, const ADU::Real* d_contact_W_list, 
+__global__ void compute_Scc_kernel(const int4* d_contacts, const Result<ADU::Real>* d_contact_info, const int* d_start_idx, const float4* d_bary, const int* d_v_ct_nums, 
+    const ADU::Real* d_contact_W_list, const ADU::Real* d_contact_W_inv_list,
     const ADU::Real* d_h_cN, const float3* d_noraml, const ADU::Real gamma, const ADU::Real epslon,
     const int nContact, const ADU::Real m_dt_inv,
     int* d_v_ct_count, // aux
@@ -201,10 +202,10 @@ __global__ void compute_Scc_kernel(const int4* d_contacts, const Result<ADU::Rea
         const auto& c = d_contacts[idx];
         const float4& bary = d_bary[idx];
         Real Sc = epslon +
-            bary.x * bary.x * d_v_ct_nums[c.x] * d_contact_W_list[c.x] +
-            bary.y * bary.y * d_v_ct_nums[c.y] * d_contact_W_list[c.y] +
-            bary.z * bary.z * d_v_ct_nums[c.z] * d_contact_W_list[c.z] +
-            bary.w + bary.w * d_v_ct_nums[c.w] * d_contact_W_list[c.w];
+            bary.x * bary.x * d_v_ct_nums[c.x] * d_contact_W_inv_list[c.x] +
+            bary.y * bary.y * d_v_ct_nums[c.y] * d_contact_W_inv_list[c.y] +
+            bary.z * bary.z * d_v_ct_nums[c.z] * d_contact_W_inv_list[c.z] +
+            bary.w + bary.w * d_v_ct_nums[c.w] * d_contact_W_inv_list[c.w];
         //printf("%f %f %f %f\n", d_contact_W_list[c.x], d_contact_W_list[c.y], d_contact_W_list[c.z], d_contact_W_list[c.w]);
         //if (ele(c, 0) != c.x || ele(c, 0) != c.y || ele(c, 2) != c.z || ele(c, 3) != c.w) printf("herehit, \n");
         for (int vi = 0; vi < 4; vi++) {
@@ -213,15 +214,18 @@ __global__ void compute_Scc_kernel(const int4* d_contacts, const Result<ADU::Rea
             ADU::Real  w = d_contact_W_list[vind];
             int v_coffset = atomicAdd(&d_v_ct_count[vind], 1);
             int v_cidx = d_start_idx[vind] + v_coffset;
+            //printf("%d; ", v_cidx);
             
             ele(d_Gamma_c[idx], vi) = ele(bary, vi) / (Sc * w);
             //*((float*)&(d_Gamma_c[idx]) + vi) = ele(bary, vi) / (Sc * w);
             // no need to check, 1e7 is large enough
             d_Gamma_i[v_cidx] = ele(bary, vi) / (Sc * w);
+            //printf("(%f %f %f %f); ", d_Gamma_i[v_cidx], Sc, w, ele(bary, vi));
+            //printf("(%f %f); ", d_contact_W_list[vind], d_contact_W_inv_list[vind]);
             d_involved_cid[v_cidx] = idx;
         }
        
-        d_K_c[idx] = m_dt_inv * gamma * d_h_cN[idx] * d_noraml[idx];
+        d_K_c[idx] = m_dt_inv * d_h_cN[idx] * d_noraml[idx] * gamma;
     }
 }
 
@@ -236,10 +240,10 @@ void compute_Scc_impl_cu(const BVH_GPU* bvh,
     ct_data_device->d_delta_u.resize(nContact, float3{});
     ct_data_device->d_r_c.resize(nContact, float3{});
 
-    thrust::fill(ct_data_device->d_Gamma_c.begin(), ct_data_device->d_Gamma_c.end(), float4{});
-    thrust::fill(ct_data_device->d_K_c.begin(), ct_data_device->d_K_c.end(), float3{});
-    thrust::fill(ct_data_device->d_delta_u.begin(), ct_data_device->d_delta_u.end(), float3{});
-    thrust::fill(ct_data_device->d_r_c.begin(), ct_data_device->d_r_c.end(), float3{});
+    thrust::fill(ct_data_device->d_Gamma_c.begin(), ct_data_device->d_Gamma_c.end(), float4{ 0,0,0 ,0});
+    thrust::fill(ct_data_device->d_K_c.begin(), ct_data_device->d_K_c.end(), float3{ 0,0,0 });
+    thrust::fill(ct_data_device->d_delta_u.begin(), ct_data_device->d_delta_u.end(), float3{ 0,0,0 });
+    thrust::fill(ct_data_device->d_r_c.begin(), ct_data_device->d_r_c.end(), float3{0,0,0});
 
     ct_data_device->d_start_idx.resize(ct_data_device->d_vi_ct_nums.size() + 1, 0);
     thrust::inclusive_scan(ct_data_device->d_vi_ct_nums.begin(), ct_data_device->d_vi_ct_nums.end(), ct_data_device->d_start_idx.begin() + 1);
@@ -253,7 +257,8 @@ void compute_Scc_impl_cu(const BVH_GPU* bvh,
     int total_size{};
      total_size = ct_data_device->d_start_idx.back(); // this should work and indeed work, but use the following line for safety (mentally)
     //CUDA_SAFE_CALL(cudaMemcpy((void*)&total_size, thrust::raw_pointer_cast(ct_data_device->d_start_idx.data() + ct_data_device->d_start_idx.size() - 1), sizeof(int), cudaMemcpyDeviceToHost));
-     printf("total size: %d \n", total_size);
+     printf("total size: %d, ncontact: %d \n", total_size, nContact);
+
 
     ct_data_device->d_vi_ct_count.resize(ct_data_device->d_vi_ct_nums.size(), 0);
     ct_data_device->d_involved_cid.resize(total_size, 0);
@@ -273,7 +278,8 @@ void compute_Scc_impl_cu(const BVH_GPU* bvh,
         thrust::raw_pointer_cast(ct_data_device->d_start_idx.data()), 
             thrust::raw_pointer_cast(ct_data_device->d_bary.data()), 
             thrust::raw_pointer_cast(ct_data_device->d_vi_ct_nums.data()), 
-            thrust::raw_pointer_cast(ct_data_device->d_contact_W_list.data()), 
+            thrust::raw_pointer_cast(ct_data_device->d_contact_W_list.data()),
+            thrust::raw_pointer_cast(ct_data_device->d_contact_W_inv_list.data()),
             thrust::raw_pointer_cast(ct_data_device->d_h_cN.data()),
             thrust::raw_pointer_cast(ct_data_device->d_normal.data()), gamma, epslon,
         nContact, m_dt_inv, 
@@ -283,9 +289,9 @@ void compute_Scc_impl_cu(const BVH_GPU* bvh,
         );
 
     /*std::vector<int> iv_cid(total_size, 0);
-    std::vector<int> st_cid(ct_data_device->d_start_idx.size(), 0);*/
+    std::vector<int> st_cid(ct_data_device->d_start_idx.size(), 0);
 
-    /*thrust::copy(ct_data_device->d_involved_cid.begin(), ct_data_device->d_involved_cid.end(), iv_cid.begin());
+    thrust::copy(ct_data_device->d_involved_cid.begin(), ct_data_device->d_involved_cid.end(), iv_cid.begin());
     thrust::copy(ct_data_device->d_start_idx.begin(), ct_data_device->d_start_idx.end(), st_cid.begin());
     for (int i = 0; i < st_cid.size() - 1; i++) {
         int st = st_cid[i];
@@ -321,7 +327,7 @@ __global__ void update_p_kernel(const int nContact, const int4* d_contact, const
         for (int vid = 0; vid < 4; vid++) {
             int vind = ele(ct, vid);  
             if (vind < static_vert_begin) {
-                float gamma_cvi = *((float*)&gamma_c + vid);
+                float gamma_cvi = ele(gamma_c, vid);
                 float3 r_c = gamma_cvi * d_r_c[idx];
                 atomicAdd(&d_p[vind * 3 + 0], r_c.x);
                 atomicAdd(&d_p[vind * 3 + 1], r_c.y);
@@ -341,21 +347,26 @@ __global__ void get_delta_u_kernel(const int nContact, const ADU::Real mu,
     {
         float3 u{};
         const int4& ct = d_contact[idx];
+        const float4& bary = d_bary[idx];
         //int vinds[4]{ ct.x, ct.y, ct.z, ct.w };
-        u = ct.x * load_float3(d_p + 3 * ct.x) + 
-            ct.y * load_float3(d_p + 3 * ct.y) + 
-            ct.z * load_float3(d_p + 3 * ct.z) + 
-            ct.w * load_float3(d_p + 3 * ct.w);
-
+        u = bary.x * load_float3(d_p + 3 * ct.x) +
+            bary.y * load_float3(d_p + 3 * ct.y) +
+            bary.z * load_float3(d_p + 3 * ct.z) +
+            bary.w * load_float3(d_p + 3 * ct.w);
+        //printf("[%f %f %f %f], ", bary.x, bary.y, bary.z, bary.w);
         u = u + d_K_c[idx];
         const float3& normal = d_normal[idx];
+
         float3 u_star = u - d_r_c[idx];
         float u_star_N = dot(normal, u_star);
+        //printf("%f, ", u_star_N);
+        
         float3 u_star_T = u_star - u_star_N * normal;
+        //printf("(%f %f %f; %f %f %f; %f %f %f)", normal.x, normal.y, normal.z, u.x, u.y, u.z, d_r_c[idx].x, d_r_c[idx].y, d_r_c[idx].z);
 
         float tau, alpha;
         if (u_star_N < 0) {
-            tau = fnorm(u_star);
+            tau = fnorm(u_star_T);
             alpha = -mu * u_star_N;
             u_star_N = 0;
             if (tau <= alpha) {
@@ -387,6 +398,7 @@ __global__ void update_p(const int nVert, const int* involved_cid, const int* st
         for (int i = start_idx; i < end_idx; i++) {
             int cid = involved_cid[i];
             delta_pi = delta_pi + delta_u[cid] * gamma_i[i];
+            //printf("%f, ", gamma_i[i]);
         }
         d_p[idx * 3 + 0] += delta_pi.x;
         d_p[idx * 3 + 1] += delta_pi.y;
