@@ -10,7 +10,7 @@ class CuSolverData;
 void computeContactCountsWithAtomic(const int4* d_contacts, thrust::device_vector<int>& d_vi_ct_nums, int nContact, int nVert);
 
 void compute_Scc_impl_cu(const BVH_GPU* bvh,
-    const int nContact, const ADU::Real m_dt_inv, const ADU::Real gamma,
+    const int nContact, const ADU::Real m_dt_inv, const ADU::Real gamma, const ADU::Real epslon,
     ContactDataDevice* ct_data_device);
 
 void convert_DCD_info(const BVH_GPU* bvh, 

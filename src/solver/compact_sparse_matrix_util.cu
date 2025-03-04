@@ -171,6 +171,7 @@ template <typename T>
 void resizeThrust(thrust::device_vector<T>& data, int newSize, T defaultVal)
 {
     data.resize(newSize, defaultVal);
+    thrust::fill(data.begin(), data.end(), defaultVal);
 }
 
 template void resizeThrust<double>(thrust::device_vector<double>&, int, double);

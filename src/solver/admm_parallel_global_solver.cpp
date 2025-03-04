@@ -769,6 +769,6 @@ void ADMMParallelSolver::compute_Scc_impl() {
 	computeContactCountsWithAtomic(bvh->d_collisonPairs, ct_data_device->d_vi_ct_nums, nContact, m_nVert);
 
 	compute_Scc_impl_cu(bvh,
-		nContact, this->m_dt_inv, gamma,
+		nContact, this->m_dt_inv, gamma, epsilon,
 		ct_data_device.get());
 }
