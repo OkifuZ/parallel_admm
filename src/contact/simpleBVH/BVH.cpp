@@ -1,5 +1,6 @@
 #include "BVH.hpp"
 #include "contact/SimpleBVH/Morton.hpp"
+#include "mutils/common_types.h"
 
 #include <tbb/parallel_invoke.h>
 #include <tbb/parallel_sort.h>
@@ -9,10 +10,10 @@
 namespace SimpleBVH {
 namespace {
     bool box_box_intersection(
-        const Eigen::Vector3d& min1,
-        const Eigen::Vector3d& max1,
-        const Eigen::Vector3d& min2,
-        const Eigen::Vector3d& max2)
+        const ADU::Vecf_3& min1,
+        const ADU::Vecf_3& max1,
+        const ADU::Vecf_3& min2,
+        const ADU::Vecf_3& max2)
     {
         if (max1[0] < min2[0] || max1[1] < min2[1] || max1[2] < min2[2])
             return 0;
@@ -23,7 +24,7 @@ namespace {
 } // namespace
 
 void BVH::init_boxes_recursive(
-    const std::vector<std::array<Eigen::Vector3d, 2>>& cornerlist,
+    const std::vector<std::array<ADU::Vecf_3, 2>>& cornerlist,
     int node_index,
     int b,
     int e)
@@ -69,8 +70,8 @@ void BVH::init_boxes_recursive(
 }
 
 void BVH::box_search_recursive(
-    const Eigen::Vector3d& bbd0,
-    const Eigen::Vector3d& bbd1,
+    const ADU::Vecf_3& bbd0,
+    const ADU::Vecf_3& bbd1,
     std::vector<unsigned int>& list,
     int n,
     int b,
@@ -123,7 +124,7 @@ int BVH::max_node_index(int node_index, int b, int e)
     return std::max(max_node_index(childl, b, m), max_node_index(childr, m, e));
 }
 
-void BVH::init(const std::vector<std::array<Eigen::Vector3d, 2>>& cornerlist)
+void BVH::init(const std::vector<std::array<ADU::Vecf_3, 2>>& cornerlist)
 {
     n_corners = cornerlist.size();
 
@@ -141,7 +142,7 @@ void BVH::init(const std::vector<std::array<Eigen::Vector3d, 2>>& cornerlist)
     }
 
     // after placing box at origin, vmax and vmin are symetric.
-    const Eigen::Vector3d scale_point = vmax - center;
+    const ADU::Vecf_3 scale_point = vmax - center;
     const double scale = scale_point.lpNorm<Eigen::Infinity>();
     // if the box is too big, resize it
     if (scale > 100) {
@@ -201,7 +202,7 @@ void BVH::init(
     assert(F.cols() == 3);
     assert(V.cols() == 3);
 
-    std::vector<std::array<Eigen::Vector3d, 2>> cornerlist(F.rows());
+    std::vector<std::array<ADU::Vecf_3, 2>> cornerlist(F.rows());
 
     for (int i = 0; i < F.rows(); i++) {
         const Eigen::RowVector3i face = F.row(i);
@@ -225,7 +226,7 @@ void BVH::init(
 }
 
 bool BVH::box_intersects_box(
-    const Eigen::Vector3d& bbd0, const Eigen::Vector3d& bbd1, int index) const
+    const ADU::Vecf_3& bbd0, const ADU::Vecf_3& bbd1, int index) const
 {
     const auto& bmin = boxlist[index][0];
     const auto& bmax = boxlist[index][1];

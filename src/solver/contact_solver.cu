@@ -124,33 +124,33 @@ __global__ void convert_DCD_info_kernel(const int nContact, const Result<ADU::Re
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < nContact) 
     {
-        int4 vids = d_contacts[idx];
-        Vecf_3 v0{ pos[vids.x * 3 + 0], pos[vids.x * 3 + 1] , pos[vids.x * 3 + 2] };
-        Vecf_3 v1{ pos[vids.y * 3 + 0], pos[vids.y * 3 + 1] , pos[vids.y * 3 + 2] };
-        Vecf_3 v2{ pos[vids.z * 3 + 0], pos[vids.z * 3 + 1] , pos[vids.z * 3 + 2] };
-        Vecf_3 v3{ pos[vids.w * 3 + 0], pos[vids.w * 3 + 1] , pos[vids.w * 3 + 2] };
+        //int4 vids = d_contacts[idx];
+        //Vecf_3 v0{ pos[vids.x * 3 + 0], pos[vids.x * 3 + 1] , pos[vids.x * 3 + 2] };
+        //Vecf_3 v1{ pos[vids.y * 3 + 0], pos[vids.y * 3 + 1] , pos[vids.y * 3 + 2] };
+        //Vecf_3 v2{ pos[vids.z * 3 + 0], pos[vids.z * 3 + 1] , pos[vids.z * 3 + 2] };
+        //Vecf_3 v3{ pos[vids.w * 3 + 0], pos[vids.w * 3 + 1] , pos[vids.w * 3 + 2] };
 
-        auto& res = d_contact_info[idx];
-        Vecf_3 pt = 0.5f * (res.closest[0] + res.closest[1]);
-        d_point[idx] = float3{ (float)pt.x(), (float)pt.y(), (float)pt.z() };
-        
-        int pair_tp = (res.barycentric[2] < -1) ? 0 : 1; // 0: ee, 1: ft
-        pair_type[idx] = pair_tp;
+        //auto& res = d_contact_info[idx];
+        //Vecf_3 pt = 0.5f * (res.closest[0] + res.closest[1]);
+        //d_point[idx] = float3{ (float)pt.x(), (float)pt.y(), (float)pt.z() };
+        //
+        //int pair_tp = (res.barycentric[2] < -1) ? 0 : 1; // 0: ee, 1: ft
+        //pair_type[idx] = pair_tp;
 
-        d_bary[idx] = pair_tp == 0 ? 
-            float4{ 1 - (float)res.barycentric[0], (float)res.barycentric[0], (float)res.barycentric[1] - 1, -(float)res.barycentric[1] } :
-            float4{ 1, -(float)res.barycentric[0], -(float)res.barycentric[1], -(float)res.barycentric[2] };
+        //d_bary[idx] = pair_tp == 0 ? 
+        //    float4{ 1 - (float)res.barycentric[0], (float)res.barycentric[0], (float)res.barycentric[1] - 1, -(float)res.barycentric[1] } :
+        //    float4{ 1, -(float)res.barycentric[0], -(float)res.barycentric[1], -(float)res.barycentric[2] };
 
-        Vecf_3 normal = (pair_tp == 0) ? (v1 - v0).cross(v3 - v2).normalized() : (v2 - v1).cross(v3 - v1).normalized();
-        Vecf_3 h = res.closest[0] - res.closest[1];
-        Real h_CN = h.dot(normal);
-        if (h_CN < 0) {
-            normal *= -1;
-            h_CN = -h_CN;
-        }
+        //Vecf_3 normal = (pair_tp == 0) ? (v1 - v0).cross(v3 - v2).normalized() : (v2 - v1).cross(v3 - v1).normalized();
+        //Vecf_3 h = res.closest[0] - res.closest[1];
+        //Real h_CN = h.dot(normal);
+        //if (h_CN < 0) {
+        //    normal *= -1;
+        //    h_CN = -h_CN;
+        //}
 
-        d_h_cN[idx] = h_CN - thickness;
-        d_normal[idx] = float3{ (float)normal.x(), (float)normal.y(), (float)normal.z()};
+        //d_h_cN[idx] = h_CN - thickness;
+        //d_normal[idx] = float3{ (float)normal.x(), (float)normal.y(), (float)normal.z()};
     }
 }
 

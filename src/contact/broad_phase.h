@@ -83,8 +83,8 @@ class BroadPhase_simpleBVH : public BroadPhase {
 public:
 	BroadPhase_simpleBVH();
 
-	std::vector<std::array<Eigen::Vector3d, 2>> edge_aabbs;
-	std::vector<std::array<Eigen::Vector3d, 2>> face_aabbs;
+	std::vector<std::array<ADU::Vecf_3, 2>> edge_aabbs;
+	std::vector<std::array<ADU::Vecf_3, 2>> face_aabbs;
 
 	SimpleBVH::BVH edge_bvh;
 	SimpleBVH::BVH face_bvh;

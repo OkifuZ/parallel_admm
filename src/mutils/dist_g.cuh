@@ -229,7 +229,10 @@ __inline__ __device__ Result<T> dcdPT(Eigen::Vector3<T> const& point,
         }
     }
 
-    
+    if (!valid) {
+        result.distance = -10;
+        return result;
+    }
     result.closest[0] = point;
     result.closest[1] = t0 + s * edge0 + t * edge1;
     diff = result.closest[0] - result.closest[1];
@@ -244,9 +247,7 @@ __inline__ __device__ Result<T> dcdPT(Eigen::Vector3<T> const& point,
     result.barycentric[1] = s;
     result.barycentric[2] = t;
 
-    if (!valid) {
-        result.distance = -10;
-    }
+    
     return result;
 }
 
@@ -486,7 +487,10 @@ __inline__ __device__ Result<T> dcdEE(Eigen::Vector3<T> const& P0, Eigen::Vector
     }
 
     Result<T> result{};
-    
+    if (!valid) {
+        result.distance = -10;
+        return result;
+    }
     result.barycentric[0] = s;
     result.barycentric[1] = t;
     result.barycentric[2] = -10;
@@ -502,8 +506,8 @@ __inline__ __device__ Result<T> dcdEE(Eigen::Vector3<T> const& P0, Eigen::Vector
     }
     result.distance = std::sqrt(result.sqrDistance);
 
-    if (!valid) {
+    /*if (!valid) {
         result.distance = -10;
-    }
+    }*/
     return result;
 }

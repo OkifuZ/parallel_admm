@@ -15,6 +15,7 @@
 #include<iostream>
 #include<fstream>
 #include "mutils/gpu_eigen_libs.cuh"
+#include "mutils/common_types.h"
 
 #include "mutils/dist_g.cuh"
 
@@ -47,7 +48,7 @@ inline AABB merge(const AABB& lhs, const AABB& rhs) noexcept
 }
 
 __device__ __host__
-inline bool overlap(const AABB& lhs, const AABB& rhs, const double& gapL) noexcept
+inline bool overlap(const AABB& lhs, const AABB& rhs, const float& gapL) noexcept
 {
     if ((rhs.lower.x - lhs.upper.x) >= gapL || (lhs.lower.x - rhs.upper.x) >= gapL) return false;
     if ((rhs.lower.y - lhs.upper.y) >= gapL || (lhs.lower.y - rhs.upper.y) >= gapL) return false;
@@ -56,12 +57,12 @@ inline bool overlap(const AABB& lhs, const AABB& rhs, const double& gapL) noexce
 }
 
 __device__ __host__
-inline double3 centroid(const AABB& box) noexcept
+inline float3  centroid(const AABB& box) noexcept
 {
-    double3 c;
-    c.x = (box.upper.x + box.lower.x) * 0.5;
-    c.y = (box.upper.y + box.lower.y) * 0.5;
-    c.z = (box.upper.z + box.lower.z) * 0.5;
+    float3 c;
+    c.x = (box.upper.x + box.lower.x) * 0.5f;
+    c.y = (box.upper.y + box.lower.y) * 0.5f;
+    c.z = (box.upper.z + box.lower.z) * 0.5f;
     return c;
 }
 
@@ -76,11 +77,11 @@ inline std::uint32_t expand_bits(std::uint32_t v) noexcept
 }
 
 __device__ __host__
-inline std::uint32_t morton_code(double x, double y, double z, double resolution = 1024.0) noexcept
+inline std::uint32_t morton_code(float x, float y, float z, float resolution = 1024.0f) noexcept
 {
-    x = __m_min(__m_max(x * resolution, 0.0), resolution - 1.0);
-    y = __m_min(__m_max(y * resolution, 0.0), resolution - 1.0);
-    z = __m_min(__m_max(z * resolution, 0.0), resolution - 1.0);
+    x = __m_min(__m_max(x * resolution, 0.0f), resolution - 1.0f);
+    y = __m_min(__m_max(y * resolution, 0.0f), resolution - 1.0f);
+    z = __m_min(__m_max(z * resolution, 0.0f), resolution - 1.0f);
 
     const std::uint32_t xx = expand_bits(static_cast<std::uint32_t>(x));
     const std::uint32_t yy = expand_bits(static_cast<std::uint32_t>(y));
@@ -92,35 +93,35 @@ inline std::uint32_t morton_code(double x, double y, double z, double resolution
 }
 
 __device__ __host__
-void AABB::combines(const double& x, const double& y, const double& z)
+void AABB::combines(const float& x, const float& y, const float& z)
 {
-    lower = make_double3(__m_min(lower.x, x), __m_min(lower.y, y), __m_min(lower.z, z));
-    upper = make_double3(__m_max(upper.x, x), __m_max(upper.y, y), __m_max(upper.z, z));
+    lower = make_float3(__m_min(lower.x, x), __m_min(lower.y, y), __m_min(lower.z, z));
+    upper = make_float3(__m_max(upper.x, x), __m_max(upper.y, y), __m_max(upper.z, z));
 }
 
 __device__ __host__
-void AABB::combines(const double& x, const double& y, const double& z, const double& xx, const double& yy, const double& zz)
+void AABB::combines(const float& x, const float& y, const float& z, const float& xx, const float& yy, const float& zz)
 {
-    lower = make_double3(__m_min(lower.x, x), __m_min(lower.y, y), __m_min(lower.z, z));
-    upper = make_double3(__m_max(upper.x, xx), __m_max(upper.y, yy), __m_max(upper.z, zz));
+    lower = make_float3(__m_min(lower.x, x), __m_min(lower.y, y), __m_min(lower.z, z));
+    upper = make_float3(__m_max(upper.x, xx), __m_max(upper.y, yy), __m_max(upper.z, zz));
 }
 
 __host__ __device__
 void AABB::combines(const AABB& aabb) {
-    lower = make_double3(__m_min(lower.x, aabb.lower.x), __m_min(lower.y, aabb.lower.y), __m_min(lower.z, aabb.lower.z));
-    upper = make_double3(__m_max(upper.x, aabb.upper.x), __m_max(upper.y, aabb.upper.y), __m_max(upper.z, aabb.upper.z));
+    lower = make_float3(__m_min(lower.x, aabb.lower.x), __m_min(lower.y, aabb.lower.y), __m_min(lower.z, aabb.lower.z));
+    upper = make_float3(__m_max(upper.x, aabb.upper.x), __m_max(upper.y, aabb.upper.y), __m_max(upper.z, aabb.upper.z));
 }
 
 __host__ __device__
-double3 AABB::center() {
-    return make_double3((upper.x + lower.x) * 0.5, (upper.y + lower.y) * 0.5, (upper.z + lower.z) * 0.5);
+float3 AABB::center() {
+    return make_float3((upper.x + lower.x) * 0.5, (upper.y + lower.y) * 0.5, (upper.z + lower.z) * 0.5);
 }
 
 __device__ __host__
 AABB::AABB()
 {
-    lower = make_double3(1e32, 1e32, 1e32);
-    upper = make_double3(-1e32, -1e32, -1e32);
+    lower = make_float3(1e32, 1e32, 1e32);
+    upper = make_float3(-1e32, -1e32, -1e32);
 }
 
 //__device__
@@ -231,62 +232,62 @@ inline unsigned int find_split(const uint64_t* node_code, const unsigned int num
 }
 
 __device__
-void _d_PP(const double3& v0, const double3& v1, double& d)
+void _d_PP(const float3& v0, const float3& v1, float& d)
 {
     d = __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1));
 }
 
 __device__
-void _d_PT(const double3& v0, const double3& v1, const double3& v2, const double3& v3, double& d)
+void _d_PT(const float3& v0, const float3& v1, const float3& v2, const float3& v3, float& d)
 {
-    double3 b = __GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v2, v1), __GEIGEN__::__minus(v3, v1));
-    double3 test = __GEIGEN__::__minus(v0, v1);
-    double aTb = __GEIGEN__::__v_vec_dot(__GEIGEN__::__minus(v0, v1), b);//(v0 - v1).dot(b);
+    float3 b = __GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v2, v1), __GEIGEN__::__minus(v3, v1));
+    float3 test = __GEIGEN__::__minus(v0, v1);
+    float aTb = __GEIGEN__::__v_vec_dot(__GEIGEN__::__minus(v0, v1), b);//(v0 - v1).dot(b);
     //printf("%f   %f   %f          %f   %f   %f   %f\n", b.x, b.y, b.z, test.x, test.y, test.z, aTb);
     d = aTb * aTb / __GEIGEN__::__squaredNorm(b);
 }
 
 __device__
-void _d_PE(const double3& v0, const double3& v1, const double3& v2, double& d)
+void _d_PE(const float3& v0, const float3& v1, const float3& v2, float& d)
 {
     d = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v1, v0), __GEIGEN__::__minus(v2, v0))) / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v2, v1));
 }
 
 __device__
-void _d_EE(const double3& v0, const double3& v1, const double3& v2, const double3& v3, double& d)
+void _d_EE(const float3& v0, const float3& v1, const float3& v2, const float3& v3, float& d)
 {
-    double3 b = __GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v1, v0), __GEIGEN__::__minus(v3, v2));//(v1 - v0).cross(v3 - v2);
-    double aTb = __GEIGEN__::__v_vec_dot(__GEIGEN__::__minus(v2, v0), b);//(v2 - v0).dot(b);
+    float3 b = __GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v1, v0), __GEIGEN__::__minus(v3, v2));//(v1 - v0).cross(v3 - v2);
+    float aTb = __GEIGEN__::__v_vec_dot(__GEIGEN__::__minus(v2, v0), b);//(v2 - v0).dot(b);
     d = aTb * aTb / __GEIGEN__::__squaredNorm(b);
 }
 
 
 __device__
-void _d_EEParallel(const double3& v0, const double3& v1, const double3& v2, const double3& v3, double& d)
+void _d_EEParallel(const float3& v0, const float3& v1, const float3& v2, const float3& v3, float& d)
 {
-    double3 b = __GEIGEN__::__v_vec_cross(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v1, v0), __GEIGEN__::__minus(v2, v0)), __GEIGEN__::__minus(v1, v0));
-    double aTb = __GEIGEN__::__v_vec_dot(__GEIGEN__::__minus(v2, v0), b);//(v2 - v0).dot(b);
+    float3 b = __GEIGEN__::__v_vec_cross(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v1, v0), __GEIGEN__::__minus(v2, v0)), __GEIGEN__::__minus(v1, v0));
+    float aTb = __GEIGEN__::__v_vec_dot(__GEIGEN__::__minus(v2, v0), b);//(v2 - v0).dot(b);
     d = aTb * aTb / __GEIGEN__::__squaredNorm(b);
 }
 
 __device__
-double _compute_epx(const double3& v0, const double3& v1, const double3& v2, const double3& v3) {
+float _compute_epx(const float3& v0, const float3& v1, const float3& v2, const float3& v3) {
     return 1e-3 * __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1)) * __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v2, v3));
 }
 
 __device__
-double _compute_epx_cp(const double3& v0, const double3& v1, const double3& v2, const double3& v3) {
+float _compute_epx_cp(const float3& v0, const float3& v1, const float3& v2, const float3& v3) {
     return 1e-3 * __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1)) * __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v2, v3));
 }
 
 __device__
-int _dType_PT(const double3& v0, const double3& v1, const double3& v2, const double3& v3)
+int _dType_PT(const float3& v0, const float3& v1, const float3& v2, const float3& v3)
 {
-    double3 basis0 = __GEIGEN__::__minus(v2, v1);
-    double3 basis1 = __GEIGEN__::__minus(v3, v1);
-    double3 basis2 = __GEIGEN__::__minus(v0, v1);
+    float3 basis0 = __GEIGEN__::__minus(v2, v1);
+    float3 basis1 = __GEIGEN__::__minus(v3, v1);
+    float3 basis2 = __GEIGEN__::__minus(v0, v1);
 
-    const double3 nVec = __GEIGEN__::__v_vec_cross(basis0, basis1);
+    const float3 nVec = __GEIGEN__::__v_vec_cross(basis0, basis1);
 
     basis1 = __GEIGEN__::__v_vec_cross(basis0, nVec);
     __GEIGEN__::Matrix3x3d D, D1, D2;
@@ -295,7 +296,7 @@ int _dType_PT(const double3& v0, const double3& v1, const double3& v2, const dou
     __GEIGEN__::__set_Mat_val(D1, basis2.x, basis1.x, nVec.x, basis2.y, basis1.y, nVec.y, basis2.z, basis1.z, nVec.z);
     __GEIGEN__::__set_Mat_val(D2, basis0.x, basis2.x, nVec.x, basis0.y, basis2.y, nVec.y, basis0.z, basis2.z, nVec.z);
 
-    double2 param[3];
+    float2 param[3];
     param[0].x = __GEIGEN__::__Determiant(D1) / __GEIGEN__::__Determiant(D);
     param[0].y = __GEIGEN__::__Determiant(D2) / __GEIGEN__::__Determiant(D);
 
@@ -351,21 +352,21 @@ int _dType_PT(const double3& v0, const double3& v1, const double3& v2, const dou
 }
 
 __device__
-int _dType_EE(const double3& v0, const double3& v1, const double3& v2, const double3& v3)
+int _dType_EE(const float3& v0, const float3& v1, const float3& v2, const float3& v3)
 {
-    double3 u = __GEIGEN__::__minus(v1, v0);
-    double3 v = __GEIGEN__::__minus(v3, v2);
-    double3 w = __GEIGEN__::__minus(v0, v2);
+    float3 u = __GEIGEN__::__minus(v1, v0);
+    float3 v = __GEIGEN__::__minus(v3, v2);
+    float3 w = __GEIGEN__::__minus(v0, v2);
 
-    double a = __GEIGEN__::__squaredNorm(u);
-    double b = __GEIGEN__::__v_vec_dot(u, v);
-    double c = __GEIGEN__::__squaredNorm(v);
-    double d = __GEIGEN__::__v_vec_dot(u, w);
-    double e = __GEIGEN__::__v_vec_dot(v, w);
+    float a = __GEIGEN__::__squaredNorm(u);
+    float b = __GEIGEN__::__v_vec_dot(u, v);
+    float c = __GEIGEN__::__squaredNorm(v);
+    float d = __GEIGEN__::__v_vec_dot(u, w);
+    float e = __GEIGEN__::__v_vec_dot(v, w);
 
-    double D = a * c - b * b; // always >= 0
-    double tD = D; // tc = tN / tD, default tD = D >= 0
-    double sN, tN;
+    float D = a * c - b * b; // always >= 0
+    float tD = D; // tc = tN / tD, default tD = D >= 0
+    float sN, tN;
     int defaultCase = 8;
     sN = (b * e - c * d);
     if (sN <= 0.0) { // sc < 0 => the s=0 edge is visible
@@ -422,16 +423,16 @@ int _dType_EE(const double3& v0, const double3& v1, const double3& v2, const dou
 
 
 __device__
-inline bool _checkPTintersection(const double3* _vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3, const double& dHat, uint32_t* _cpNum, int* _mInx, int4* _collisionPair, int4* _ccd_collisionPair) noexcept
+inline bool _checkPTintersection(const float3* _vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3, const float& dHat, uint32_t* _cpNum, int* _mInx, int4* _collisionPair, int4* _ccd_collisionPair) noexcept
 {
-    double3 v0 = _vertexes[id0];
-    double3 v1 = _vertexes[id1];
-    double3 v2 = _vertexes[id2];
-    double3 v3 = _vertexes[id3];
+    float3 v0 = _vertexes[id0];
+    float3 v1 = _vertexes[id1];
+    float3 v2 = _vertexes[id2];
+    float3 v3 = _vertexes[id3];
 
     int dtype = _dType_PT(v0, v1, v2, v3);
 
-    double d = 100;
+    float d = 100;
     switch (dtype) {
     case 0: {
         _d_PP(v0, v1, d);
@@ -524,22 +525,22 @@ inline bool _checkPTintersection(const double3* _vertexes, const uint32_t& id0, 
 }
 
 __device__
-inline bool _checkPTintersection_fullCCD(const double3* _vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3, const double& dHat, uint32_t* _cpNum, int4* _ccd_collisionPair) noexcept
+inline bool _checkPTintersection_fullCCD(const float3* _vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3, const float& dHat, uint32_t* _cpNum, int4* _ccd_collisionPair) noexcept
 {
-    double3 v0 = _vertexes[id0];
-    double3 v1 = _vertexes[id1];
-    double3 v2 = _vertexes[id2];
-    double3 v3 = _vertexes[id3];
+    float3 v0 = _vertexes[id0];
+    float3 v1 = _vertexes[id1];
+    float3 v2 = _vertexes[id2];
+    float3 v3 = _vertexes[id3];
 
     int dtype = _dType_PT(v0, v1, v2, v3);
 
-    double3 basis0 = __GEIGEN__::__minus(v2, v1);
-    double3 basis1 = __GEIGEN__::__minus(v3, v1);
-    double3 basis2 = __GEIGEN__::__minus(v0, v1);
+    float3 basis0 = __GEIGEN__::__minus(v2, v1);
+    float3 basis1 = __GEIGEN__::__minus(v3, v1);
+    float3 basis2 = __GEIGEN__::__minus(v0, v1);
 
-    const double3 nVec = __GEIGEN__::__v_vec_cross(basis0, basis1);
+    const float3 nVec = __GEIGEN__::__v_vec_cross(basis0, basis1);
 
-    double sign = __GEIGEN__::__v_vec_dot(nVec, basis2);
+    float sign = __GEIGEN__::__v_vec_dot(nVec, basis2);
 
     if (dtype==6&&(sign <0)) {
         return;
@@ -549,25 +550,25 @@ inline bool _checkPTintersection_fullCCD(const double3* _vertexes, const uint32_
 }
 
 __device__
-inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3, const uint32_t& obj_idx, const double& dHat, uint32_t* _cpNum, int* MatIndex, int4* _collisionPair, int4* _ccd_collisionPair, int edgeNum) noexcept
+inline bool _checkEEintersection(const float3* _vertexes, const float3* _rest_vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3, const uint32_t& obj_idx, const float& dHat, uint32_t* _cpNum, int* MatIndex, int4* _collisionPair, int4* _ccd_collisionPair, int edgeNum) noexcept
 {
-    double3 v0 = _vertexes[id0];
-    double3 v1 = _vertexes[id1];
-    double3 v2 = _vertexes[id2];
-    double3 v3 = _vertexes[id3];
+    float3 v0 = _vertexes[id0];
+    float3 v1 = _vertexes[id1];
+    float3 v2 = _vertexes[id2];
+    float3 v3 = _vertexes[id3];
 
 
     int dtype = _dType_EE(v0, v1, v2, v3);
     int add_e = -1;
-    double d = 100.0;
+    float d = 100.0;
     bool smooth = false;
     switch (dtype) {
     case 0: {
         _d_PP(v0, v2, d);
         if (d < dHat) {
 
-            double eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
-            double eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
+            float eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
+            float eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
             add_e = (eeSqureNCross < eps_x) ? -obj_idx - 2 : -1;
 
             if (add_e <= -2) {
@@ -596,8 +597,8 @@ inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_
         _d_PP(v0, v3, d);
         if (d < dHat) {
 
-            double eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
-            double eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
+            float eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
+            float eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
             add_e = (eeSqureNCross < eps_x) ? -obj_idx - 2 : -1;
 
             if (add_e <= -2) {
@@ -625,8 +626,8 @@ inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_
         _d_PE(v0, v2, v3, d);
         if (d < dHat) {
 
-            double eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
-            double eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
+            float eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
+            float eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
             add_e = (eeSqureNCross < eps_x) ? -obj_idx - 2 : -1;
 
 
@@ -655,8 +656,8 @@ inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_
         _d_PP(v1, v2, d);
         if (d < dHat) {
 
-            double eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
-            double eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
+            float eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
+            float eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
             add_e = (eeSqureNCross < eps_x) ? -obj_idx - 2 : -1;
 
             if (add_e <= -2) {
@@ -684,8 +685,8 @@ inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_
         _d_PP(v1, v3, d);
         if (d < dHat) {
 
-            double eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
-            double eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
+            float eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
+            float eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
             add_e = (eeSqureNCross < eps_x) ? -obj_idx - 2 : -1;
 
             if (add_e <= -2) {
@@ -713,8 +714,8 @@ inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_
         _d_PE(v1, v2, v3, d);
         if (d < dHat) {
 
-            double eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
-            double eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
+            float eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
+            float eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
             add_e = (eeSqureNCross < eps_x) ? -obj_idx - 2 : -1;
 
             if (add_e <= -2) {
@@ -742,8 +743,8 @@ inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_
         _d_PE(v2, v0, v1, d);
         if (d < dHat) {
 
-            double eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v2, v3), __GEIGEN__::__minus(v0, v1)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v2, v3))*/;
-            double eps_x = _compute_epx_cp(_rest_vertexes[id2], _rest_vertexes[id3], _rest_vertexes[id0], _rest_vertexes[id1]);
+            float eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v2, v3), __GEIGEN__::__minus(v0, v1)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v2, v3))*/;
+            float eps_x = _compute_epx_cp(_rest_vertexes[id2], _rest_vertexes[id3], _rest_vertexes[id0], _rest_vertexes[id1]);
             add_e = (eeSqureNCross < eps_x) ? -obj_idx - 2 : -1;
 
 
@@ -772,8 +773,8 @@ inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_
         _d_PE(v3, v0, v1, d);
         if (d < dHat) {
 
-            double eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v2, v3), __GEIGEN__::__minus(v0, v1)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v2, v3))*/;
-            double eps_x = _compute_epx_cp(_rest_vertexes[id2], _rest_vertexes[id3], _rest_vertexes[id0], _rest_vertexes[id1]);
+            float eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v2, v3), __GEIGEN__::__minus(v0, v1)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v2, v3))*/;
+            float eps_x = _compute_epx_cp(_rest_vertexes[id2], _rest_vertexes[id3], _rest_vertexes[id0], _rest_vertexes[id1]);
             add_e = (eeSqureNCross < eps_x) ? -obj_idx - 2 : -1;
 
 
@@ -801,8 +802,8 @@ inline bool _checkEEintersection(const double3* _vertexes, const double3* _rest_
     case 8: {
         _d_EE(v0, v1, v2, v3, d);
 
-        double eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
-        double eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
+        float eeSqureNCross = __GEIGEN__::__squaredNorm(__GEIGEN__::__v_vec_cross(__GEIGEN__::__minus(v0, v1), __GEIGEN__::__minus(v2, v3)))/* / __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(v0, v1))*/;
+        float eps_x = _compute_epx_cp(_rest_vertexes[id0], _rest_vertexes[id1], _rest_vertexes[id2], _rest_vertexes[id3]);
         add_e = (eeSqureNCross < eps_x) ? -obj_idx - 2 : -1;
 
         if (d < dHat) {
@@ -847,13 +848,13 @@ void _reduct_max_box(AABB* _leafBoxes, int number) {
 
     __threadfence();
 
-    double xmin = temp.lower.x, ymin = temp.lower.y, zmin = temp.lower.z;
-    double xmax = temp.upper.x, ymax = temp.upper.y, zmax = temp.upper.z;
+    float xmin = temp.lower.x, ymin = temp.lower.y, zmin = temp.lower.z;
+    float xmax = temp.upper.x, ymax = temp.upper.y, zmax = temp.upper.z;
     //printf("%f   %f    %f   %f   %f    %f\n", xmin, ymin, zmin, xmax, ymax, zmax);
     //printf("%f   %f    %f\n", xmax, ymax, zmax);
     int warpTid = threadIdx.x % 32;
     int warpId = (threadIdx.x >> 5);
-    double nextTp;
+    float nextTp;
     int warpNum;
     int tidNum = 32;
     if (blockIdx.x == gridDim.x - 1) {
@@ -904,13 +905,13 @@ void _reduct_max_box(AABB* _leafBoxes, int number) {
 
 template <class element_type>
 __global__
-void _calcLeafBvs(const double3* _vertexes, const element_type* _elements, AABB* _bvs, int faceNum, int type = 0) {
+void _calcLeafBvs(const float3* _vertexes, const element_type* _elements, AABB* _bvs, int faceNum, int type = 0) {
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx >= faceNum) return;
     AABB _bv;
 
     element_type _e = _elements[idx];
-    double3 _v = _vertexes[_e.x];
+    float3 _v = _vertexes[_e.x];
     _bv.combines(_v.x, _v.y, _v.z);
     _v = _vertexes[_e.y];
     _bv.combines(_v.x, _v.y, _v.z);
@@ -923,8 +924,8 @@ void _calcLeafBvs(const double3* _vertexes, const element_type* _elements, AABB*
 
 template <class element_type>
 __global__
-void _calcLeafBvs_ccd(const double3* _vertexes, const double3* _moveDir, double alpha, const element_type* _elements, AABB* _bvs, int faceNum, int type = 0) {
-    int idx = threadIdx.x + blockIdx.x * blockDim.x;
+void _calcLeafBvs_ccd(const float3* _vertexes, const float3* _moveDir, float alpha, const element_type* _elements, AABB* _bvs, int faceNum, int type = 0) {
+    /*int idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx >= faceNum) return;
     AABB _bv;
 
@@ -945,7 +946,7 @@ void _calcLeafBvs_ccd(const double3* _vertexes, const double3* _moveDir, double 
         _bv.combines(_v.x, _v.y, _v.z);
         _bv.combines(_v.x - _mvD.x * alpha, _v.y - _mvD.y * alpha, _v.z - _mvD.z * alpha);
     }
-    _bvs[idx] = _bv;
+    _bvs[idx] = _bv;*/
 }
 
 __global__
@@ -953,9 +954,9 @@ void _calcMChash(uint64_t* _MChash, AABB* _bvs, int number) {
     uint32_t idx = threadIdx.x + blockIdx.x * blockDim.x;
     if (idx >= number) return;
     AABB maxBv = _bvs[0];
-    double3 SceneSize = make_double3(maxBv.upper.x - maxBv.lower.x, maxBv.upper.y - maxBv.lower.y, maxBv.upper.z - maxBv.lower.z);
-    double3 centerP = _bvs[idx + number - 1].center();
-    double3 offset = make_double3(centerP.x - maxBv.lower.x, centerP.y - maxBv.lower.y, centerP.z - maxBv.lower.z);
+    float3 SceneSize = make_float3(maxBv.upper.x - maxBv.lower.x, maxBv.upper.y - maxBv.lower.y, maxBv.upper.z - maxBv.lower.z);
+    float3 centerP = _bvs[idx + number - 1].center();
+    float3 offset = make_float3(centerP.x - maxBv.lower.x, centerP.y - maxBv.lower.y, centerP.z - maxBv.lower.z);
 
     //printf("%d   %f     %f     %f\n", offset.x, offset.y, offset.z);
     uint64_t mc32 = morton_code(offset.x / SceneSize.x, offset.y / SceneSize.y, offset.z / SceneSize.z);
@@ -1041,7 +1042,7 @@ void _sortBvs(const uint32_t* _indices, AABB* _bvs, AABB* _temp_bvs, int number)
 }
 
 __global__
-void _selfQuery_vf(const int* _btype, const double3* _vertexes, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes, int4* _collisionPair, int4* _ccd_collisionPair, uint32_t* _cpNum, int* MatIndex, double dHat, int number) {
+void _selfQuery_vf(const int* _btype, const float3* _vertexes, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes, int4* _collisionPair, int4* _ccd_collisionPair, uint32_t* _cpNum, int* MatIndex, float dHat, int number) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= number) return;
 
@@ -1053,10 +1054,10 @@ void _selfQuery_vf(const int* _btype, const double3* _vertexes, const uint3* _fa
     idx = _surfVerts[idx];
     _bv.upper = _vertexes[idx];
     _bv.lower = _vertexes[idx];
-    //double bboxDiagSize2 = __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(_bvs[0].upper, _bvs[0].lower));
+    //float bboxDiagSize2 = __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(_bvs[0].upper, _bvs[0].lower));
     //printf("%f\n", bboxDiagSize2);
-    double gapl = sqrt(dHat);//0.001 * sqrt(bboxDiagSize2);
-    //double dHat = gapl * gapl;// *bboxDiagSize2;
+    float gapl = sqrt(dHat);//0.001 * sqrt(bboxDiagSize2);
+    //float dHat = gapl * gapl;// *bboxDiagSize2;
     unsigned int num_found = 0;
     do
     {
@@ -1098,7 +1099,7 @@ void _selfQuery_vf(const int* _btype, const double3* _vertexes, const uint3* _fa
 }
 
 __global__
-void _selfQuery_vf_ccd(const int* _btype, const double3* _vertexes, const double3* moveDir, double alpha, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes, int4* _ccd_collisionPair, uint32_t* _cpNum, double dHat, int number) {
+void _selfQuery_vf_ccd(const int* _btype, const float3* _vertexes, const float3* moveDir, float alpha, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes, int4* _ccd_collisionPair, uint32_t* _cpNum, float dHat, int number) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= number) return;
 
@@ -1108,15 +1109,15 @@ void _selfQuery_vf_ccd(const int* _btype, const double3* _vertexes, const double
 
     AABB _bv;
     idx = _surfVerts[idx];
-    double3 current_vertex = _vertexes[idx];
-    double3 mvD = moveDir[idx];
+    float3 current_vertex = _vertexes[idx];
+    float3 mvD = moveDir[idx];
     _bv.upper = current_vertex;
     _bv.lower = current_vertex;
     _bv.combines(current_vertex.x - mvD.x * alpha, current_vertex.y - mvD.y * alpha, current_vertex.z - mvD.z * alpha);
-    //double bboxDiagSize2 = __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(_bvs[0].upper, _bvs[0].lower));
+    //float bboxDiagSize2 = __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(_bvs[0].upper, _bvs[0].lower));
     //printf("%f\n", bboxDiagSize2);
-    double gapl = sqrt(dHat);//0.001 * sqrt(bboxDiagSize2);
-    //double dHat = gapl * gapl;// *bboxDiagSize2;
+    float gapl = sqrt(dHat);//0.001 * sqrt(bboxDiagSize2);
+    //float dHat = gapl * gapl;// *bboxDiagSize2;
     unsigned int num_found = 0;
     do
     {
@@ -1161,7 +1162,7 @@ void _selfQuery_vf_ccd(const int* _btype, const double3* _vertexes, const double
 
 
 __global__
-void _selfQuery_ee(const int* _btype, const double3* _vertexes, const double3* _rest_vertexes, const uint2* _edges, const AABB* _bvs, const Node* _nodes, int4* _collisionPair, int4* _ccd_collisionPair, uint32_t* _cpNum, int* MatIndex, double dHat, int number) {
+void _selfQuery_ee(const int* _btype, const float3* _vertexes, const float3* _rest_vertexes, const uint2* _edges, const AABB* _bvs, const Node* _nodes, int4* _collisionPair, int4* _ccd_collisionPair, uint32_t* _cpNum, int* MatIndex, float dHat, int number) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= number) return;
 
@@ -1172,10 +1173,10 @@ void _selfQuery_ee(const int* _btype, const double3* _vertexes, const double3* _
     idx = idx + number - 1;
     AABB _bv = _bvs[idx];
     uint32_t self_eid = _nodes[idx].element_idx;
-    //double bboxDiagSize2 = __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(_bvs[0].upper, _bvs[0].lower));
+    //float bboxDiagSize2 = __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(_bvs[0].upper, _bvs[0].lower));
     //printf("%f\n", bboxDiagSize2);
-    double gapl = sqrt(dHat);//0.001 * sqrt(bboxDiagSize2);
-    //double dHat = gapl * gapl;// *bboxDiagSize2;
+    float gapl = sqrt(dHat);//0.001 * sqrt(bboxDiagSize2);
+    //float dHat = gapl * gapl;// *bboxDiagSize2;
     unsigned int num_found = 0;
     do
     {
@@ -1223,7 +1224,7 @@ void _selfQuery_ee(const int* _btype, const double3* _vertexes, const double3* _
 }
 
 __global__
-void _selfQuery_ee_ccd(const int* _btype, const double3* _vertexes, const double3* moveDir, double alpha, const uint2* _edges, const AABB* _bvs, const Node* _nodes, int4* _ccd_collisionPair, uint32_t* _cpNum, double dHat, int number) {
+void _selfQuery_ee_ccd(const int* _btype, const float3* _vertexes, const float3* moveDir, float alpha, const uint2* _edges, const AABB* _bvs, const Node* _nodes, int4* _ccd_collisionPair, uint32_t* _cpNum, float dHat, int number) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= number) return;
 
@@ -1234,11 +1235,11 @@ void _selfQuery_ee_ccd(const int* _btype, const double3* _vertexes, const double
     AABB _bv = _bvs[idx];
     uint32_t self_eid = _nodes[idx].element_idx;
     uint2 current_edge = _edges[self_eid];
-    //double3 edge_tvert0 = __GEIGEN__::__minus(_vertexes[current_edge.x], __GEIGEN__::__s_vec_multiply(moveDir[current_edge.x], alpha));
-    //double3 edge_tvert1 = __GEIGEN__::__minus(_vertexes[current_edge.y], __GEIGEN__::__s_vec_multiply(moveDir[current_edge.y], alpha));
+    //float3 edge_tvert0 = __GEIGEN__::__minus(_vertexes[current_edge.x], __GEIGEN__::__s_vec_multiply(moveDir[current_edge.x], alpha));
+    //float3 edge_tvert1 = __GEIGEN__::__minus(_vertexes[current_edge.y], __GEIGEN__::__s_vec_multiply(moveDir[current_edge.y], alpha));
     //_bv.combines(edge_tvert0.x, edge_tvert0.y, edge_tvert0.z);
     //_bv.combines(edge_tvert1.x, edge_tvert1.y, edge_tvert1.z);
-    double gapl = sqrt(dHat);
+    float gapl = sqrt(dHat);
 
     unsigned int num_found = 0;
     do
@@ -1318,7 +1319,7 @@ AABB calcMaxBV(AABB* _leafBoxes, AABB* _tempLeafBox, const int& number) {
 }
 
 template <class element_type>
-void calcLeafBvs(const double3* _vertexes, const element_type* _faces, AABB* _bvs, const int& faceNum, const int& type) {
+void calcLeafBvs(const float3* _vertexes, const element_type* _faces, AABB* _bvs, const int& faceNum, const int& type) {
     int numbers = faceNum;
     const unsigned int threadNum = default_threads;
     int blockNum = (numbers + threadNum - 1) / threadNum;
@@ -1326,11 +1327,11 @@ void calcLeafBvs(const double3* _vertexes, const element_type* _faces, AABB* _bv
 }
 
 template <class element_type>
-void calcLeafBvs_fullCCD(const double3* _vertexes, const double3* _moveDir, const double& alpha, const element_type* _faces, AABB* _bvs, const int& faceNum, const int& type) {
-    int numbers = faceNum;
+void calcLeafBvs_fullCCD(const float3* _vertexes, const float3* _moveDir, const float& alpha, const element_type* _faces, AABB* _bvs, const int& faceNum, const int& type) {
+   /* int numbers = faceNum;
     const unsigned int threadNum = default_threads;
     int blockNum = (numbers + threadNum - 1) / threadNum;
-    _calcLeafBvs_ccd << <blockNum, threadNum >> > (_vertexes, _moveDir, alpha, _faces, _bvs + numbers - 1, faceNum, type);
+    _calcLeafBvs_ccd << <blockNum, threadNum >> > (_vertexes, _moveDir, alpha, _faces, _bvs + numbers - 1, faceNum, type);*/
 }
 
 void calcMChash(uint64_t* _MChash, AABB* _bvs, int number) {
@@ -1378,7 +1379,7 @@ void sortBvs(const uint32_t* _indices, AABB* _bvs, AABB* _temp_bvs, int number) 
 }
 
 
-void selfQuery_ee(const int* _btype, const double3* _vertexes, const double3* _rest_vertexes, const uint2* _edges, const AABB* _bvs, const Node* _nodes, int4* _collisonPairs, int4* _ccd_collisonPairs, uint32_t* _cpNum, int* MatIndex, double dHat, int number) {
+void selfQuery_ee(const int* _btype, const float3* _vertexes, const float3* _rest_vertexes, const uint2* _edges, const AABB* _bvs, const Node* _nodes, int4* _collisonPairs, int4* _ccd_collisonPairs, uint32_t* _cpNum, int* MatIndex, float dHat, int number) {
     int numbers = number;
     const unsigned int threadNum = 256;
     int blockNum = (numbers + threadNum - 1) / threadNum;
@@ -1386,7 +1387,7 @@ void selfQuery_ee(const int* _btype, const double3* _vertexes, const double3* _r
     _selfQuery_ee << <blockNum, threadNum >> > (_btype, _vertexes, _rest_vertexes, _edges, _bvs, _nodes, _collisonPairs, _ccd_collisonPairs, _cpNum, MatIndex, dHat, numbers);
 }
 
-void fullCCDselfQuery_ee(const int* _btype, const double3* _vertexes, const double3* moveDir, const double& alpha, const uint2* _edges, const AABB* _bvs, const Node* _nodes, int4* _ccd_collisonPairs, uint32_t* _cpNum, double dHat, int number) {
+void fullCCDselfQuery_ee(const int* _btype, const float3* _vertexes, const float3* moveDir, const float& alpha, const uint2* _edges, const AABB* _bvs, const Node* _nodes, int4* _ccd_collisonPairs, uint32_t* _cpNum, float dHat, int number) {
     int numbers = number;
     const unsigned int threadNum = 256;
     int blockNum = (numbers + threadNum - 1) / threadNum;
@@ -1394,7 +1395,7 @@ void fullCCDselfQuery_ee(const int* _btype, const double3* _vertexes, const doub
     _selfQuery_ee_ccd << <blockNum, threadNum >> > (_btype, _vertexes, moveDir, alpha, _edges, _bvs, _nodes, _ccd_collisonPairs, _cpNum, dHat, numbers);
 }
 
-void selfQuery_vf(const int* _btype, const double3* _vertexes, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes, int4* _collisonPairs, int4* _ccd_collisonPairs, uint32_t* _cpNum, int* MatIndex, double dHat, int number) {
+void selfQuery_vf(const int* _btype, const float3* _vertexes, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes, int4* _collisonPairs, int4* _ccd_collisonPairs, uint32_t* _cpNum, int* MatIndex, float dHat, int number) {
     int numbers = number;
     const unsigned int threadNum = 256;
     int blockNum = (numbers + threadNum - 1) / threadNum;
@@ -1402,7 +1403,7 @@ void selfQuery_vf(const int* _btype, const double3* _vertexes, const uint3* _fac
     _selfQuery_vf << <blockNum, threadNum >> > (_btype, _vertexes, _faces, _surfVerts, _bvs, _nodes, _collisonPairs, _ccd_collisonPairs, _cpNum, MatIndex, dHat, numbers);
 }
 
-void fullCCDselfQuery_vf(const int* _btype, const double3* _vertexes, const double3* moveDir, const double& alpha, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes, int4* _ccd_collisonPairs, uint32_t* _cpNum, double dHat, int number) {
+void fullCCDselfQuery_vf(const int* _btype, const float3* _vertexes, const float3* moveDir, const float& alpha, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes, int4* _ccd_collisonPairs, uint32_t* _cpNum, float dHat, int number) {
     int numbers = number;
     const unsigned int threadNum = 256;
     int blockNum = (numbers + threadNum - 1) / threadNum;
@@ -1436,8 +1437,8 @@ lbvh::~lbvh() {
 
 
 
-void lbvh_f::init(int* _mbtype, double3* _mVerts, uint3* _mFaces, uint32_t* _mSurfVert,
-    int4* _mCollisonPairs, uint32_t* _mcpNum, const int& faceNum, const int& vertNum, Result<double>* contact_info) {
+void lbvh_f::init(int* _mbtype, float3* _mVerts, uint3* _mFaces, uint32_t* _mSurfVert,
+    int4* _mCollisonPairs, uint32_t* _mcpNum, const int& faceNum, const int& vertNum, Result<ADU::Real>* contact_info) {
     _faces = _mFaces;
     _surfVerts = _mSurfVert;
     _vertexes = _mVerts;
@@ -1451,8 +1452,8 @@ void lbvh_f::init(int* _mbtype, double3* _mVerts, uint3* _mFaces, uint32_t* _mSu
     MALLOC_DEVICE_MEM(face_number);
 }
 
-void lbvh_e::init(int* _mbtype, double3* _mVerts, double3* _mRest_vertexes, uint2* _mEdges,
-    int4* _mCollisonPairs, uint32_t* _mcpNum, const int& edgeNum, const int& vertNum, Result<double>* contact_info) {
+void lbvh_e::init(int* _mbtype, float3* _mVerts, float3* _mRest_vertexes, uint2* _mEdges,
+    int4* _mCollisonPairs, uint32_t* _mcpNum, const int& edgeNum, const int& vertNum, Result<ADU::Real>* contact_info) {
     _rest_vertexes = _mRest_vertexes;
     _edges = _mEdges;
     _vertexes = _mVerts;
@@ -1472,7 +1473,7 @@ AABB* lbvh_f::getSceneSize() {
     return _bvs;
 }
 
-double lbvh_f::Construct() {
+float lbvh_f::Construct() {
     calcLeafBvs(_vertexes, _faces, _bvs, face_number, 0);
     //CUDA_SAFE_CALL(cudaDeviceSynchronize());
     scene = calcMaxBV(_bvs, _tempLeafBox, face_number);
@@ -1487,8 +1488,8 @@ double lbvh_f::Construct() {
     return 0;//time0 + time1 + time2;
 }
 
-double lbvh_f::ConstructFullCCD(const double3* moveDir, const double& alpha) {
-    calcLeafBvs_fullCCD(_vertexes, moveDir, alpha, _faces, _bvs, face_number, 0);
+float lbvh_f::ConstructFullCCD(const float3* moveDir, const float& alpha) {
+    /*calcLeafBvs_fullCCD(_vertexes, moveDir, alpha, _faces, _bvs, face_number, 0);
     scene = calcMaxBV(_bvs, _tempLeafBox, face_number);
     calcMChash(_MChash, _bvs, face_number);
     thrust::sequence(thrust::device_ptr<uint32_t>(_indices), thrust::device_ptr<uint32_t>(_indices) + face_number);
@@ -1501,10 +1502,11 @@ double lbvh_f::ConstructFullCCD(const double3* moveDir, const double& alpha) {
     calcInternalNodes(_nodes, _MChash, face_number);
     calcInternalAABB(_nodes, _bvs, _flags, face_number);
 
+    return 0;*/
     return 0;
 }
 
-double lbvh_e::Construct() {
+float lbvh_e::Construct() {
 
     /*cudaEvent_t start, end0, end1, end2;
     cudaEventCreate(&start);
@@ -1545,8 +1547,8 @@ double lbvh_e::Construct() {
     //std::cout << "generation done: " << time0 + time1 + time2 << std::endl;
 }
 
-double lbvh_e::ConstructFullCCD(const double3* moveDir, const double& alpha) {
-    calcLeafBvs_fullCCD(_vertexes, moveDir, alpha, _edges, _bvs, edge_number, 1);
+float lbvh_e::ConstructFullCCD(const float3* moveDir, const float& alpha) {
+    /*calcLeafBvs_fullCCD(_vertexes, moveDir, alpha, _edges, _bvs, edge_number, 1);
     scene = calcMaxBV(_bvs, _tempLeafBox, edge_number);
     calcMChash(_MChash, _bvs, edge_number);
     thrust::sequence(thrust::device_ptr<uint32_t>(_indices), thrust::device_ptr<uint32_t>(_indices) + edge_number);
@@ -1560,29 +1562,30 @@ double lbvh_e::ConstructFullCCD(const double3* moveDir, const double& alpha) {
 
     calcInternalAABB(_nodes, _bvs, _flags, edge_number);
 
+    return 0;*/
     return 0;
 }
 
 
-void lbvh_f::SelfCollitionDetect(double dHat) {
+void lbvh_f::SelfCollitionDetect(float dHat) {
 
     selfQuery_vf(_btype, _vertexes, _faces, _surfVerts, _bvs, _nodes, _collisionPair, _ccd_collisionPair, _cpNum, _MatIndex, dHat, vert_number);
 
 }
 
-void lbvh_e::SelfCollitionDetect(double dHat) {
+void lbvh_e::SelfCollitionDetect(float dHat) {
 
     selfQuery_ee(_btype, _vertexes, _rest_vertexes, _edges, _bvs, _nodes, _collisionPair, _ccd_collisionPair, _cpNum, _MatIndex, dHat, edge_number);
 
 }
 
-void lbvh_f::SelfCollitionFullDetect(double dHat, const double3* moveDir, const double& alpha) {
+void lbvh_f::SelfCollitionFullDetect(float dHat, const float3* moveDir, const float& alpha) {
 
     fullCCDselfQuery_vf(_btype, _vertexes, moveDir, alpha, _faces, _surfVerts, _bvs, _nodes, _ccd_collisionPair, _cpNum, dHat, vert_number);
 
 }
 
-void lbvh_e::SelfCollitionFullDetect(double dHat, const double3* moveDir, const double& alpha) {
+void lbvh_e::SelfCollitionFullDetect(float dHat, const float3* moveDir, const float& alpha) {
 
     fullCCDselfQuery_ee(_btype, _vertexes, moveDir, alpha, _edges, _bvs, _nodes, _ccd_collisionPair, _cpNum, dHat, edge_number);
 
@@ -1632,19 +1635,19 @@ __device__ void sortThree(uint32_t& a, uint32_t& b, uint32_t& c) {
 
 
 __device__
-inline bool _checkDCDPointTriangle(const double3* _vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3,
-    const double& dHat, uint32_t* _cpNum, int4* _collisionPair, Result<double>* contact_info) noexcept
+inline bool _checkDCDPointTriangle(const float3* _vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3,
+    const float& dHat, uint32_t* _cpNum, int4* _collisionPair, Result<float>* contact_info) noexcept
 {
-    const double3& _v0 = _vertexes[id0];
-    const double3& _v1 = _vertexes[id1];
-    const double3& _v2 = _vertexes[id2];
-    const double3& _v3 = _vertexes[id3];
+    const float3& _v0 = _vertexes[id0];
+    const float3& _v1 = _vertexes[id1];
+    const float3& _v2 = _vertexes[id2];
+    const float3& _v3 = _vertexes[id3];
 
-    Eigen::Vector3d v0(_v0.x, _v0.y, _v0.z);
-    Eigen::Vector3d v1(_v1.x, _v1.y, _v1.z);
-    Eigen::Vector3d v2(_v2.x, _v2.y, _v2.z);
-    Eigen::Vector3d v3(_v3.x, _v3.y, _v3.z);
-    Result<double> res = dcdPT(v0, v1, v2, v3);
+    Eigen::Vector3f v0(_v0.x, _v0.y, _v0.z);
+    Eigen::Vector3f v1(_v1.x, _v1.y, _v1.z);
+    Eigen::Vector3f v2(_v2.x, _v2.y, _v2.z);
+    Eigen::Vector3f v3(_v3.x, _v3.y, _v3.z);
+    Result<float> res = dcdPT(v0, v1, v2, v3);
     if (res.distance < dHat && res.distance >= 0) {
         int cdp_idx = atomicAdd(_cpNum, 1);
         uint32_t id1_ = id1;
@@ -1659,20 +1662,20 @@ inline bool _checkDCDPointTriangle(const double3* _vertexes, const uint32_t& id0
 }
 
 __device__
-inline bool _checkDCDEdgeEdge(const double3* _vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3,
-    const double& dHat, uint32_t* _cpNum, int4* _collisionPair, Result<double>* contact_info) noexcept
+inline bool _checkDCDEdgeEdge(const float3* _vertexes, const uint32_t& id0, const uint32_t& id1, const uint32_t& id2, const uint32_t& id3,
+    const float& dHat, uint32_t* _cpNum, int4* _collisionPair, Result<float>* contact_info) noexcept
 {
-    const double3& _v0 = _vertexes[id0];
-    const double3& _v1 = _vertexes[id1];
-    const double3& _v2 = _vertexes[id2];
-    const double3& _v3 = _vertexes[id3];
+    const float3& _v0 = _vertexes[id0];
+    const float3& _v1 = _vertexes[id1];
+    const float3& _v2 = _vertexes[id2];
+    const float3& _v3 = _vertexes[id3];
 
-    Eigen::Vector3d v0(_v0.x, _v0.y, _v0.z);
-    Eigen::Vector3d v1(_v1.x, _v1.y, _v1.z);
-    Eigen::Vector3d v2(_v2.x, _v2.y, _v2.z);
-    Eigen::Vector3d v3(_v3.x, _v3.y, _v3.z);
-    Result<double> res = dcdEE(v0, v1, v2, v3);
-    //Result<double> res = dcdPT(v0, v1, v2, v3);
+    Eigen::Vector3f v0(_v0.x, _v0.y, _v0.z);
+    Eigen::Vector3f v1(_v1.x, _v1.y, _v1.z);
+    Eigen::Vector3f v2(_v2.x, _v2.y, _v2.z);
+    Eigen::Vector3f v3(_v3.x, _v3.y, _v3.z);
+    Result<float> res = dcdEE(v0, v1, v2, v3);
+    //Result<float> res = dcdPT(v0, v1, v2, v3);
     if (res.distance < dHat && res.distance >= 0) {
         int cdp_idx = atomicAdd(_cpNum, 1);
         /*uint32_t id0_ = id0 > id1 ? id1 : id0;
@@ -1696,8 +1699,8 @@ inline bool _checkDCDEdgeEdge(const double3* _vertexes, const uint32_t& id0, con
 }
 
 __global__
-void _dcd_vf(const double3* _vertexes, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes,
-    int4* _collisionPair, uint32_t* _cpNum, Result<double>* contact_info, double dHat, int number) {
+void _dcd_vf(const float3* _vertexes, const uint3* _faces, const uint32_t* _surfVerts, const AABB* _bvs, const Node* _nodes,
+    int4* _collisionPair, uint32_t* _cpNum, Result<float>* contact_info, float dHat, int number) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= number) return;
 
@@ -1709,11 +1712,11 @@ void _dcd_vf(const double3* _vertexes, const uint3* _faces, const uint32_t* _sur
     idx = _surfVerts[idx];
     _bv.upper = _vertexes[idx];
     _bv.lower = _vertexes[idx];
-    //double bboxDiagSize2 = __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(_bvs[0].upper, _bvs[0].lower));
+    //float bboxDiagSize2 = __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(_bvs[0].upper, _bvs[0].lower));
     //printf("%f\n", bboxDiagSize2);
-    //double gapl = sqrt(dHat);//0.001 * sqrt(bboxDiagSize2);
-    double gapl = dHat;//0.001 * sqrt(bboxDiagSize2);
-    //double dHat = gapl * gapl;// *bboxDiagSize2;
+    //float gapl = sqrt(dHat);//0.001 * sqrt(bboxDiagSize2);
+    float gapl = dHat;//0.001 * sqrt(bboxDiagSize2);
+    //float dHat = gapl * gapl;// *bboxDiagSize2;
     unsigned int num_found = 0;
     do
     {
@@ -1753,8 +1756,8 @@ void _dcd_vf(const double3* _vertexes, const uint3* _faces, const uint32_t* _sur
 }
 
 __global__
-void _dcd_ee(const double3* _vertexes, const uint2* _edges, const AABB* _bvs, const Node* _nodes,
-    int4* _collisionPair, uint32_t* _cpNum, Result<double>* contact_info, double dHat, int e_number, int t_number) {
+void _dcd_ee(const float3* _vertexes, const uint2* _edges, const AABB* _bvs, const Node* _nodes,
+    int4* _collisionPair, uint32_t* _cpNum, Result<float>* contact_info, float dHat, int e_number, int t_number) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= e_number) return;
 
@@ -1766,11 +1769,11 @@ void _dcd_ee(const double3* _vertexes, const uint2* _edges, const AABB* _bvs, co
     AABB _bv = _bvs[idx]; // leaf AABB
     uint32_t self_eid = _nodes[idx].element_idx;
 
-    //double bboxDiagSize2 = __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(_bvs[0].upper, _bvs[0].lower));
+    //float bboxDiagSize2 = __GEIGEN__::__squaredNorm(__GEIGEN__::__minus(_bvs[0].upper, _bvs[0].lower));
     //printf("%f\n", bboxDiagSize2);
-    //double gapl = sqrt(dHat);//0.001 * sqrt(bboxDiagSize2);
-    double gapl = dHat;//0.001 * sqrt(bboxDiagSize2);
-    //double dHat = gapl * gapl;// *bboxDiagSize2;
+    //float gapl = sqrt(dHat);//0.001 * sqrt(bboxDiagSize2);
+    float gapl = dHat;//0.001 * sqrt(bboxDiagSize2);
+    //float dHat = gapl * gapl;// *bboxDiagSize2;
 
     unsigned int num_found = 0;
     do
@@ -1818,7 +1821,7 @@ void _dcd_ee(const double3* _vertexes, const uint2* _edges, const AABB* _bvs, co
 }
 
 
-void lbvh_e::discreteCollisionDetection(double thickness) {
+void lbvh_e::discreteCollisionDetection(float thickness) {
     int numbers = this->edge_number;
     const unsigned int threadNum = 256;
     int blockNum = (numbers + threadNum - 1) / threadNum;
@@ -1829,7 +1832,7 @@ void lbvh_e::discreteCollisionDetection(double thickness) {
 }
 
 
-void lbvh_f::discreteCollisionDetection(double thickness) {
+void lbvh_f::discreteCollisionDetection(float thickness) {
     int numbers = this->vert_number;
     const unsigned int threadNum = 256;
     int blockNum = (numbers + threadNum - 1) / threadNum;

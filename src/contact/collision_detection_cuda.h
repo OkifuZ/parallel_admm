@@ -55,7 +55,7 @@ public:
     Solver* solver;
     MeshData* mesh;
 
-    double3* d_verts;
+    float3* d_verts;
     uint2* d_edges;
     uint3* d_faces;
     uint32_t* d_surfVertIdx;

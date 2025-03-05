@@ -47,13 +47,13 @@ void BVH_GPU::init() {
     this->e_num = edges.rows();
     this->t_num = tris.rows();
 
-    Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> verts_double = verts.cast<double>();
+    //Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> verts_double = verts.cast<double>();
 
-    CUDA_SAFE_CALL(cudaMalloc((void**)&d_verts, v_num * sizeof(double3)));
+    CUDA_SAFE_CALL(cudaMalloc((void**)&d_verts, v_num * sizeof(float3)));
     CUDA_SAFE_CALL(cudaMalloc((void**)&d_faces, t_num * sizeof(uint3)));
     CUDA_SAFE_CALL(cudaMalloc((void**)&d_edges, e_num * sizeof(uint2)));
     CUDA_SAFE_CALL(cudaMalloc((void**)&d_surfVertIdx, v_num * sizeof(uint32_t)));
-    CUDA_SAFE_CALL(cudaMalloc((void**)&d_contact_info, max_collision_number * sizeof(Result<double>)));
+    CUDA_SAFE_CALL(cudaMalloc((void**)&d_contact_info, max_collision_number * sizeof(Result<ADU::Real>)));
     CUDA_SAFE_CALL(cudaMalloc((void**)&d_collisonPairs, max_collision_number * sizeof(int4)));
     CUDA_SAFE_CALL(cudaMalloc((void**)&d_cpNum, sizeof(uint32_t)));
 
@@ -66,10 +66,10 @@ void BVH_GPU::init() {
     CUDA_SAFE_CALL(cudaMemcpy((void*)d_surfVertIdx, h_surfVertIdx.data(), v_num * sizeof(uint32_t), cudaMemcpyHostToDevice));
     CUDA_SAFE_CALL(cudaMemcpy((void*)d_faces, tris.data(), t_num * sizeof(uint3), cudaMemcpyHostToDevice));
     CUDA_SAFE_CALL(cudaMemcpy((void*)d_edges, edges.data(), e_num * sizeof(uint2), cudaMemcpyHostToDevice));
-    CUDA_SAFE_CALL(cudaMemcpy((void*)d_verts, verts_double.data(), v_num * sizeof(double3), cudaMemcpyHostToDevice));
+    CUDA_SAFE_CALL(cudaMemcpy((void*)d_verts, verts.data(), v_num * sizeof(float3), cudaMemcpyHostToDevice));
 
     CUDA_SAFE_CALL(cudaMemset((void*)d_cpNum, 0, sizeof(uint32_t)));
-    CUDA_SAFE_CALL(cudaMemset((void*)d_contact_info, 0, max_collision_number * sizeof(Result<double>)));
+    CUDA_SAFE_CALL(cudaMemset((void*)d_contact_info, 0, max_collision_number * sizeof(Result<ADU::Real>)));
     CUDA_SAFE_CALL(cudaMemset((void*)d_collisonPairs, 0, max_collision_number * sizeof(int4)));
 
     bvh_f.init(nullptr, d_verts, d_faces, d_surfVertIdx, d_collisonPairs, d_cpNum, t_num, v_num, d_contact_info);
@@ -102,9 +102,10 @@ void BVH_GPU::update(const ADU::Matf_X3& verts, bool copy_to_host) {
     this->e_num = edges.rows();
     this->t_num = tris.rows();
 
-    Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> verts_double = verts.cast<double>();
+    //Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> verts_double = verts.cast<double>();
 
-    CUDA_SAFE_CALL(cudaMemcpy(d_verts, verts_double.data(), v_num * sizeof(double3), cudaMemcpyHostToDevice));
+    //CUDA_SAFE_CALL(cudaMemcpy(d_verts, verts_double.data(), v_num * sizeof(double3), cudaMemcpyHostToDevice));
+    CUDA_SAFE_CALL(cudaMemcpy(d_verts, verts.data(), v_num * sizeof(float3), cudaMemcpyHostToDevice));
 
     bvh_f._vertexes = d_verts;
     bvh_e._vertexes = d_verts;
@@ -125,7 +126,7 @@ void BVH_GPU::update(ADU::Real* verts_device, int vnum, bool copy_to_host) {
     this->e_num = edges.rows();
     this->t_num = tris.rows();
 
-    d_verts = reinterpret_cast<double3*>(verts_device);
+    //d_verts = reinterpret_cast<double3*>(verts_device);
 
     bvh_f._vertexes = d_verts;
     bvh_e._vertexes = d_verts;
@@ -169,7 +170,7 @@ void BVH_GPU::convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct
     h_contact_info.resize(h_cpNum);
     h_collisionPairs.resize(h_cpNum);
 
-    CUDA_SAFE_CALL(cudaMemcpy((void*)h_contact_info.data(), (void*)d_contact_info, h_cpNum * sizeof(Result<double>), cudaMemcpyDeviceToHost));
+    CUDA_SAFE_CALL(cudaMemcpy((void*)h_contact_info.data(), (void*)d_contact_info, h_cpNum * sizeof(Result<float>), cudaMemcpyDeviceToHost));
     CUDA_SAFE_CALL(cudaMemcpy((void*)h_collisionPairs.data(), (void*)d_collisonPairs, h_cpNum * sizeof(int4), cudaMemcpyDeviceToHost));
 
 

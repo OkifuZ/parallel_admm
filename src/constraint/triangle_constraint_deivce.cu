@@ -25,9 +25,12 @@ void SVD_impl(const ADU::Matf_33& A_, ADU::Matf_33& U_, ADU::Vecf_3& S_, ADU::Ma
         V(1, 0), V(1, 1), V(1, 2),
         V(2, 0), V(2, 1), V(2, 2));
 
-    U_ = U.cast<double>();
+    /*U_ = U.cast<double>();
     V_ = V.cast<double>();
-    S_ = S.cast<double>();
+    S_ = S.cast<double>();*/
+    U_ = U;
+    V_ = V;
+    S_ = S;
 }
 
 

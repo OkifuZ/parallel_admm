@@ -13,24 +13,24 @@
 #include "zensim/math/bit/Bits.h"
 
 __device__
-double atomicAdd_double(double* address, double val)
+float atomicAdd_float(float* address, float val)
 {
-	unsigned long long int* address_as_ull =
+	/*unsigned long long int* address_as_ull =
 		(unsigned long long int*)address;
 	unsigned long long int old = *address_as_ull, assumed;
 	do {
 		assumed = old;
 		old = atomicCAS(address_as_ull, assumed,
-			__double_as_longlong(val +
-				__longlong_as_double(assumed)));
+			__float_as_longlong(val +
+				__longlong_as_float(assumed)));
 	} while (assumed != old);
-	return __longlong_as_double(old);
+	return __longlong_as_float(old);*/
 }
 
 
 namespace __GEIGEN__ {
 
-	__device__ __host__ void __init_Mat3x3(Matrix3x3d& M, const double& val) {
+	__device__ __host__ void __init_Mat3x3(Matrix3x3d& M, const float& val) {
 		for (int i = 0;i < 3;i++) {
 			for (int j = 0;j < 3;j++) {
 				M.m[i][j] = val;
@@ -38,7 +38,7 @@ namespace __GEIGEN__ {
 		}
 	}
 
-	__device__ __host__ void __init_Mat6x6(Matrix6x6d& M, const double& val) {
+	__device__ __host__ void __init_Mat6x6(Matrix6x6d& M, const float& val) {
 		for (int i = 0;i < 6;i++) {
 			for (int j = 0;j < 6;j++) {
 				M.m[i][j] = val;
@@ -46,7 +46,7 @@ namespace __GEIGEN__ {
 		}
 	}
 
-	__device__ __host__ void __init_Mat9x9(Matrix9x9d& M, const double& val) {
+	__device__ __host__ void __init_Mat9x9(Matrix9x9d& M, const float& val) {
 		for (int i = 0;i < 9;i++) {
 			for (int j = 0;j < 9;j++) {
 				M.m[i][j] = val;
@@ -67,30 +67,30 @@ namespace __GEIGEN__ {
 		}
 	}
 
-	__device__ __host__ double __mabs(const double& a) {
+	__device__ __host__ float __mabs(const float& a) {
 		return a > 0 ? a : -a;
 	}
 
-	__device__ __host__ double __norm(const double3& n) {
+	__device__ __host__ float __norm(const float3& n) {
 		return sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
 	}
 
-	__device__ __host__ double3 __s_vec_multiply(const double3& a, double b) {
-		return make_double3(a.x * b, a.y * b, a.z * b);
+	__device__ __host__ float3 __s_vec_multiply(const float3& a, float b) {
+		return make_float3(a.x * b, a.y * b, a.z * b);
 	}
 
-	__device__ __host__ double2 __s_vec_multiply(const double2& a, double b) {
-		return make_double2(a.x * b, a.y * b);
+	__device__ __host__ float2 __s_vec_multiply(const float2& a, float b) {
+		return make_float2(a.x * b, a.y * b);
 	}
 
-	__device__ __host__ double3 __normalized(double3 n) {
-		double norm = __norm(n);
+	__device__ __host__ float3 __normalized(float3 n) {
+		float norm = __norm(n);
 		norm = 1 / norm;
 		return __s_vec_multiply(n, norm);
 	}
 
-	__device__ __host__ double3 __add(double3 a, double3 b) {
-		return make_double3(a.x + b.x, a.y + b.y, a.z + b.z);
+	__device__ __host__ float3 __add(float3 a, float3 b) {
+		return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
 	}
 
 	__device__ __host__ Vector9 __add9(const Vector9& a, const Vector9& b) {
@@ -109,27 +109,27 @@ namespace __GEIGEN__ {
 		return V;
 	}
 
-	__device__ __host__ double3 __minus(double3 a, double3 b) {
-		return make_double3(a.x - b.x, a.y - b.y, a.z - b.z);
+	__device__ __host__ float3 __minus(float3 a, float3 b) {
+		return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
 	}
 
-	__device__ __host__ double2 __minus_v2(double2 a, double2 b) {
-		return make_double2(a.x - b.x, a.y - b.y);
+	__device__ __host__ float2 __minus_v2(float2 a, float2 b) {
+		return make_float2(a.x - b.x, a.y - b.y);
 	}
 
-	__device__ __host__ double3 __v_vec_multiply(double3 a, double3 b) {
-		return make_double3(a.x * b.x, a.y * b.y, a.z * b.z);
+	__device__ __host__ float3 __v_vec_multiply(float3 a, float3 b) {
+		return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
 	}
 
-	__device__ __host__ double __v2_vec_multiply(double2 a, double2 b) {
+	__device__ __host__ float __v2_vec_multiply(float2 a, float2 b) {
 		return a.x * b.x + a.y * b.y;
 	}
 
-	__device__ __host__ double __squaredNorm(double3 a) {
+	__device__ __host__ float __squaredNorm(float3 a) {
 		return a.x * a.x + a.y * a.y + a.z * a.z;
 	}
 
-	__device__ __host__ double __squaredNorm(double2 a)
+	__device__ __host__ float __squaredNorm(float2 a)
 	{
 		return  a.x * a.x + a.y * a.y;
 	}
@@ -137,7 +137,7 @@ namespace __GEIGEN__ {
 	__device__ __host__ void __M_Mat_multiply(const Matrix3x3d& A, const Matrix3x3d& B, Matrix3x3d& output) {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 3; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 				}
@@ -151,7 +151,7 @@ namespace __GEIGEN__ {
 		Matrix3x3d output;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 3; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 				}
@@ -165,7 +165,7 @@ namespace __GEIGEN__ {
 		Matrix2x2d output;
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 2; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 				}
@@ -175,29 +175,29 @@ namespace __GEIGEN__ {
 		return output;
 	}
 
-	__device__ __host__ double __Mat_Trace(const Matrix3x3d& A) {
+	__device__ __host__ float __Mat_Trace(const Matrix3x3d& A) {
 		return A.m[0][0] + A.m[1][1] + A.m[2][2];
 	}
 
-	__device__ __host__ double3 __v_M_multiply(const double3& n, const Matrix3x3d& A) {
-		double x = A.m[0][0] * n.x + A.m[1][0] * n.y + A.m[2][0] * n.z;
-		double y = A.m[0][1] * n.x + A.m[1][1] * n.y + A.m[2][1] * n.z;
-		double z = A.m[0][2] * n.x + A.m[1][2] * n.y + A.m[2][2] * n.z;
-		return make_double3(x, y, z);
+	__device__ __host__ float3 __v_M_multiply(const float3& n, const Matrix3x3d& A) {
+		float x = A.m[0][0] * n.x + A.m[1][0] * n.y + A.m[2][0] * n.z;
+		float y = A.m[0][1] * n.x + A.m[1][1] * n.y + A.m[2][1] * n.z;
+		float z = A.m[0][2] * n.x + A.m[1][2] * n.y + A.m[2][2] * n.z;
+		return make_float3(x, y, z);
 	}
 
-	__device__ __host__ double3 __M_v_multiply(const Matrix3x3d& A, const double3& n) {
-		double x = A.m[0][0] * n.x + A.m[0][1] * n.y + A.m[0][2] * n.z;
-		double y = A.m[1][0] * n.x + A.m[1][1] * n.y + A.m[1][2] * n.z;
-		double z = A.m[2][0] * n.x + A.m[2][1] * n.y + A.m[2][2] * n.z;
-		return make_double3(x, y, z);
+	__device__ __host__ float3 __M_v_multiply(const Matrix3x3d& A, const float3& n) {
+		float x = A.m[0][0] * n.x + A.m[0][1] * n.y + A.m[0][2] * n.z;
+		float y = A.m[1][0] * n.x + A.m[1][1] * n.y + A.m[1][2] * n.z;
+		float z = A.m[2][0] * n.x + A.m[2][1] * n.y + A.m[2][2] * n.z;
+		return make_float3(x, y, z);
 	}
 
-	__device__ __host__ double3 __M3x2_v2_multiply(const Matrix3x2d& A, const double2& n) {
-		double x = A.m[0][0] * n.x + A.m[0][1] * n.y;// +A.m[0][2] * n.z;
-		double y = A.m[1][0] * n.x + A.m[1][1] * n.y;// +A.m[1][2] * n.z;
-		double z = A.m[2][0] * n.x + A.m[2][1] * n.y;// +A.m[2][2] * n.z;
-		return make_double3(x, y, z);
+	__device__ __host__ float3 __M3x2_v2_multiply(const Matrix3x2d& A, const float2& n) {
+		float x = A.m[0][0] * n.x + A.m[0][1] * n.y;// +A.m[0][2] * n.z;
+		float y = A.m[1][0] * n.x + A.m[1][1] * n.y;// +A.m[1][2] * n.z;
+		float z = A.m[2][0] * n.x + A.m[2][1] * n.y;// +A.m[2][2] * n.z;
+		return make_float3(x, y, z);
 	}
 
 	__device__ __host__ Matrix3x2d __Mat3x2_add(const Matrix3x2d& A, const Matrix3x2d& B) {
@@ -210,7 +210,7 @@ namespace __GEIGEN__ {
 		return output;
 	}
 
-	__device__ __host__ Matrix3x2d __S_Mat3x2_multiply(const Matrix3x2d& A, const double& b) {
+	__device__ __host__ Matrix3x2d __S_Mat3x2_multiply(const Matrix3x2d& A, const float& b) {
 		Matrix3x2d output;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 2; j++) {
@@ -223,7 +223,7 @@ namespace __GEIGEN__ {
 	__device__ __host__ Vector12 __M12x9_v9_multiply(const Matrix12x9d& A, const Vector9& n) {
 		Vector12 v12;
 		for (int i = 0;i < 12;i++) {
-			double temp = 0;
+			float temp = 0;
 			for (int j = 0;j < 9;j++) {
 				temp += A.m[i][j] * n.v[j];
 			}
@@ -235,7 +235,7 @@ namespace __GEIGEN__ {
 	__device__ __host__ Vector12 __M12x6_v6_multiply(const Matrix12x6d& A, const Vector6& n) {
 		Vector12 v12;
 		for (int i = 0;i < 12;i++) {
-			double temp = 0;
+			float temp = 0;
 			for (int j = 0;j < 6;j++) {
 				temp += A.m[i][j] * n.v[j];
 			}
@@ -244,11 +244,11 @@ namespace __GEIGEN__ {
 		return v12;
 	}
 
-	__device__ __host__ Vector6 __M6x3_v3_multiply(const Matrix6x3d& A, const double3& n) {
+	__device__ __host__ Vector6 __M6x3_v3_multiply(const Matrix6x3d& A, const float3& n) {
 		Vector6 v6;
 		for (int i = 0;i < 6;i++) {
 
-			double temp = A.m[i][0] * n.x;
+			float temp = A.m[i][0] * n.x;
 			temp += A.m[i][1] * n.y;
 			temp += A.m[i][2] * n.z;
 
@@ -257,8 +257,8 @@ namespace __GEIGEN__ {
 		return v6;
 	}
 
-	__device__ __host__ double2 __M2x3_v3_multiply(const Matrix2x3d& A, const double3& n) {
-		double2 output;
+	__device__ __host__ float2 __M2x3_v3_multiply(const Matrix2x3d& A, const float3& n) {
+		float2 output;
 		output.x = A.m[0][0] * n.x + A.m[0][1] * n.y + A.m[0][2] * n.z;
 		output.y = A.m[1][0] * n.x + A.m[1][1] * n.y + A.m[1][2] * n.z;
 		return output;
@@ -267,7 +267,7 @@ namespace __GEIGEN__ {
 	__device__ __host__ Vector9 __M9x6_v6_multiply(const Matrix9x6d& A, const Vector6& n) {
 		Vector9 v9;
 		for (int i = 0;i < 9;i++) {
-			double temp = 0;
+			float temp = 0;
 			for (int j = 0;j < 6;j++) {
 				temp += A.m[i][j] * n.v[j];
 			}
@@ -279,7 +279,7 @@ namespace __GEIGEN__ {
 	__device__ __host__ Vector12 __M12x12_v12_multiply(const Matrix12x12d& A, const Vector12& n) {
 		Vector12 v12;
 		for (int i = 0;i < 12;i++) {
-			double temp = 0;
+			float temp = 0;
 			for (int j = 0;j < 12;j++) {
 				temp += A.m[i][j] * n.v[j];
 			}
@@ -291,7 +291,7 @@ namespace __GEIGEN__ {
 	__device__ __host__ Vector9 __M9x9_v9_multiply(const Matrix9x9d& A, const Vector9& n) {
 		Vector9 v9;
 		for (int i = 0;i < 9;i++) {
-			double temp = 0;
+			float temp = 0;
 			for (int j = 0;j < 9;j++) {
 				temp += A.m[i][j] * n.v[j];
 			}
@@ -303,7 +303,7 @@ namespace __GEIGEN__ {
 	__device__ __host__ Vector6 __M6x6_v6_multiply(const Matrix6x6d& A, const Vector6& n) {
 		Vector6 v6;
 		for (int i = 0;i < 6;i++) {
-			double temp = 0;
+			float temp = 0;
 			for (int j = 0;j < 6;j++) {
 				temp += A.m[i][j] * n.v[j];
 			}
@@ -312,7 +312,7 @@ namespace __GEIGEN__ {
 		return v6;
 	}
 
-	__device__ __host__ Matrix9x9d __S_Mat9x9_multiply(const Matrix9x9d& A, const double& B) {
+	__device__ __host__ Matrix9x9d __S_Mat9x9_multiply(const Matrix9x9d& A, const float& B) {
 		Matrix9x9d output;
 		for (int i = 0;i < 9;i++) {
 			for (int j = 0;j < 9;j++) {
@@ -322,7 +322,7 @@ namespace __GEIGEN__ {
 		return output;
 	}
 
-	__device__ __host__ Matrix6x6d __S_Mat6x6_multiply(const Matrix6x6d& A, const double& B) {
+	__device__ __host__ Matrix6x6d __S_Mat6x6_multiply(const Matrix6x6d& A, const float& B) {
 		Matrix6x6d output;
 		for (int i = 0;i < 6;i++) {
 			for (int j = 0;j < 6;j++) {
@@ -332,15 +332,15 @@ namespace __GEIGEN__ {
 		return output;
 	}
 
-	__device__ __host__ double __v_vec_dot(const double3& a, const double3& b) {
+	__device__ __host__ float __v_vec_dot(const float3& a, const float3& b) {
 		return a.x * b.x + a.y * b.y + a.z * b.z;
 	}
 
-	__device__ __host__ double3 __v_vec_cross(double3 a, double3 b) {
-		return make_double3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+	__device__ __host__ float3 __v_vec_cross(float3 a, float3 b) {
+		return make_float3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 	}
 
-	__device__ __host__ Matrix3x3d __v_vec_toMat(double3 a, double3 b) {
+	__device__ __host__ Matrix3x3d __v_vec_toMat(float3 a, float3 b) {
 		Matrix3x3d M;
 		M.m[0][0] = a.x * b.x;M.m[0][1] = a.x * b.y;M.m[0][2] = a.x * b.z;
 		M.m[1][0] = a.y * b.x;M.m[1][1] = a.y * b.y;M.m[1][2] = a.y * b.z;
@@ -348,14 +348,14 @@ namespace __GEIGEN__ {
 		return M;
 	}
 
-	__device__ __host__ Matrix2x2d __v2_vec2_toMat2x2(double2 a, double2 b) {
+	__device__ __host__ Matrix2x2d __v2_vec2_toMat2x2(float2 a, float2 b) {
 		Matrix2x2d M;
 		M.m[0][0] = a.x * b.x;M.m[0][1] = a.x * b.y;
 		M.m[1][0] = a.y * b.x;M.m[1][1] = a.y * b.y;
 		return M;
 	}
 
-	__device__ __host__ Matrix2x2d __s_Mat2x2_multiply(Matrix2x2d A, double b)
+	__device__ __host__ Matrix2x2d __s_Mat2x2_multiply(Matrix2x2d A, float b)
 	{
 		Matrix2x2d output;
 		for (int i = 0; i < 2; i++) {
@@ -388,7 +388,7 @@ namespace __GEIGEN__ {
 		return output;
 	}
 
-	__device__ __host__ Matrix9x9d __v9_vec9_toMat9x9(const Vector9& a, const Vector9& b, const double& coe) {
+	__device__ __host__ Matrix9x9d __v9_vec9_toMat9x9(const Vector9& a, const Vector9& b, const float& coe) {
 		Matrix9x9d M;
 		for (int i = 0;i < 9;i++) {
 			for (int j = 0;j < 9;j++) {
@@ -408,21 +408,21 @@ namespace __GEIGEN__ {
 		return M;
 	}
 
-	__device__ __host__ Vector9 __s_vec9_multiply(Vector9 a, double b) {
+	__device__ __host__ Vector9 __s_vec9_multiply(Vector9 a, float b) {
 		Vector9 V;
 		for (int i = 0;i < 9;i++)
 			V.v[i] = a.v[i] * b;
 		return V;
 	}
 
-	__device__ __host__ Vector12 __s_vec12_multiply(Vector12 a, double b) {
+	__device__ __host__ Vector12 __s_vec12_multiply(Vector12 a, float b) {
 		Vector12 V;
 		for (int i = 0;i < 12;i++)
 			V.v[i] = a.v[i] * b;
 		return V;
 	}
 
-	__device__ __host__ Vector6 __s_vec6_multiply(Vector6 a, double b) {
+	__device__ __host__ Vector6 __s_vec6_multiply(Vector6 a, float b) {
 		Vector6 V;
 		for (int i = 0;i < 6;i++)
 			V.v[i] = a.v[i] * b;
@@ -505,38 +505,38 @@ namespace __GEIGEN__ {
 		M.m[1][1] = 1;
 	}
 
-	__device__ __host__ void __set_Mat_val(Matrix3x3d& M, const double& a00, const double& a01, const double& a02,
-		const double& a10, const double& a11, const double& a12,
-		const double& a20, const double& a21, const double& a22) {
+	__device__ __host__ void __set_Mat_val(Matrix3x3d& M, const float& a00, const float& a01, const float& a02,
+		const float& a10, const float& a11, const float& a12,
+		const float& a20, const float& a21, const float& a22) {
 		M.m[0][0] = a00;M.m[0][1] = a01;M.m[0][2] = a02;
 		M.m[1][0] = a10;M.m[1][1] = a11;M.m[1][2] = a12;
 		M.m[2][0] = a20;M.m[2][1] = a21;M.m[2][2] = a22;
 	}
 
-	__device__ __host__ void __set_Mat_val_row(Matrix3x3d& M, const double3& row0, const double3& row1, const double3& row2) {
+	__device__ __host__ void __set_Mat_val_row(Matrix3x3d& M, const float3& row0, const float3& row1, const float3& row2) {
 		M.m[0][0] = row0.x;M.m[0][1] = row0.y;M.m[0][2] = row0.z;
 		M.m[1][0] = row1.x;M.m[1][1] = row1.y;M.m[1][2] = row1.z;
 		M.m[2][0] = row2.x;M.m[2][1] = row2.y;M.m[2][2] = row2.z;
 	}
 
-	__device__ __host__ void __set_Mat_val_column(Matrix3x3d& M, const double3& col0, const double3& col1, const double3& col2) {
+	__device__ __host__ void __set_Mat_val_column(Matrix3x3d& M, const float3& col0, const float3& col1, const float3& col2) {
 		M.m[0][0] = col0.x;M.m[0][1] = col1.x;M.m[0][2] = col2.x;
 		M.m[1][0] = col0.y;M.m[1][1] = col1.y;M.m[1][2] = col2.y;
 		M.m[2][0] = col0.z;M.m[2][1] = col1.z;M.m[2][2] = col2.z;
 	}
 
-	__device__ __host__ void __set_Mat3x2_val_column(Matrix3x2d& M, const double3& col0, const double3& col1) {
+	__device__ __host__ void __set_Mat3x2_val_column(Matrix3x2d& M, const float3& col0, const float3& col1) {
 		M.m[0][0] = col0.x;M.m[0][1] = col1.x;
 		M.m[1][0] = col0.y;M.m[1][1] = col1.y;
 		M.m[2][0] = col0.z;M.m[2][1] = col1.z;
 	}
 
-	__device__ __host__ void __set_Mat2x2_val_column(Matrix2x2d& M, const double2& col0, const double2& col1) {
+	__device__ __host__ void __set_Mat2x2_val_column(Matrix2x2d& M, const float2& col0, const float2& col1) {
 		M.m[0][0] = col0.x;M.m[0][1] = col1.x;
 		M.m[1][0] = col0.y;M.m[1][1] = col1.y;
 	}
 
-	__device__ __host__ void __init_Mat9x12_val(Matrix9x12d& M, const double& val) {
+	__device__ __host__ void __init_Mat9x12_val(Matrix9x12d& M, const float& val) {
 		for (int i = 0;i < 9;i++) {
 			for (int j = 0;j < 12;j++) {
 				M.m[i][j] = val;
@@ -544,7 +544,7 @@ namespace __GEIGEN__ {
 		}
 	}
 
-	__device__ __host__ void __init_Mat6x12_val(Matrix6x12d& M, const double& val) {
+	__device__ __host__ void __init_Mat6x12_val(Matrix6x12d& M, const float& val) {
 		for (int i = 0;i < 6;i++) {
 			for (int j = 0;j < 12;j++) {
 				M.m[i][j] = val;
@@ -552,7 +552,7 @@ namespace __GEIGEN__ {
 		}
 	}
 
-	__device__ __host__ void __init_Mat6x9_val(Matrix6x9d& M, const double& val) {
+	__device__ __host__ void __init_Mat6x9_val(Matrix6x9d& M, const float& val) {
 		for (int i = 0;i < 6;i++) {
 			for (int j = 0;j < 9;j++) {
 				M.m[i][j] = val;
@@ -560,7 +560,7 @@ namespace __GEIGEN__ {
 		}
 	}
 
-	__device__ __host__ void __init_Mat3x6_val(Matrix3x6d& M, const double& val) {
+	__device__ __host__ void __init_Mat3x6_val(Matrix3x6d& M, const float& val) {
 		for (int i = 0;i < 3;i++) {
 			for (int j = 0;j < 6;j++) {
 				M.m[i][j] = val;
@@ -568,7 +568,7 @@ namespace __GEIGEN__ {
 		}
 	}
 
-	__device__ __host__ Matrix3x3d __S_Mat_multiply(const Matrix3x3d& A, const double& B) {
+	__device__ __host__ Matrix3x3d __S_Mat_multiply(const Matrix3x3d& A, const float& B) {
 		Matrix3x3d output;
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 3; j++)
@@ -653,7 +653,7 @@ namespace __GEIGEN__ {
 		Matrix12x9d output;
 		for (int i = 0; i < 12; i++) {
 			for (int j = 0; j < 9; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 9; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 
@@ -668,7 +668,7 @@ namespace __GEIGEN__ {
 		Matrix12x6d output;
 		for (int i = 0; i < 12; i++) {
 			for (int j = 0; j < 6; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 6; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 
@@ -683,7 +683,7 @@ namespace __GEIGEN__ {
 		Matrix9x6d output;
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 6; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 6; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 
@@ -698,7 +698,7 @@ namespace __GEIGEN__ {
 		Matrix6x3d output;
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 3; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 3; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 
@@ -713,7 +713,7 @@ namespace __GEIGEN__ {
 		Matrix3x2d output;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 2; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 2; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 
@@ -728,7 +728,7 @@ namespace __GEIGEN__ {
 		Matrix12x12d output;
 		for (int i = 0; i < 12; i++) {
 			for (int j = 0; j < 12; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 9; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 				}
@@ -742,7 +742,7 @@ namespace __GEIGEN__ {
 		Matrix12x2d output;
 		for (int i = 0; i < 12; i++) {
 			for (int j = 0; j < 2; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 2; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 				}
@@ -757,7 +757,7 @@ namespace __GEIGEN__ {
 		Matrix9x2d output;
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 2; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 2; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 				}
@@ -772,7 +772,7 @@ namespace __GEIGEN__ {
 		Matrix6x2d output;
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 2; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 2; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 				}
@@ -786,7 +786,7 @@ namespace __GEIGEN__ {
 		Matrix12x12d output;
 		for (int i = 0; i < 12; i++) {
 			for (int j = 0; j < 12; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 2; k++) {
 					temp += A.m[i][k] * B.m[j][k];
 				}
@@ -801,7 +801,7 @@ namespace __GEIGEN__ {
 		Matrix9x9d output;
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 2; k++) {
 					temp += A.m[i][k] * B.m[j][k];
 				}
@@ -816,7 +816,7 @@ namespace __GEIGEN__ {
 		Matrix6x6d output;
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 6; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 2; k++) {
 					temp += A.m[i][k] * B.m[j][k];
 				}
@@ -830,7 +830,7 @@ namespace __GEIGEN__ {
 		Matrix12x12d output;
 		for (int i = 0; i < 12; i++) {
 			for (int j = 0; j < 12; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 6; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 				}
@@ -844,7 +844,7 @@ namespace __GEIGEN__ {
 		Matrix9x9d output;
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 6; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 				}
@@ -858,7 +858,7 @@ namespace __GEIGEN__ {
 		Matrix6x6d output;
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 6; j++) {
-				double temp = 0;
+				float temp = 0;
 				for (int k = 0; k < 3; k++) {
 					temp += A.m[i][k] * B.m[k][j];
 				}
@@ -868,7 +868,7 @@ namespace __GEIGEN__ {
 		return output;
 	}
 
-	__device__ __host__ Matrix12x12d __s_M12x12_Multiply(const Matrix12x12d& A, const double& B) {
+	__device__ __host__ Matrix12x12d __s_M12x12_Multiply(const Matrix12x12d& A, const float& B) {
 		Matrix12x12d output;
 		for (int i = 0; i < 12; i++)
 			for (int j = 0; j < 12; j++)
@@ -876,7 +876,7 @@ namespace __GEIGEN__ {
 		return output;
 	}
 
-	__device__ __host__ Matrix9x9d __s_M9x9_Multiply(const Matrix9x9d& A, const double& B)
+	__device__ __host__ Matrix9x9d __s_M9x9_Multiply(const Matrix9x9d& A, const float& B)
 	{
 		Matrix9x9d output;
 		for (int i = 0; i < 9; i++)
@@ -885,7 +885,7 @@ namespace __GEIGEN__ {
 		return output;
 	}
 
-	__device__ __host__ Matrix6x6d __s_M6x6_Multiply(const Matrix6x6d& A, const double& B)
+	__device__ __host__ Matrix6x6d __s_M6x6_Multiply(const Matrix6x6d& A, const float& B)
 	{
 		Matrix6x6d output;
 		for (int i = 0; i < 6; i++)
@@ -894,7 +894,7 @@ namespace __GEIGEN__ {
 		return output;
 	}
 
-	__device__ __host__ void __Determiant(const Matrix3x3d& input, double& determinant) {
+	__device__ __host__ void __Determiant(const Matrix3x3d& input, float& determinant) {
 		determinant = input.m[0][0] * input.m[1][1] * input.m[2][2] +
 			input.m[1][0] * input.m[2][1] * input.m[0][2] +
 			input.m[2][0] * input.m[0][1] * input.m[1][2] -
@@ -903,7 +903,7 @@ namespace __GEIGEN__ {
 			input.m[0][1] * input.m[1][0] * input.m[2][2];
 	}
 
-	__device__ __host__ double __Determiant(const Matrix3x3d& input) {
+	__device__ __host__ float __Determiant(const Matrix3x3d& input) {
 		return input.m[0][0] * input.m[1][1] * input.m[2][2] +
 			input.m[1][0] * input.m[2][1] * input.m[0][2] +
 			input.m[2][0] * input.m[0][1] * input.m[1][2] -
@@ -924,7 +924,7 @@ namespace __GEIGEN__ {
 
 	//	for (int i = 0; i < 3; ++i) {
 	//		int pr, pc;
-	//		double maxValue = -1e32;
+	//		float maxValue = -1e32;
 	//		for (int j = 0; j < 3; ++j) {
 	//			if (pivot[j] != 1) {
 	//				for (int k = 0; k < 3; ++k) {
@@ -939,7 +939,7 @@ namespace __GEIGEN__ {
 	//			}
 	//		}
 	//		if (pr != pc) {
-	//			double pv;
+	//			float pv;
 	//			for (int j = 0; j < 3; ++j) {
 	//				pv = output.m[pr][j];
 	//				output.m[pr][j] = output.m[pc][j];
@@ -949,14 +949,14 @@ namespace __GEIGEN__ {
 	//		swapC[i] = pc;
 	//		swapR[i] = pr;
 	//		++pivot[i];
-	//		double inv = 1.f / output.m[pc][pc];
+	//		float inv = 1.f / output.m[pc][pc];
 	//		output.m[pc][pc] = 1;
 	//		for (int j = 0; j < 3; ++j) {
 	//			output.m[pc][j] *= inv;
 	//		}
 	//		for (int j = 0; j < 3; ++j) {
 	//			if (j != pc) {
-	//				double powerRatio = output.m[j][pc];
+	//				float powerRatio = output.m[j][pc];
 	//				output.m[j][pc] = 0.f;
 	//				for (int k = 0; k < 3; ++k) {
 	//					output.m[j][k] -= output.m[pc][k] * powerRatio;
@@ -966,7 +966,7 @@ namespace __GEIGEN__ {
 	//	}
 	//	for (int i = 0; i < 3; ++i) {
 	//		if (swapR[i] != swapC[i]) {
-	//			double pv;
+	//			float pv;
 	//			for (int j = 0; j < 3; ++j) {
 	//				pv = output.m[j][swapC[i]];
 	//				output.m[j][swapC[i]] = output.m[j][swapR[i]];
@@ -977,9 +977,9 @@ namespace __GEIGEN__ {
 	//}
 
 	__device__ __host__ void __Inverse(const Matrix3x3d& input, Matrix3x3d& result) {
-		double eps = 1e-15;
+		float eps = 1e-15;
 		const int dim = 3;
-		double mat[dim][dim * 2];
+		float mat[dim][dim * 2];
 		for (int i = 0;i < dim; i++)
 		{
 			for (int j = 0;j < 2 * dim; j++)
@@ -1010,7 +1010,7 @@ namespace __GEIGEN__ {
 					mat[i][r] += mat[j][r];
 				}
 			}
-			double ep = mat[i][i];
+			float ep = mat[i][i];
 			for (int r = i; r < 2 * dim; r++)
 			{
 				mat[i][r] /= ep;
@@ -1018,7 +1018,7 @@ namespace __GEIGEN__ {
 
 			for (int j = i + 1; j < dim; j++)
 			{
-				double e = -1 * (mat[j][i] / mat[i][i]);
+				float e = -1 * (mat[j][i] / mat[i][i]);
 				for (int r = i; r < 2 * dim; r++)
 				{
 					mat[j][r] += e * mat[i][r];
@@ -1030,7 +1030,7 @@ namespace __GEIGEN__ {
 		{
 			for (int j = i - 1; j >= 0; j--)
 			{
-				double e = -1 * (mat[j][i] / mat[i][i]);
+				float e = -1 * (mat[j][i] / mat[i][i]);
 				for (int r = i; r < 2 * dim; r++)
 				{
 					mat[j][r] += e * mat[i][r];
@@ -1049,9 +1049,9 @@ namespace __GEIGEN__ {
 	}
 
 	__device__ __host__ void __Inverse2x2(const Matrix2x2d& input, Matrix2x2d& result) {
-		double eps = 1e-15;
+		float eps = 1e-15;
 		const int dim = 2;
-		double mat[dim][dim * 2];
+		float mat[dim][dim * 2];
 		for (int i = 0;i < dim; i++)
 		{
 			for (int j = 0;j < 2 * dim; j++)
@@ -1082,7 +1082,7 @@ namespace __GEIGEN__ {
 					mat[i][r] += mat[j][r];
 				}
 			}
-			double ep = mat[i][i];
+			float ep = mat[i][i];
 			for (int r = i; r < 2 * dim; r++)
 			{
 				mat[i][r] /= ep;
@@ -1090,7 +1090,7 @@ namespace __GEIGEN__ {
 
 			for (int j = i + 1; j < dim; j++)
 			{
-				double e = -1 * (mat[j][i] / mat[i][i]);
+				float e = -1 * (mat[j][i] / mat[i][i]);
 				for (int r = i; r < 2 * dim; r++)
 				{
 					mat[j][r] += e * mat[i][r];
@@ -1102,7 +1102,7 @@ namespace __GEIGEN__ {
 		{
 			for (int j = i - 1; j >= 0; j--)
 			{
-				double e = -1 * (mat[j][i] / mat[i][i]);
+				float e = -1 * (mat[j][i] / mat[i][i]);
 				for (int r = i; r < 2 * dim; r++)
 				{
 					mat[j][r] += e * mat[i][r];
@@ -1120,38 +1120,38 @@ namespace __GEIGEN__ {
 		}
 	}
 
-	__device__ __host__ double __f(const double& x, const double& a, const double& b, const double& c, const double& d) {
-		double f = a * x * x * x + b * x * x + c * x + d;
+	__device__ __host__ float __f(const float& x, const float& a, const float& b, const float& c, const float& d) {
+		float f = a * x * x * x + b * x * x + c * x + d;
 		return f;
 	}
 
-	__device__ __host__ double __df(const double& x, const double& a, const double& b, const double& c) {
-		double df = 3 * a * x * x + 2 * b * x + c;
+	__device__ __host__ float __df(const float& x, const float& a, const float& b, const float& c) {
+		float df = 3 * a * x * x + 2 * b * x + c;
 		return df;
 	}
 
-	__device__ __host__ void __NewtonSolverForCubicEquation(const double& a, const double& b, const double& c, const double& d, double* results, int& num_solutions, double EPS)
+	__device__ __host__ void __NewtonSolverForCubicEquation(const float& a, const float& b, const float& c, const float& d, float* results, int& num_solutions, float EPS)
 	{
-		//double EPS = 1e-6;
-		double DX = 0;
-		//double results[3];
+		//float EPS = 1e-6;
+		float DX = 0;
+		//float results[3];
 		num_solutions = 0;
-		double specialPoint = -b / a / 3;
-		double pos[2];
+		float specialPoint = -b / a / 3;
+		float pos[2];
 		int solves = 1;
-		double delta = 4 * b * b - 12 * a * c;
+		float delta = 4 * b * b - 12 * a * c;
 		if (delta > 0) {
 			pos[0] = (sqrt(delta) - 2 * b) / 6 / a;
 			pos[1] = (-sqrt(delta) - 2 * b) / 6 / a;
-			double v1 = __f(pos[0], a, b, c, d);
-			double v2 = __f(pos[1], a, b, c, d);
+			float v1 = __f(pos[0], a, b, c, d);
+			float v2 = __f(pos[1], a, b, c, d);
 			if (__mabs(v1) < EPS * EPS) {
 				v1 = 0;
 			}
 			if (__mabs(v2) < EPS * EPS) {
 				v2 = 0;
 			}
-			double sign = v1 * v2;
+			float sign = v1 * v2;
 			DX = (pos[0] - pos[1]);
 			if (sign <= 0) {
 				solves = 3;
@@ -1165,7 +1165,7 @@ namespace __GEIGEN__ {
 		else if (delta == 0) {
 			if (__mabs(__f(specialPoint, a, b, c, d)) < EPS * EPS) {
 				for (int i = 0; i < 3; i++) {
-					double tempReuslt = specialPoint;
+					float tempReuslt = specialPoint;
 					results[num_solutions] = tempReuslt;
 					num_solutions++;
 				}
@@ -1190,12 +1190,12 @@ namespace __GEIGEN__ {
 
 		}
 
-		double start = specialPoint - DX;
-		double x0 = start;
-		double result[3];
+		float start = specialPoint - DX;
+		float x0 = start;
+		float result[3];
 
 		for (int i = 0; i < solves; i++) {
-			double x1 = 0;
+			float x1 = 0;
 			int itCount = 0;
 			do
 			{
@@ -1214,20 +1214,20 @@ namespace __GEIGEN__ {
 	}
 
 
-	__device__ __host__ void __NewtonSolverForCubicEquation_satbleNeohook(const double& a, const double& b, const double& c, const double& d, double* results, int& num_solutions, double EPS)
+	__device__ __host__ void __NewtonSolverForCubicEquation_satbleNeohook(const float& a, const float& b, const float& c, const float& d, float* results, int& num_solutions, float EPS)
 	{
-		double DX = 0;
+		float DX = 0;
 		num_solutions = 0;
-		double specialPoint = -b / 3;
-		double pos[2];
+		float specialPoint = -b / 3;
+		float pos[2];
 		int solves = 1;
-		double delta = 4 * b * b - 12 * c;
-		double sign = -1;
+		float delta = 4 * b * b - 12 * c;
+		float sign = -1;
 		if (delta > 0) {
 			pos[0] = (sqrt(delta) - 2 * b) / 6;
 			pos[1] = (-sqrt(delta) - 2 * b) / 6;
-			double v1 = __f(pos[0], a, b, c, d);
-			double v2 = __f(pos[1], a, b, c, d);
+			float v1 = __f(pos[0], a, b, c, d);
+			float v2 = __f(pos[1], a, b, c, d);
 			DX = (pos[0] - pos[1]);
 			if ((v1) >= 0) {
 				v1 = 0;
@@ -1258,12 +1258,12 @@ namespace __GEIGEN__ {
 			return;
 		}
 
-		double start = specialPoint - DX;
-		double x0 = start;
-		//double result[3];
+		float start = specialPoint - DX;
+		float x0 = start;
+		//float result[3];
 
 		for (int i = 0; i < solves; i++) {
-			double x1 = 0;
+			float x1 = 0;
 			int itCount = 0;
 			do
 			{
@@ -1283,11 +1283,11 @@ namespace __GEIGEN__ {
 		num_solutions = 3;
 	}
 
-	__device__ __host__ void __SolverForCubicEquation(const double& a, const double& b, const double& c, const double& d, double* results, int& num_solutions, double EPS) {
-		double A = b * b - 3 * a * c;
-		double B = b * c - 9 * a * d;
-		double C = c * c - 3 * b * d;
-		double delta = B * B - 4 * A * C;
+	__device__ __host__ void __SolverForCubicEquation(const float& a, const float& b, const float& c, const float& d, float* results, int& num_solutions, float EPS) {
+		float A = b * b - 3 * a * c;
+		float B = b * c - 9 * a * d;
+		float C = c * c - 3 * b * d;
+		float delta = B * B - 4 * A * C;
 		num_solutions = 0;
 		if (abs(A) < EPS * EPS && abs(B) < EPS * EPS) {
 			results[0] = -b / 3.0 / a;
@@ -1296,30 +1296,30 @@ namespace __GEIGEN__ {
 			num_solutions = 3;
 		}
 		else if (abs(delta) <= EPS * EPS) {
-			double K = B / A;
+			float K = B / A;
 			results[0] = -b / a + K;
 			results[1] = -K / 2.0;
 			results[2] = results[1];
 			num_solutions = 3;
 		}
 		else if (delta < -EPS * EPS) {
-			double T = (2 * A * b - 3 * a * B) / (2 * A * sqrt(A));
-			double theta = acos(T);
+			float T = (2 * A * b - 3 * a * B) / (2 * A * sqrt(A));
+			float theta = acos(T);
 			results[0] = (-b - 2 * sqrt(A) * cos(theta / 3.0)) / (3 * a);
 			results[1] = (-b + sqrt(A) * (cos(theta / 3.0) + sqrt(3.0) * sin(theta / 3.0))) / (3 * a);
 			results[2] = (-b + sqrt(A) * (cos(theta / 3.0) - sqrt(3.0) * sin(theta / 3.0))) / (3 * a);
 			num_solutions = 3;
 		}
 		else if (delta > EPS * EPS) {
-			double Y1 = A * b + 3 * a * (-B + sqrt(delta)) / 2;
-			double Y2 = A * b + 3 * a * (-B - sqrt(delta)) / 2;
+			float Y1 = A * b + 3 * a * (-B + sqrt(delta)) / 2;
+			float Y2 = A * b + 3 * a * (-B - sqrt(delta)) / 2;
 
 			results[0] = -b - cbrt(Y1) - cbrt(Y2);
 			num_solutions = 1;
 		}
 	}
 
-	__device__ __host__ Vector9 __Mat3x3_to_vec9_double(const Matrix3x3d& F) {
+	__device__ __host__ Vector9 __Mat3x3_to_vec9_float(const Matrix3x3d& F) {
 
 		Vector9 result;
 		for (int i = 0; i < 3; i++) {
@@ -1330,9 +1330,9 @@ namespace __GEIGEN__ {
 		return result;
 	}
 
-	__device__ __host__ void __normalized_vec9_double(Vector9& v9) {
+	__device__ __host__ void __normalized_vec9_float(Vector9& v9) {
 
-		double length = 0;
+		float length = 0;
 		for (int i = 0;i < 9;i++) {
 			length += v9.v[i] * v9.v[i];
 		}
@@ -1342,9 +1342,9 @@ namespace __GEIGEN__ {
 		}
 	}
 
-	__device__ __host__ void __normalized_vec6_double(Vector6& v6) {
+	__device__ __host__ void __normalized_vec6_float(Vector6& v6) {
 
-		double length = 0;
+		float length = 0;
 		for (int i = 0;i < 6;i++) {
 			length += v6.v[i] * v6.v[i];
 		}
@@ -1354,7 +1354,7 @@ namespace __GEIGEN__ {
 		}
 	}
 
-	__device__ __host__ Vector6 __Mat3x2_to_vec6_double(const Matrix3x2d& F) {
+	__device__ __host__ Vector6 __Mat3x2_to_vec6_float(const Matrix3x2d& F) {
 
 		Vector6 result;
 		for (int i = 0; i < 2; i++) {
@@ -1365,7 +1365,7 @@ namespace __GEIGEN__ {
 		return result;
 	}
 
-	__device__ __host__ Matrix3x3d __vec9_to_Mat3x3_double(const double vec9[9]) {
+	__device__ __host__ Matrix3x3d __vec9_to_Mat3x3_float(const float vec9[9]) {
 		Matrix3x3d mat;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -1375,7 +1375,7 @@ namespace __GEIGEN__ {
 		return mat;
 	}
 
-	__device__ __host__ Matrix2x2d __vec4_to_Mat2x2_double(const double vec4[4]) {
+	__device__ __host__ Matrix2x2d __vec4_to_Mat2x2_float(const float vec4[4]) {
 		Matrix2x2d mat;
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
@@ -1386,11 +1386,11 @@ namespace __GEIGEN__ {
 	}
 
 	__device__ void SVD(const Matrix3x3d& F, Matrix3x3d& Uout, Matrix3x3d& Vout, Matrix3x3d& Sigma) {
-		using matview = zs::vec_view<double, zs::integer_seq<int, 3, 3>>;
-		using cmatview = zs::vec_view<const double, zs::integer_seq<int, 3, 3>>;
-		using vec3 = zs::vec<double, 3>;
-		cmatview F_{ (const double*)F.m };
-		matview UU{ (double*)Uout.m }, VV{ (double*)Vout.m };
+		using matview = zs::vec_view<float, zs::integer_seq<int, 3, 3>>;
+		using cmatview = zs::vec_view<const float, zs::integer_seq<int, 3, 3>>;
+		using vec3 = zs::vec<float, 3>;
+		cmatview F_{ (const float*)F.m };
+		matview UU{ (float*)Uout.m }, VV{ (float*)Vout.m };
 		vec3 SS{};
 		zs::tie(UU, SS, VV) = zs::math::qr_svd(F_);
 		for (int i = 0; i != 3; ++i)
@@ -1401,9 +1401,9 @@ namespace __GEIGEN__ {
 			}
 	}
 
-	__device__ __host__ void __makePD2x2(const double& a00, const double& a01, const double& a10, const double& a11, double eigenValues[2], int& num, double2 eigenVectors[2], double eps) {
-		double b = -(a00 + a11), c = a00 * a11 - a10 * a01;
-		double existEv = b * b - 4 * c;
+	__device__ __host__ void __makePD2x2(const float& a00, const float& a01, const float& a10, const float& a11, float eigenValues[2], int& num, float2 eigenVectors[2], float eps) {
+		float b = -(a00 + a11), c = a00 * a11 - a10 * a01;
+		float existEv = b * b - 4 * c;
 		if ((a01) == 0 || (a10) == 0) {
 			if (a00 > 0) {
 				eigenValues[num] = a00;
@@ -1424,7 +1424,7 @@ namespace __GEIGEN__ {
 				eigenValues[0] = (-b - sqrt(existEv)) / 2;
 				eigenVectors[0].x = 1;
 				eigenVectors[0].y = (eigenValues[0] - a00) / a01;
-				double length = sqrt(eigenVectors[0].x * eigenVectors[0].x + eigenVectors[0].y * eigenVectors[0].y);
+				float length = sqrt(eigenVectors[0].x * eigenVectors[0].x + eigenVectors[0].y * eigenVectors[0].y);
 				//eigenValues[0] *= length;
 				eigenVectors[0].x /= length;
 				eigenVectors[0].y /= length;
@@ -1442,7 +1442,7 @@ namespace __GEIGEN__ {
 				eigenValues[0] = (-b - sqrt(existEv)) / 2;
 				eigenVectors[0].x = 1;
 				eigenVectors[0].y = (eigenValues[0] - a00) / a01;
-				double length = sqrt(eigenVectors[0].x * eigenVectors[0].x + eigenVectors[0].y * eigenVectors[0].y);
+				float length = sqrt(eigenVectors[0].x * eigenVectors[0].x + eigenVectors[0].y * eigenVectors[0].y);
 				//eigenValues[0] *= length;
 				eigenVectors[0].x /= length;
 				eigenVectors[0].y /= length;
@@ -1459,7 +1459,7 @@ namespace __GEIGEN__ {
         Vector4 tempM;
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 4; j++) {
-                double temp = 0;
+                float temp = 0;
                 for (int k = 0; k < 4; k++) {
                     temp += A.m[i][k] * B.m[j][k];
                 }
@@ -1467,7 +1467,7 @@ namespace __GEIGEN__ {
             }
 
             for (int j = 0; j < 9; j++) {
-                double temp = 0;
+                float temp = 0;
                 for (int k = 0; k < 4; k++) {
                     temp += A.m[j][k] * tempM.v[k];
                 }
@@ -1483,7 +1483,7 @@ namespace __GEIGEN__ {
         Vector9 tempM;
         for (int i = 0; i < 12; i++) {
             for (int j = 0; j < 9; j++) {
-                double temp = 0;
+                float temp = 0;
                 for (int k = 0; k < 9; k++) {
                     temp += A.m[i][k] * B.m[j][k];
                 }
@@ -1491,7 +1491,7 @@ namespace __GEIGEN__ {
             }
 
             for (int j = 0; j < 12; j++) {
-                double temp = 0;
+                float temp = 0;
                 for (int k = 0; k < 9; k++) {
                     temp += A.m[j][k] * tempM.v[k];
                 }
@@ -1501,7 +1501,7 @@ namespace __GEIGEN__ {
         //return output;
     }
 
-    __device__ __host__ Vector4 __s_vec4_multiply(Vector4 a, double b) {
+    __device__ __host__ Vector4 __s_vec4_multiply(Vector4 a, float b) {
         Vector4 V;
         for (int i = 0; i < 4; i++)
             V.v[i] = a.v[i] * b;
@@ -1511,7 +1511,7 @@ namespace __GEIGEN__ {
     __device__ __host__ Vector9 __M9x4_v4_multiply(const Matrix9x4d& A, const Vector4& n) {
         Vector9 v9;
         for (int i = 0; i < 9; i++) {
-            double temp = 0;
+            float temp = 0;
             for (int j = 0; j < 4; j++) {
                 temp += A.m[i][j] * n.v[j];
             }
@@ -1520,7 +1520,7 @@ namespace __GEIGEN__ {
         return v9;
     }
 
-    __device__ __host__ Matrix4x4d __S_Mat4x4_multiply(const Matrix4x4d& A, const double& B)
+    __device__ __host__ Matrix4x4d __S_Mat4x4_multiply(const Matrix4x4d& A, const float& B)
     {
         Matrix4x4d output;
         for (int i = 0; i < 4; i++) {
@@ -1542,11 +1542,11 @@ namespace __GEIGEN__ {
         return M;
     }
 
-    __device__ __host__ void __s_M_Mat_MT_multiply(const Matrix3x3d& A, const Matrix3x3d& B, const Matrix3x3d& C, const double& coe, Matrix3x3d& output) {
-        double tvec3[3];
+    __device__ __host__ void __s_M_Mat_MT_multiply(const Matrix3x3d& A, const Matrix3x3d& B, const Matrix3x3d& C, const float& coe, Matrix3x3d& output) {
+        float tvec3[3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                double temp = 0;
+                float temp = 0;
                 for (int k = 0; k < 3; k++) {
                     temp += A.m[i][k] * B.m[k][j];
                 }
@@ -1555,7 +1555,7 @@ namespace __GEIGEN__ {
             }
 
             for (int j = 0; j < 3; j++) {
-                double temp = 0;
+                float temp = 0;
                 for (int k = 0; k < 3; k++) {
                     temp += C.m[j][k] * tvec3[k];
                 }

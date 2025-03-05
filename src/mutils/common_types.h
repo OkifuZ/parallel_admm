@@ -6,7 +6,7 @@
 constexpr auto ADMM_VERBOSE = false;
 
 namespace ADU {
-	using Real = double;
+	using Real = float;
 
 	inline Real operator "" _r(long double value) {
 		return static_cast<Real>(value);

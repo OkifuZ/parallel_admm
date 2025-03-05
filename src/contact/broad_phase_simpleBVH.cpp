@@ -79,8 +79,8 @@ void BroadPhase_simpleBVH::query_edge_edge(const ADU::Matf_X3& verts, std::vecto
 		});
 }
 
-inline void get_tri_aabb(const Eigen::Vector3d& v0, const Eigen::Vector3d& v1, const Eigen::Vector3d& v2, 
-	std::array<Eigen::Vector3d, 2>& aabb) 
+inline void get_tri_aabb(const ADU::Vecf_3& v0, const ADU::Vecf_3& v1, const ADU::Vecf_3& v2,
+	std::array<ADU::Vecf_3, 2>& aabb)
 {
 	aabb[0].x() = std::min({ v0.x(), v1.x(), v2.x() });
 	aabb[0].y() = std::min({ v0.y(), v1.y(), v2.y() });
@@ -91,8 +91,8 @@ inline void get_tri_aabb(const Eigen::Vector3d& v0, const Eigen::Vector3d& v1, c
 	aabb[1].z() = std::max({ v0.z(), v1.z(), v2.z() });
 }
 
-inline void get_edge_aabb(const Eigen::Vector3d& v0, const Eigen::Vector3d& v1,
-	std::array<Eigen::Vector3d, 2>& aabb)
+inline void get_edge_aabb(const ADU::Vecf_3& v0, const ADU::Vecf_3& v1,
+	std::array<ADU::Vecf_3, 2>& aabb)
 {
 	aabb[0].x() = std::min({ v0.x(), v1.x()});
 	aabb[0].y() = std::min({ v0.y(), v1.y()});

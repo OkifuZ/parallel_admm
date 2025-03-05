@@ -1,6 +1,7 @@
 #pragma once
 
 #include "contact/simpleBVH/Morton.hpp"
+#include "mutils/common_types.h"
 #include <Eigen/Core>
 
 #include <vector>
@@ -14,11 +15,11 @@
 namespace SimpleBVH {
 
 using VectorMax3d =
-    Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::ColMajor, 3, 1>;
+    Eigen::Matrix<ADU::Real, Eigen::Dynamic, 1, Eigen::ColMajor, 3, 1>;
 
 class BVH {
 public:
-    void init(const std::vector<std::array<Eigen::Vector3d, 2>>& cornerlist);
+    void init(const std::vector<std::array<ADU::Vecf_3, 2>>& cornerlist);
 
     void
     init(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F, const double tol);
@@ -31,8 +32,8 @@ public:
     }
 
     void intersect_3D_box(
-        const Eigen::Vector3d& bbd0,
-        const Eigen::Vector3d& bbd1,
+        const ADU::Vecf_3& bbd0,
+        const ADU::Vecf_3& bbd1,
         std::vector<unsigned int>& list) const
     {
         std::vector<unsigned int> tmp;
@@ -45,8 +46,8 @@ public:
     }
 
     void intersect_3D_box_tbb(
-        const Eigen::Vector3d& bbd0,
-        const Eigen::Vector3d& bbd1,
+        const ADU::Vecf_3& bbd0,
+        const ADU::Vecf_3& bbd1,
         tbb::concurrent_vector<unsigned int>& list) const
     {
         std::vector<unsigned int> tmp;
@@ -63,10 +64,10 @@ public:
         const Eigen::Vector2d& bbd1,
         std::vector<unsigned int>& list) const
     {
-        Eigen::Vector3d bbd0_3D = Eigen::Vector3d::Zero();
+        ADU::Vecf_3 bbd0_3D = ADU::Vecf_3::Zero();
         bbd0_3D.head<2>() = bbd0;
 
-        Eigen::Vector3d bbd1_3D = Eigen::Vector3d::Zero();
+        ADU::Vecf_3 bbd1_3D = ADU::Vecf_3::Zero();
         bbd1_3D.head<2>() = bbd1;
 
         intersect_3D_box(bbd0_3D, bbd1_3D, list);
@@ -77,10 +78,10 @@ public:
         const VectorMax3d& bbd1,
         std::vector<unsigned int>& list) const
     {
-        Eigen::Vector3d bbd0_3D = Eigen::Vector3d::Zero();
+        ADU::Vecf_3 bbd0_3D = ADU::Vecf_3::Zero();
         bbd0_3D.head(bbd0.size()) = bbd0.head(bbd0.size());
 
-        Eigen::Vector3d bbd1_3D = Eigen::Vector3d::Zero();
+        ADU::Vecf_3 bbd1_3D = ADU::Vecf_3::Zero();
         bbd1_3D.head(bbd1.size()) = bbd1.head(bbd1.size());
 
         intersect_3D_box(bbd0_3D, bbd1_3D, list);
@@ -91,10 +92,10 @@ public:
         const VectorMax3d& bbd1,
         tbb::concurrent_vector<unsigned int>& list) const
     {
-        Eigen::Vector3d bbd0_3D = Eigen::Vector3d::Zero();
+        ADU::Vecf_3 bbd0_3D = ADU::Vecf_3::Zero();
         bbd0_3D.head(bbd0.size()) = bbd0.head(bbd0.size());
 
-        Eigen::Vector3d bbd1_3D = Eigen::Vector3d::Zero();
+        ADU::Vecf_3 bbd1_3D = ADU::Vecf_3::Zero();
         bbd1_3D.head(bbd1.size()) = bbd1.head(bbd1.size());
 
         intersect_3D_box_tbb(bbd0_3D, bbd1_3D, list);
@@ -102,30 +103,30 @@ public:
 
 private:
     void init_boxes_recursive(
-        const std::vector<std::array<Eigen::Vector3d, 2>>& cornerlist,
+        const std::vector<std::array<ADU::Vecf_3, 2>>& cornerlist,
         int node_index,
         int b,
         int e);
 
     void box_search_recursive(
-        const Eigen::Vector3d& bbd0,
-        const Eigen::Vector3d& bbd1,
+        const ADU::Vecf_3& bbd0,
+        const ADU::Vecf_3& bbd1,
         std::vector<unsigned int>& list,
         int n,
         int b,
         int e) const;
 
     void box_search_recursive_tbb(
-        const Eigen::Vector3d& bbd0,
-        const Eigen::Vector3d& bbd1,
+        const ADU::Vecf_3& bbd0,
+        const ADU::Vecf_3& bbd1,
         std::vector<unsigned int>& list,
         int n,
         int b,
         int e) const {};
 
     bool box_intersects_box(
-        const Eigen::Vector3d& bbd0,
-        const Eigen::Vector3d& bbd1,
+        const ADU::Vecf_3& bbd0,
+        const ADU::Vecf_3& bbd1,
         int index) const;
 
     static int max_node_index(int node_index, int b, int e);
@@ -138,9 +139,9 @@ private:
     };
     std::vector<sortstruct> list;
 
-    std::vector<std::array<Eigen::Vector3d, 2>> boxlist;
+    std::vector<std::array<ADU::Vecf_3, 2>> boxlist;
     std::vector<int> new2old;
-    std::vector<std::array<Eigen::Vector3d, 2>> sorted_cornerlist;
+    std::vector<std::array<ADU::Vecf_3, 2>> sorted_cornerlist;
     size_t n_corners = -1;
 };
 } // namespace SimpleBVH
