@@ -35,6 +35,7 @@ __inline__ __device__ Result<T> dcdPT(Eigen::Vector3<T> const& point,
     // nested if-then-else statements. The remaining members are all
     // set at the end of the function.
     Result<T> result{};
+    bool valid = false;
 
     T const zero = static_cast<T>(0);
     T const one = static_cast<T>(1);
@@ -124,6 +125,7 @@ __inline__ __device__ Result<T> dcdPT(Eigen::Vector3<T> const& point,
             // minimum at interior point
             s /= det;
             t /= det;
+            valid = true;
         }
     }
     else
@@ -227,6 +229,7 @@ __inline__ __device__ Result<T> dcdPT(Eigen::Vector3<T> const& point,
         }
     }
 
+    
     result.closest[0] = point;
     result.closest[1] = t0 + s * edge0 + t * edge1;
     diff = result.closest[0] - result.closest[1];
@@ -240,6 +243,10 @@ __inline__ __device__ Result<T> dcdPT(Eigen::Vector3<T> const& point,
     result.barycentric[0] = one - s - t;
     result.barycentric[1] = s;
     result.barycentric[2] = t;
+
+    if (!valid) {
+        result.distance = -10;
+    }
     return result;
 }
 
@@ -257,6 +264,8 @@ __inline__ __device__ Result<T> dcdEE(Eigen::Vector3<T> const& P0, Eigen::Vector
     T c = Q1mQ0.dot(Q1mQ0);
     T d = P1mP0.dot(P0mQ0);
     T e = Q1mQ0.dot(P0mQ0);
+
+    bool valid = false;
 
     T det = a * c - b * b;
     T s, t, nd, bmd, bte, ctd, bpe, ate, btd;
@@ -398,6 +407,7 @@ __inline__ __device__ Result<T> dcdEE(Eigen::Vector3<T> const& P0, Eigen::Vector
                         // region 0
                         s /= det;
                         t /= det;
+                        valid = true;
                     }
                 }
             }
@@ -471,10 +481,12 @@ __inline__ __device__ Result<T> dcdEE(Eigen::Vector3<T> const& P0, Eigen::Vector
             // one point at which R is a minimum.
             s = zero;
             t = e / c;
+            //valid = true;
         }
     }
 
     Result<T> result{};
+    
     result.barycentric[0] = s;
     result.barycentric[1] = t;
     result.barycentric[2] = -10;
@@ -482,7 +494,6 @@ __inline__ __device__ Result<T> dcdEE(Eigen::Vector3<T> const& P0, Eigen::Vector
     result.closest[1] = Q0 + t * Q1mQ0;
     Eigen::Vector3<T> diff = result.closest[0] - result.closest[1];
     result.sqrDistance = diff.dot(diff);
-
     if constexpr (std::is_floating_point_v<T>){
         result.distance = sqrtf(result.sqrDistance);
     }
@@ -490,5 +501,9 @@ __inline__ __device__ Result<T> dcdEE(Eigen::Vector3<T> const& P0, Eigen::Vector
         result.distance = sqrt(result.sqrDistance);
     }
     result.distance = std::sqrt(result.sqrDistance);
+
+    if (!valid) {
+        result.distance = -10;
+    }
     return result;
 }

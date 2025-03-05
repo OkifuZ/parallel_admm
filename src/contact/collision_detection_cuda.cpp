@@ -143,6 +143,8 @@ void BVH_GPU::dcd() {
     this->bvh_f.discreteCollisionDetection(ContactParameter::get_thickness());
     this->bvh_e.discreteCollisionDetection(ContactParameter::get_thickness());
     CUDA_SAFE_CALL(cudaMemcpy(&h_cpNum, d_cpNum, sizeof(uint32_t), cudaMemcpyDeviceToHost));
+    printf("cp nums: %d\n", h_cpNum);
+    hist_max_collision_num = std::max(hist_max_collision_num, (size_t)h_cpNum);
 }
 
 void BVH_GPU::unique_contactInfo() {

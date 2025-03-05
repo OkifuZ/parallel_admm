@@ -1645,7 +1645,7 @@ inline bool _checkDCDPointTriangle(const double3* _vertexes, const uint32_t& id0
     Eigen::Vector3d v2(_v2.x, _v2.y, _v2.z);
     Eigen::Vector3d v3(_v3.x, _v3.y, _v3.z);
     Result<double> res = dcdPT(v0, v1, v2, v3);
-    if (res.distance < dHat) {
+    if (res.distance < dHat && res.distance >= 0) {
         int cdp_idx = atomicAdd(_cpNum, 1);
         uint32_t id1_ = id1;
         uint32_t id2_ = id2;
@@ -1673,7 +1673,7 @@ inline bool _checkDCDEdgeEdge(const double3* _vertexes, const uint32_t& id0, con
     Eigen::Vector3d v3(_v3.x, _v3.y, _v3.z);
     Result<double> res = dcdEE(v0, v1, v2, v3);
     //Result<double> res = dcdPT(v0, v1, v2, v3);
-    if (res.distance < dHat) {
+    if (res.distance < dHat && res.distance >= 0) {
         int cdp_idx = atomicAdd(_cpNum, 1);
         /*uint32_t id0_ = id0 > id1 ? id1 : id0;
         uint32_t id1_ = id0 > id1 ? id0 : id1;

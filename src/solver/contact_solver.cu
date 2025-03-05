@@ -112,12 +112,6 @@ void computeContactCountsWithAtomic(const int4* d_contacts, thrust::device_vecto
     updateContactCounts << <numBlocks, blockSize >> > (d_contacts, thrust::raw_pointer_cast(d_vi_ct_nums.data()), nContact);
     cudaDeviceSynchronize(); // Ensure the kernel finishes
 
-    /*std::vector<int> v_ct_num(d_vi_ct_nums.size(), 0);
-    thrust::copy(d_vi_ct_nums.begin(), d_vi_ct_nums.end(), v_ct_num.begin());
-    for (int i = 0; i < d_vi_ct_nums.size(); i++) {
-        printf("%d ", v_ct_num[i]);
-    }
-    printf("\n");*/
 }
 
 
@@ -206,37 +200,26 @@ __global__ void compute_Scc_kernel(const int4* d_contacts, const Result<ADU::Rea
     if (idx < nContact) {
         const auto& c = d_contacts[idx];
         const float4& bary = d_bary[idx];
-        float Sc = epslon + 
-            bary.x * bary.x  * d_contact_W_inv_list[c.x] * d_v_ct_nums[c.x] +
-            bary.y * bary.y  * d_contact_W_inv_list[c.y] * d_v_ct_nums[c.y] +
+        float Sc = epslon;
+
+        Sc += bary.x * bary.x * d_contact_W_inv_list[c.x] * d_v_ct_nums[c.x] +
+            bary.y * bary.y * d_contact_W_inv_list[c.y] * d_v_ct_nums[c.y] +
             bary.z * bary.z * d_contact_W_inv_list[c.z] * d_v_ct_nums[c.z] +
-            bary.w + bary.w * d_contact_W_inv_list[c.w] * d_v_ct_nums[c.w];
+            bary.w * bary.w * d_contact_W_inv_list[c.w] * d_v_ct_nums[c.w];
+
         
-        printf("(%d %f) ", idx, Sc);
-        /*printf("(%d %.8f %.8f %.8f %.8f) ", idx, d_contact_W_inv_list[c.x], 
-            d_contact_W_inv_list[c.y], 
-            d_contact_W_inv_list[c.z], 
-            d_contact_W_inv_list[c.w]);*/
-        //printf("(%d %d %d %d %d) ", idx, d_v_ct_nums[c.x], d_v_ct_nums[c.y], d_v_ct_nums[c.z], d_v_ct_nums[c.w]);
-        //printf("%f %f %f %f\n", d_contact_W_list[c.x], d_contact_W_list[c.y], d_contact_W_list[c.z], d_contact_W_list[c.w]);
-        //if (ele(c, 0) != c.x || ele(c, 0) != c.y || ele(c, 2) != c.z || ele(c, 3) != c.w) printf("herehit, \n");
         for (int vi = 0; vi < 4; vi++) {
             //int vind = *((int*)(&c) + vi);
             int vind = ele(c, vi);
             float w = d_contact_W_list[vind];
             int v_coffset = atomicAdd(&d_v_ct_count[vind], 1);
             int v_cidx = d_start_idx[vind] + v_coffset;
-            //printf("%d; ", v_cidx);
             
             float4& gamma_c = d_Gamma_c[idx];
             
-            //ele(gamma_c, vi) = ele(bary, vi) / (Sc * w);
-            *((float*)(d_Gamma_c + idx) + vi) = ele(bary, vi) / (Sc * w);
-            //*((float*)&(d_Gamma_c[idx]) + vi) = ele(bary, vi) / (Sc * w);
+            ele(gamma_c, vi) = ele(bary, vi) / (Sc * w);
             // no need to check, 1e7 is large enough
             d_Gamma_i[v_cidx] = ele(bary, vi) / (Sc * w);
-            //printf("(%f %f %f %f); ", d_Gamma_i[v_cidx], Sc, w, ele(bary, vi));
-            //printf("(%f %f); ", d_contact_W_list[vind], d_contact_W_inv_list[vind]);
             d_involved_cid[v_cidx] = idx;
         }
        
@@ -271,9 +254,8 @@ void compute_Scc_impl_cu(const BVH_GPU* bvh,
     }
     printf("\n");*/
     int total_size{};
-     total_size = ct_data_device->d_start_idx.back(); // this should work and indeed work, but use the following line for safety (mentally)
-    //CUDA_SAFE_CALL(cudaMemcpy((void*)&total_size, thrust::raw_pointer_cast(ct_data_device->d_start_idx.data() + ct_data_device->d_start_idx.size() - 1), sizeof(int), cudaMemcpyDeviceToHost));
-     //printf("total size: %d, ncontact: %d \n", total_size, nContact);
+     //total_size = ct_data_device->d_start_idx.back(); // this should work and indeed work, but use the following line for safety (mentally)
+    CUDA_SAFE_CALL(cudaMemcpy((void*)&total_size, thrust::raw_pointer_cast(ct_data_device->d_start_idx.data() + ct_data_device->d_start_idx.size() - 1), sizeof(int), cudaMemcpyDeviceToHost));
 
     ct_data_device->d_vi_ct_count.resize(ct_data_device->d_vi_ct_nums.size(), 0);
     ct_data_device->d_involved_cid.resize(total_size, 0);
@@ -368,34 +350,30 @@ __global__ void get_delta_u_kernel(const int nContact, const ADU::Real mu,
             bary.y * load_float3(d_p + 3 * ct.y) +
             bary.z * load_float3(d_p + 3 * ct.z) +
             bary.w * load_float3(d_p + 3 * ct.w);
-        //printf("[%f %f %f %f], ", bary.x, bary.y, bary.z, bary.w);
         u = u + d_K_c[idx];
         const float3& normal = d_normal[idx];
 
         float3 u_star = u - d_r_c[idx];
         float u_star_N = dot(normal, u_star);
-        //printf("%f, ", u_star_N);
         
         float3 u_star_T = u_star - u_star_N * normal;
-        //printf("(%f %f %f; %f %f %f; %f %f %f)", normal.x, normal.y, normal.z, u.x, u.y, u.z, d_r_c[idx].x, d_r_c[idx].y, d_r_c[idx].z);
 
         float tau, alpha;
         if (u_star_N < 0) {
             tau = fnorm(u_star_T);
             alpha = -mu * u_star_N;
             u_star_N = 0;
-            /*if (tau <= alpha) {
+            if (tau <= alpha) {
                 u_star_T = float3{ 0,0,0 };
             }
             else {
                 u_star_T = (1.0f - alpha / tau) * u_star_T;
-            }*/
+            }
         }
 
         float3 u_star_new = u_star_N * normal + u_star_T;
         d_delta_u[idx] = u_star_new - u;
         d_r_c[idx] = d_r_c[idx] + d_delta_u[idx];
-        //printf("(%f %f %f)", d_delta_u[idx].x, d_delta_u[idx].y, d_delta_u[idx].z);
 
     }
 }
@@ -409,11 +387,9 @@ __global__ void update_p(const int nVert, const int* involved_cid, const int* st
         float3 delta_pi{ 0,0,0 };
         int start_idx = start[idx];
         int end_idx = start[idx + 1]; 
-        //if (start_idx != end_idx) printf("%d: %d %d, ", idx, start_idx, end_idx); // empty BUG!
         for (int i = start_idx; i < end_idx; i++) {
             int cid = involved_cid[i];
             delta_pi = delta_pi + delta_u[cid] * gamma_i[i];
-            //printf("%f, ", gamma_i[i]);
         }
         d_p[idx * 3 + 0] += delta_pi.x;
         d_p[idx * 3 + 1] += delta_pi.y;

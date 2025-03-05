@@ -26,7 +26,7 @@ static bool thickness_validation_check(const MeshData& mesh) {
 		}
 	}
 	if (!pass) {
-		printf("thickness_validation_check: small edge found, length=%f\n", min_edge_len);
+		printf("thickness_validation_check: small edge found, length=%f, thickness = %f\n", min_edge_len, thickness);
 		return false;
 	}
 	return true;

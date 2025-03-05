@@ -45,6 +45,7 @@ class BVH_GPU {
 public:
 
     size_t max_collision_number = 100000;
+    size_t hist_max_collision_num = 0;
 
     lbvh_f bvh_f;
     lbvh_e bvh_e;

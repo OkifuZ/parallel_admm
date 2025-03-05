@@ -144,11 +144,20 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	thrust::device_vector<ADU::Real> d_contact_W_list;*/
 	std::shared_ptr<ContactDataDevice> ct_data_device{};
 
-
 	void compute_Scc_impl();
+
+
+	std::vector<std::array<float, 3>> contact_points;
+	std::vector<std::array<float, 3>> contact_normals;
 
 public:
 	void convert_constraint2device();
+
+
+	std::vector<std::array<float, 3>>& getContactPoints();
+	std::vector<std::array<float, 3>>& getContactNormals();
+
+	
 
 
 };

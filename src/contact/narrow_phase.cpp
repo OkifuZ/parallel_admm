@@ -536,6 +536,7 @@ ADU::Matf_X3& ProximalQuery::get_contact_normals() {
 	return contact_normals;
 }
 
+
 ADU::Matf_X3& ProximalQuery::get_contact_edges_points() {
 	/*contact_edges_points.setZero();
 	int idx = 0;

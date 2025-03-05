@@ -257,9 +257,18 @@ void main_loop() {
     if (app.show_windows && app.vis_contactP) {
         auto solver_ptr = static_cast<ADMMSolverFull_RL_damping*>(app.solver.get());
         auto& s_vec = solver_ptr->prox_query->get_SaSb_mean();
-        app.vis_contactP->updatePointPositions(app.solver->prox_query->get_contact_points());
-        app.vis_contactP->addVectorQuantity("normal", app.solver->prox_query->get_contact_normals());
         app.vis_contactP->addVectorQuantity("S", s_vec);
+
+        if (!app_config.use_GPU) {
+            app.vis_contactP->updatePointPositions(app.solver->prox_query->get_contact_points());
+            app.vis_contactP->addVectorQuantity("normal", app.solver->prox_query->get_contact_normals());
+        }
+        else {
+            ADMMParallelSolver* sv = static_cast<ADMMParallelSolver*> (app.solver.get());
+            app.vis_contactP->updatePointPositions(sv->getContactPoints());
+            app.vis_contactP->addVectorQuantity("normal", sv->getContactNormals());
+        }
+        
 
         /*if (!app.pause) {
             std::cout << step_idx << "\n";
@@ -523,7 +532,9 @@ int main(int argc, const char* argv[]) {
 
     app.solver->m_nCDim = Mesh2Constraint::curr_start_row;
 
-    static_cast<ADMMParallelSolver*>(app.solver.get())->convert_constraint2device();
+    if (app_config.use_GPU) {
+        static_cast<ADMMParallelSolver*>(app.solver.get())->convert_constraint2device();
+    }
 
     // proximal query 
     ContactParameter::set_broadphase_radius(app_config.dcd.broad.radius);
@@ -574,8 +585,8 @@ int main(int argc, const char* argv[]) {
     }
 
 
-
-    BVH_GPU bvh;
+    std::shared_ptr<BVH_GPU> bvh_sp = std::make_shared<BVH_GPU>();
+    BVH_GPU& bvh = *bvh_sp;
     app.bvh = &bvh;
     bvh.solver = app.solver.get();
     app.solver->bvh = &bvh;
@@ -630,7 +641,12 @@ int main(int argc, const char* argv[]) {
     polyscope::state::userCallback = main_loop;
     polyscope::show();
    
-    std::cout << "max collision num: " << solver->prox_query->hist_max_collision_num << "\n";
+    if (app_config.use_GPU) {
+        std::cout << "max collision num: " << bvh.hist_max_collision_num << "\n";
+    }
+    else {
+        std::cout << "max collision num: " << solver->prox_query->hist_max_collision_num << "\n";
+    }
     std::cout << "logger:\n";
     std::cout << ADU::Timer::getLog();
     
