@@ -40,6 +40,7 @@ struct CuSolverData {
     thrust::device_vector<ADU::Real> b_curr_device{};
     thrust::device_vector<ADU::Real> p_device{};
     thrust::device_vector<ADU::Real> x_0_device{};
+    thrust::device_vector<ADU::Real> v_0_device{};
 
     thrust::device_vector<ADU::Real> jacobi_buffer_1;
     thrust::device_vector<ADU::Real> jacobi_buffer_2;
@@ -56,6 +57,7 @@ struct CuSolverData {
 void copy_mat2thrustvector(const ADU::Matf_X3& mat, thrust::device_vector<ADU::Real>& tar, int rows) ;
 void copy_vec2thrustvector(const ADU::Vecf_X& vec, thrust::device_vector<ADU::Real>& tar, int len);
 void copy_thrustvector2mat(thrust::device_vector<ADU::Real>& vec, ADU::Matf_X3& tar , int rows) ;
+void copy_thrustvector2thrust(thrust::device_vector<ADU::Real>& vec, thrust::device_vector<ADU::Real>& tar, int size);
 
 void cu_jacobi_global(const CuCompactSparseMat& A,
     const thrust::device_vector<ADU::Real>& b,
@@ -65,3 +67,8 @@ void cu_jacobi_global(const CuCompactSparseMat& A,
     int nDynVert, int iter_cnt);
 
 void convert_Mat2dvector(const ADU::Matf_X3& mat, thrust::device_vector<ADU::Vecf_3>& vec);
+
+void do_pre_integration(int nVert, int nDynVert, const ADU::Real dt, const ADU::Real g, const ADU::Real* x_0, const int* is_fix, const ADU::Real* M,
+    ADU::Real* v_0, ADU::Real* x_curr, ADU::Real* M_x_tilde);
+
+void do_post_process(int nVert, int nDynVert, const ADU::Real dt, ADU::Real* v_0, ADU::Real* x_curr, ADU::Real* x_0);

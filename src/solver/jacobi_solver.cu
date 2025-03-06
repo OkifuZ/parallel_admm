@@ -3,6 +3,11 @@
 #include <thrust/device_vector.h>
 #include <thrust/execution_policy.h>
 #include <thrust/for_each.h>
+#include <cuda_runtime.h>
+#include "mutils/cuda_tools.cuh"
+#include <thrust/for_each.h>
+#include <thrust/device_vector.h>
+#include <device_launch_parameters.h>
 
 using namespace ADU;
 
@@ -20,13 +25,14 @@ CuSolverData::CuSolverData(const CompactSparseMat& hostData,
     int jacobi_buffer_size, int x_curr_size, int b_curr_size, int p_size, int constraint_dim) :
     sp_mat_device(hostData)
 {
-    jacobi_buffer_1.resize(jacobi_buffer_size * 3);
-    jacobi_buffer_2.resize(jacobi_buffer_size * 3);
-    x_curr_device.resize(x_curr_size * 3);
-    x_0_device.resize(x_curr_size * 3);
-    b_curr_device.resize(b_curr_size * 3);
-    z_buffer.resize(constraint_dim * 3);
-    p_device.resize(p_size * 3);
+    jacobi_buffer_1.resize(jacobi_buffer_size * 3, 0);
+    jacobi_buffer_2.resize(jacobi_buffer_size * 3, 0);
+    x_curr_device.resize(x_curr_size * 3, 0);
+    x_0_device.resize(x_curr_size * 3, 0);
+    v_0_device.resize(x_curr_size * 3, 0);
+    b_curr_device.resize(b_curr_size * 3, 0);
+    z_buffer.resize(constraint_dim * 3, 0);
+    p_device.resize(p_size * 3, 0);
 }
 
 
@@ -113,6 +119,12 @@ void copy_thrustvector2mat(thrust::device_vector<ADU::Real>& vec, ADU::Matf_X3& 
     thrust::copy(vec.begin(), vec.begin() + len * 3, tar.data());
 }
 
+void copy_thrustvector2thrust(thrust::device_vector<ADU::Real>& vec, thrust::device_vector<ADU::Real>& tar, int size) {
+    // Check if the size of vec matches 3 times the number of rows in tar
+   
+    thrust::copy(vec.begin(), vec.begin() + size, tar.data());
+}
+
 
 void cu_jacobi_global(const CuCompactSparseMat& A,
     const thrust::device_vector<ADU::Real>& b,
@@ -156,3 +168,83 @@ void cu_jacobi_global(const CuCompactSparseMat& A,
 }
 
 
+__global__ void do_integration_kernel(int nVert, int nDynVert, const ADU::Real dt, const ADU::Real g, const ADU::Real* x_0, const int* is_fix, const ADU::Real* M,
+    ADU::Real* v_0, ADU::Real* x_curr, ADU::Real* M_x_tilde)
+{
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (idx < nVert) {
+        if (is_fix[idx] == 0) {
+            if (idx < nDynVert) {
+                v_0[idx * 3 + 1] -= g * dt;
+                x_curr[idx * 3 + 0] = x_0[idx * 3 + 0] + v_0[idx * 3 + 0] * dt;
+                x_curr[idx * 3 + 1] = x_0[idx * 3 + 1] + v_0[idx * 3 + 1] * dt;
+                x_curr[idx * 3 + 2] = x_0[idx * 3 + 2] + v_0[idx * 3 + 2] * dt;
+            }
+            else {
+                x_curr[idx * 3 + 0] = x_0[idx * 3 + 0];
+                x_curr[idx * 3 + 1] = x_0[idx * 3 + 1];
+                x_curr[idx * 3 + 2] = x_0[idx * 3 + 2];
+            }
+        }
+        else {
+            v_0[idx * 3 + 0] = 0;
+            v_0[idx * 3 + 1] = 0;
+            v_0[idx * 3 + 2] = 0;
+            x_curr[idx * 3 + 0] = x_0[idx * 3 + 0];
+            x_curr[idx * 3 + 1] = x_0[idx * 3 + 1];
+            x_curr[idx * 3 + 2] = x_0[idx * 3 + 2];
+        }
+        ADU::Real m = M[idx];
+        M_x_tilde[idx * 3 + 0] = m * x_curr[idx * 3 + 0];
+        M_x_tilde[idx * 3 + 1] = m * x_curr[idx * 3 + 1];
+        M_x_tilde[idx * 3 + 2] = m * x_curr[idx * 3 + 2];
+    }
+}
+
+void do_pre_integration(int nVert, int nDynVert, const ADU::Real dt, const ADU::Real g, const ADU::Real* x_0, const int* is_fix, const ADU::Real* M,
+    ADU::Real* v_0, ADU::Real* x_curr, ADU::Real* M_x_tilde)
+{
+
+    int blockSize = 256; // This can be adjusted
+    int numBlocks = (nVert + blockSize - 1) / blockSize;
+    // set v_0 to 0
+    // get x_tilde
+    // get M_x_tilde
+    // 
+    do_integration_kernel
+    <<<numBlocks, blockSize>>>
+    (nVert, nDynVert, dt, g, x_0, is_fix, M, v_0, x_curr, M_x_tilde);
+
+    CUDA_SAFE_CALL(cudaDeviceSynchronize());
+
+}
+
+
+__global__ void do_post_process_kernel(int nVert, int nDynVert, const ADU::Real dt_inv, ADU::Real* x_0, 
+    ADU::Real* v_0, const ADU::Real* x_curr)
+{
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (idx < nVert) {
+        if (idx < nDynVert) {
+            v_0[idx * 3 + 0] = (x_curr[idx * 3 + 0] - x_0[idx * 3 + 0]) * dt_inv;
+            v_0[idx * 3 + 1] = (x_curr[idx * 3 + 1] - x_0[idx * 3 + 1]) * dt_inv;
+            v_0[idx * 3 + 2] = (x_curr[idx * 3 + 2] - x_0[idx * 3 + 2]) * dt_inv;
+        }
+
+        x_0[idx * 3 + 0] = x_curr[idx * 3 + 0];
+        x_0[idx * 3 + 1] = x_curr[idx * 3 + 1];
+        x_0[idx * 3 + 2] = x_curr[idx * 3 + 2];
+    }
+}
+
+void do_post_process(int nVert, int nDynVert, const ADU::Real dt, ADU::Real* v_0, ADU::Real* x_curr, ADU::Real* x_0) 
+{
+    int blockSize = 256; // This can be adjusted
+    int numBlocks = (nVert + blockSize - 1) / blockSize;
+    do_post_process_kernel
+        << <numBlocks, blockSize >> >
+    (nVert, nDynVert, 1.0f / dt, x_0, v_0, x_curr);
+    CUDA_SAFE_CALL(cudaDeviceSynchronize());
+}

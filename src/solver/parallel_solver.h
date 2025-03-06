@@ -150,6 +150,9 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	std::vector<std::array<float, 3>> contact_points;
 	std::vector<std::array<float, 3>> contact_normals;
 
+	thrust::device_vector<int> d_is_fixed;
+	thrust::device_vector<ADU::Real> d_M;
+
 public:
 	void convert_constraint2device();
 

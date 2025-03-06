@@ -102,6 +102,25 @@ void ADMMParallelSolver::init() {
 	resizeThrust<ADU::Real>(this->cache_nDynVertX3, nDynVert * 3, 0);
 	resizeThrust<ADU::Real>(this->cache_nDynVertX3_bp1, nDynVert*3, 0);
 
+	// for pre-integration
+	std::vector<int> is_fixed(m_nVert, 0);
+	for (auto x : m_pin_inds_set) {
+		is_fixed[x] = 1;
+	}
+	resizeThrust(d_is_fixed, m_nVert, 0);
+	thrust::copy(is_fixed.begin(), is_fixed.end(), d_is_fixed.begin());
+
+	resizeThrust(d_M, m_nVert, 1000000.0f);
+	copy_vec2thrustvector(m_M_vec, d_M, m_nVert);
+
+	resizeThrust<ADU::Real>(M_x_tilde_device, m_nVert * 3, 0);
+	resizeThrust<ADU::Real>(DX_device, m_nCDim * 3, 0);
+
+	ADU::Matf_X3& x_0 = m_vertices;
+	ADU::Matf_X3& v_0 = m_velocities;
+
+	copy_mat2thrustvector(x_0, solver_data_device->x_0_device, m_nVert);
+	copy_mat2thrustvector(v_0, solver_data_device->v_0_device, m_nVert);
 
 	printf("ADMMParallelSolver init done\n");
 
@@ -173,8 +192,6 @@ void ADMMParallelSolver::precompute() {
 	Wd.setFromTriplets(We_d_trips.begin(), We_d_trips.end());
 	Dd.setFromTriplets(D_d_trips.begin(), D_d_trips.end());
 	m_Damp_Mat = m_dt * (damp_k_L * Dd.transpose() * Wd * Dd + damp_k_M * m_M);
-
-
 
 	// frictional contact
 	m_dt2Wc = SpMatf(nDynVert, nDynVert);
@@ -274,8 +291,6 @@ void ADMMParallelSolver::precompute() {
 void ADMMParallelSolver::step() {
     using namespace ADU;
 
-	printf("here\n");
-
 	// for contact stabilization
 	epsilon = 1.0_r / (m_dt2 * kappa + m_dt * beta);
 	gamma = m_dt * kappa / (m_dt * kappa + beta);
@@ -285,56 +300,58 @@ void ADMMParallelSolver::step() {
 	/*Matf_X3 b = Matf_X3(nDynVert, 3);
 	b.setZero();*/
 
-	Matf_X3 x_0(m_nVert, 3);
-	Matf_X3 v_0(m_nVert, 3);
-	x_0 = m_vertices;
-	v_0 = m_velocities;
+	//Matf_X3 x_0(m_nVert, 3);
+	//Matf_X3 v_0(m_nVert, 3);
+	/*Matf_X3& x_0 = m_vertices;
+	Matf_X3& v_0 = m_velocities;
 
 	copy_mat2thrustvector(x_0, solver_data_device->x_0_device, m_nVert);
+	copy_mat2thrustvector(v_0, solver_data_device->v_0_device, m_nVert);*/
 
-	// explicit integrate as initial value
-	for (int i = 0; i < nDynVert; i++) {
-		if (m_pin_inds_set.count(i)) v_0.row(i).setZero();
-		else v_0.row(i).y() -= g * m_dt;
-	}
+	do_pre_integration(m_nVert, nDynVert, m_dt, g, solver_data_device->x_0_device.data().get(), 
+		d_is_fixed.data().get(), d_M.data().get(),  solver_data_device->v_0_device.data().get(),
+		solver_data_device->x_curr_device.data().get(), M_x_tilde_device.data().get());
 
-	ADU::Matf_X3 temp(m_nCDim, 3);
+	//// explicit integrate as initial value
+	//for (int i = 0; i < nDynVert; i++) {
+	//	if (m_pin_inds_set.count(i)) v_0.row(i).setZero();
+	//	else v_0.row(i).y() -= g * m_dt;
+	//}
 
-	Matf_X3 x_tilde = x_0.block(0, 0, nDynVert, 3) + m_dt * v_0.block(0, 0, nDynVert, 3); // nDynVert * 3
-	Matf_X3 M_x_tilde = m_M * x_tilde; // nDynVert * 3
+	//Matf_X3 x_tilde = x_0.block(0, 0, nDynVert, 3) + m_dt * v_0.block(0, 0, nDynVert, 3); // nDynVert * 3
+	//Matf_X3 M_x_tilde = m_M * x_tilde; // nDynVert * 3
 
-	resizeThrust<ADU::Real>(M_x_tilde_device, nDynVert * 3, 0);
-	copy_mat2thrustvector(M_x_tilde, M_x_tilde_device, nDynVert);
+	//resizeThrust<ADU::Real>(M_x_tilde_device, nDynVert * 3, 0);
+	//copy_mat2thrustvector(M_x_tilde, M_x_tilde_device, nDynVert);
 
-	b_curr.resize(nDynVert, 3);
-	b_curr.setZero();
+	/*b_curr.resize(nDynVert, 3);
+	b_curr.setZero();*/
 
 	// initial value
-	x_curr.resize(m_nVert, 3);
-	x_curr.setZero();
-	// Matf_X3 x_curr(m_nVert, 3);
-	x_curr.block(0, 0, nDynVert, 3) = x_tilde;
-	x_curr.block(nDynVert, 0, m_nVert - nDynVert, 3) = x_0.block(nDynVert, 0, m_nVert - nDynVert, 3);
-	Matf_X3 z(m_nCDim, 3);
+	/*x_curr.resize(m_nVert, 3);
+	x_curr.setZero();*/
+	//// Matf_X3 x_curr(m_nVert, 3);
+	//x_curr.block(0, 0, nDynVert, 3) = x_tilde;
+	//x_curr.block(nDynVert, 0, m_nVert - nDynVert, 3) = x_0.block(nDynVert, 0, m_nVert - nDynVert, 3);
+	/*Matf_X3 z(m_nCDim, 3);
 	z.setZero();
 	Matf_X3 DX(m_nCDim, 3);
-	DX.setZero();
-	resizeThrust<ADU::Real>(DX_device, m_nCDim * 3, 0);
+	DX.setZero();*/
 
-	if (animator) {
+	/*if (animator) {
 		animator->animate_all(m_vertices, x_curr, v_0, this->m_dt);
-	}
-	Matf_X3 b_ini = m_Damp_Mat * x_0.block(0, 0, nDynVert, 3);
+	}*/
+	//Matf_X3 b_ini = m_Damp_Mat * x_0.block(0, 0, nDynVert, 3);
 
-	p.resize(m_nVert, 3);
-	p = v_0;
+	/*p.resize(m_nVert, 3);
+	p = v_0;*/
 
 	if (!warmstart_Ue) { m_Ue.setZero(); }
 	if (!warmstart_Uc) { m_Uc.setZero(); }
 
 	Timer timer("ADMMParallelSolver::step()");
 
-	copy_mat2thrustvector(x_curr, solver_data_device->x_curr_device, m_nVert);
+	//copy_mat2thrustvector(x_curr, solver_data_device->x_curr_device, m_nVert);
 
 	for (int admm_it = 0; admm_it < admm_max_iter; admm_it++) {
 		Timer per_iteration_timer("per_iteration");
@@ -455,11 +472,21 @@ void ADMMParallelSolver::step() {
 		}
 	}
 
-	copy_thrustvector2mat(solver_data_device->x_curr_device,x_curr,  m_nVert);
+	// copy x_curr to x_0
+	// get v_0
+	// x_0 to m_vertices
+	// v_0 to m_velocities
 
-	m_velocities.block(0, 0, nDynVert, 3) = (x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3)) / m_dt;
+	do_post_process(m_nVert, nDynVert, m_dt, solver_data_device->v_0_device.data().get(), 
+		solver_data_device->x_curr_device.data().get(), solver_data_device->x_0_device.data().get());
+
+	copy_thrustvector2mat(solver_data_device->x_0_device, m_vertices, m_nVert);
+	copy_thrustvector2mat(solver_data_device->v_0_device, m_velocities, m_nVert);
+	//copy_thrustvector2mat(solver_data_device->x_curr_device, x_curr,  m_nVert);
+
+	/*m_velocities.block(0, 0, nDynVert, 3) = (x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3)) / m_dt;
 	m_velocities.block(nDynVert, 0, m_nVert - nDynVert, 3) = v_0.block(nDynVert, 0, m_nVert - nDynVert, 3);
-	m_vertices = x_curr;
+	m_vertices = x_curr;*/
 
 	step_cnt++;
 }

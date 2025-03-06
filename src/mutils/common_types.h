@@ -2,6 +2,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Core>
+#include <vector_types.h>
 
 constexpr auto ADMM_VERBOSE = false;
 
@@ -58,6 +59,19 @@ namespace ADU {
 	using Veci_3 = Eigen::Vector<int, 3>;
 	using Veci_4 = Eigen::Vector<int, 4>;
 
+	template <typename T>
+	struct ADU_ele_traits;
 
+	template <>
+	struct ADU_ele_traits<float> {
+		using vec3_type = float3;
+		using vec2_type = float2;
+	};
+
+	template <>
+	struct ADU_ele_traits<double> {
+		using vec3_type = double3;
+		using vec2_type = double2;
+	};
 }
 

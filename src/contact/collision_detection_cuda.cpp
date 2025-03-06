@@ -117,6 +117,8 @@ void BVH_GPU::update(const ADU::Matf_X3& verts, bool copy_to_host) {
     construct(copy_to_host);
 }
 
+
+
 void BVH_GPU::update(ADU::Real* verts_device, int vnum, bool copy_to_host) {
     //auto verts = solver->getVertices();
     const auto& edges = mesh->surface_edges;
@@ -125,8 +127,7 @@ void BVH_GPU::update(ADU::Real* verts_device, int vnum, bool copy_to_host) {
     this->v_num = vnum;
     this->e_num = edges.rows();
     this->t_num = tris.rows();
-
-    //d_verts = reinterpret_cast<double3*>(verts_device);
+    d_verts = reinterpret_cast<typename ADU::ADU_ele_traits<ADU::Real>::vec3_type*>(verts_device);
 
     bvh_f._vertexes = d_verts;
     bvh_e._vertexes = d_verts;

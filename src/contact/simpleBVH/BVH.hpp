@@ -60,8 +60,8 @@ public:
     }
 
     void intersect_2D_box(
-        const Eigen::Vector2d& bbd0,
-        const Eigen::Vector2d& bbd1,
+        const ADU::Vecf_2& bbd0,
+        const ADU::Vecf_2& bbd1,
         std::vector<unsigned int>& list) const
     {
         ADU::Vecf_3 bbd0_3D = ADU::Vecf_3::Zero();
