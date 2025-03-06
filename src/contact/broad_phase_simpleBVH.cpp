@@ -43,13 +43,13 @@ void BroadPhase_simpleBVH::query_point_triangle(const ADU::Matf_X3& verts, std::
 		ADU::make_exception("BroadPhase::query_point_triangle candidate size error");
 	}
 
-	const Eigen::Vector3d round{ radius, radius, radius };
+	const ADU::Vecf_3 round{ radius, radius, radius };
 
 	tbb::parallel_for(tbb::blocked_range<size_t>(0, n_verts), 
 		[&](tbb::blocked_range<size_t> r) 
 		{
 			for (size_t qi = r.begin(); qi < r.end(); qi++) {
-				const Eigen::Vector3d& v = verts.row(surf_vinds(qi));
+				const ADU::Vecf_3& v = verts.row(surf_vinds(qi));
 				face_bvh.intersect_box(v - round, v + round, candidates[qi]);
 			}
 		}
@@ -67,7 +67,7 @@ void BroadPhase_simpleBVH::query_edge_edge(const ADU::Matf_X3& verts, std::vecto
 		ADU::make_exception("BroadPhase::query_edge_edge candidate size error");
 	}
 
-	const Eigen::Vector3d round{ radius / 3, radius / 3, radius / 3 };
+	const ADU::Vecf_3 round{ radius / 3, radius / 3, radius / 3 };
 
 	tbb::parallel_for(tbb::blocked_range<size_t>(0, n_edges), 
 		[&](tbb::blocked_range<size_t> r) 

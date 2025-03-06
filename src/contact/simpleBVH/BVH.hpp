@@ -22,7 +22,7 @@ public:
     void init(const std::vector<std::array<ADU::Vecf_3, 2>>& cornerlist);
 
     void
-    init(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F, const double tol);
+    init(const Eigen::MatrixXf& V, const Eigen::MatrixXi& F, const ADU::Real tol);
 
     void clear()
     {
@@ -131,7 +131,7 @@ private:
 
     static int max_node_index(int node_index, int b, int e);
 
-    Eigen::Matrix<double, Eigen::Dynamic, 3, Eigen::RowMajor> box_centers;
+    Eigen::Matrix<ADU::Real, Eigen::Dynamic, 3, Eigen::RowMajor> box_centers;
 
     struct sortstruct {
         int order;

@@ -133,9 +133,12 @@ void BVH::init(const std::vector<std::array<ADU::Vecf_3, 2>>& cornerlist)
         box_centers.row(i) = (cornerlist[i][0] + cornerlist[i][1]) / 2;
     }
 
-    const Eigen::RowVector3d vmin = box_centers.colwise().minCoeff();
-    const Eigen::RowVector3d vmax = box_centers.colwise().maxCoeff();
-    const Eigen::RowVector3d center = (vmin + vmax) / 2;
+    const Eigen::RowVector3f vmin = box_centers.colwise().minCoeff();
+    const Eigen::RowVector3f vmax = box_centers.colwise().maxCoeff();
+    const Eigen::RowVector3f center = (vmin + vmax) / 2;
+    /*const Eigen::RowVector3f vmin = box_centers.colwise().minCoeff();
+    const Eigen::RowVector3f vmax = box_centers.colwise().maxCoeff();
+    const Eigen::RowVector3f center = (vmin + vmax) / 2;*/
     for (int i = 0; i < n_corners; i++) {
         // make box centered at origin
         box_centers.row(i) -= center;
@@ -143,7 +146,7 @@ void BVH::init(const std::vector<std::array<ADU::Vecf_3, 2>>& cornerlist)
 
     // after placing box at origin, vmax and vmin are symetric.
     const ADU::Vecf_3 scale_point = vmax - center;
-    const double scale = scale_point.lpNorm<Eigen::Infinity>();
+    const ADU::Real scale = scale_point.lpNorm<Eigen::Infinity>();
     // if the box is too big, resize it
     if (scale > 100) {
         box_centers /= scale;
@@ -156,7 +159,7 @@ void BVH::init(const std::vector<std::array<ADU::Vecf_3, 2>>& cornerlist)
         tbb::blocked_range<size_t>(0, n_corners),
         [&](tbb::blocked_range<size_t> r) {
             for (int i = r.begin(); i < r.end(); i++) {
-                const Eigen::MatrixXd tmp = box_centers.row(i) * multi;
+                const Eigen::MatrixXf tmp = box_centers.row(i) * multi;
 
                 list[i].morton =
                     Resorting::MortonCode64(int(tmp(0)), int(tmp(1)), int(tmp(2)));
@@ -166,7 +169,7 @@ void BVH::init(const std::vector<std::array<ADU::Vecf_3, 2>>& cornerlist)
         tbb::static_partitioner{}
     );
     /*for (int i = 0; i < n_corners; i++) {
-        const Eigen::MatrixXd tmp = box_centers.row(i) * multi;
+        const Eigen::MatrixXf tmp = box_centers.row(i) * multi;
 
         list[i].morton =
             Resorting::MortonCode64(int(tmp(0)), int(tmp(1)), int(tmp(2)));
@@ -197,7 +200,7 @@ void BVH::init(const std::vector<std::array<ADU::Vecf_3, 2>>& cornerlist)
 }
 
 void BVH::init(
-    const Eigen::MatrixXd& V, const Eigen::MatrixXi& F, const double tol)
+    const Eigen::MatrixXf& V, const Eigen::MatrixXi& F, const ADU::Real tol)
 {
     assert(F.cols() == 3);
     assert(V.cols() == 3);
@@ -206,17 +209,17 @@ void BVH::init(
 
     for (int i = 0; i < F.rows(); i++) {
         const Eigen::RowVector3i face = F.row(i);
-        const Eigen::RowVector3d v0 = V.row(face(0));
-        const Eigen::RowVector3d v1 = V.row(face(1));
-        const Eigen::RowVector3d v2 = V.row(face(2));
+        const Eigen::RowVector3f v0 = V.row(face(0));
+        const Eigen::RowVector3f v1 = V.row(face(1));
+        const Eigen::RowVector3f v2 = V.row(face(2));
 
-        Eigen::Matrix3d tmp;
+        Eigen::Matrix3f tmp;
         tmp.row(0) = v0;
         tmp.row(1) = v1;
         tmp.row(2) = v2;
 
-        const Eigen::RowVector3d min = tmp.colwise().minCoeff().array() - tol;
-        const Eigen::RowVector3d max = tmp.colwise().maxCoeff().array() + tol;
+        const Eigen::RowVector3f min = tmp.colwise().minCoeff().array() - tol;
+        const Eigen::RowVector3f max = tmp.colwise().maxCoeff().array() + tol;
 
         cornerlist[i][0] = min.transpose();
         cornerlist[i][1] = max.transpose();
