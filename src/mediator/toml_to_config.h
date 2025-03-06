@@ -48,6 +48,7 @@ struct APPConfig {
             int admm_max_iter;
             int DCD_interval;
             int GS_max_iter;
+            int Global_Jacobi_iter{20};
             bool warmstart_Uc;
             bool warmstart_Ue;
         };
@@ -201,6 +202,10 @@ struct APPConfig {
         app_config.solver.admm.admm_max_iter = _CTML(solver_config["admm_max_iter"].value<int>());
         app_config.solver.admm.DCD_interval = _CTML(solver_config["DCD_interval"].value<int>());
         app_config.solver.admm.GS_max_iter = _CTML(solver_config["GS_max_iter"].value<int>());
+        auto global_iter = solver_config["Global_Jacobi_iter"];
+        if (global_iter) {
+            app_config.solver.admm.Global_Jacobi_iter = *global_iter.value<int>();
+        }
 
         auto& solver_admm_config = solver_config["admm"];
         app_config.solver.admm.warmstart_Ue = _CTML(solver_admm_config["warmstart_Ue"].value<bool>());

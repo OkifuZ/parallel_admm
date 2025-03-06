@@ -97,6 +97,7 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	ADU::Matf_X3 b_curr;
 
 
+
 	/*void project_feasible(ADU::Matf_X3& p,
 		ProximalQuery::ContactInfoList& contacts,
 		ADU::Real mu, size_t max_jacobi_iter) override;*/
@@ -155,6 +156,8 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 
 public:
 	void convert_constraint2device();
+
+	int Global_Jacobi_iter = 20;
 
 
 	std::vector<std::array<float, 3>>& getContactPoints();

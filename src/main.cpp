@@ -457,6 +457,9 @@ int main(int argc, const char* argv[]) {
         solver = static_cast<ADMMSolverFull_RL_damping*>(app.solver.get());
     }
 
+    auto svs = static_cast<ADMMParallelSolver*>(app.solver.get());
+    svs->Global_Jacobi_iter = app_config.solver.admm.Global_Jacobi_iter;
+
     solver->static_mesh_id_begin = static_mesh_id_begin;
     solver->static_vert_begin = static_vert_begin;
 

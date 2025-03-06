@@ -12,7 +12,8 @@ g = 3.98
 [solver]
 admm_max_iter = 20
 DCD_interval = 6
-GS_max_iter = 20
+GS_max_iter = 5
+Global_Jacobi_iter = 10
 contact.use_CCD = false
 admm.warmstart_Ue = true
 admm.warmstart_Uc = true
@@ -75,10 +76,38 @@ k.bending = 1.0
 k.use_limit = false
 density = 4.0
 
+[[mesh]]
+f.path = 'flat/flat_v10649.obj'
+f.type = 'tri'
+f.color = 2
+t.scale = 3.5
+t.translate = [0, 2.5, 0]
+t.rotate = [0, 60, 0]
+k.stretch = 15000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = false
+density = 4.0
+
+[[mesh]]
+f.path = 'flat/flat_v10649.obj'
+f.type = 'tri'
+f.color = 3
+t.scale = 3.5
+t.translate = [0, 3.2, 0]
+t.rotate = [0, 90, 0]
+k.stretch = 15000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = false
+density = 4.0
+
 # [[mesh]]
 # f.path = 'flat/flat_v134.obj'
 # f.type = 'tri'
-# f.color = 1
+# f.color = 3
 # t.scale = 2.5
 # t.translate = [0, 1.8, 0]
 # t.rotate = [0, 45, 0]
