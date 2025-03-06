@@ -10,26 +10,26 @@ pin = [0, 1, 2, 3]
 g = 3.98
 
 [solver]
-admm_max_iter = 20
-DCD_interval = 6
-GS_max_iter = 5
+admm_max_iter = 11
+DCD_interval = 5
+GS_max_iter = 10
 Global_Jacobi_iter = 10
 contact.use_CCD = false
 admm.warmstart_Ue = true
 admm.warmstart_Uc = true
 contact.enable = true
 contact.use_Jacobi = true
-contact.w_scale = 25
+contact.w_scale = 15
 contact.kappa = 1e5
 contact.beta = 1e5
 contact.unique = true
 contact.use_heu_wc = false
-contact.mu = 0.1
+contact.mu = 0.8
 damp.kl = 1e-4
 damp.km = 1e-3
 
 [DCD]
-narrow.max_collision = 40000
+narrow.max_collision = 200000
 narrow.thickness = 3e-2
 broad.radius = 3e-2
 broad.strategy = 'rebuild'

@@ -1,6 +1,7 @@
 #include "solver/parallel_solver.h"
 #include "mutils/timer.h"
 #include "constraint/pin_constraint.h"
+#include "constraint/bending_constraint.h"
 #include "thrust/device_vector.h"
 #include "solver/contact_solver.cuh"
 
@@ -21,6 +22,7 @@ void ADMMParallelSolver::convert_constraint2device() {
 	// 1. count constraint num for each type
 	std::vector<std::shared_ptr<TriangleConstraint>> tri_constraints;
 	std::vector<std::shared_ptr<PinConstraint> > pin_constraints;
+	std::vector<std::shared_ptr<BendingConstraint> > bend_constraints;
 
 	for (auto& ct: m_constraints) {
 		if (ct->type == 1) {
@@ -34,6 +36,12 @@ void ADMMParallelSolver::convert_constraint2device() {
 		else if (ct->type == 2) {
 		}
 		else if (ct->type == 3) {
+			static bool hit3 = false;
+			if (!hit3) {
+				hit3 = true;
+				bending_constraint_start_row = ct->start_row;
+			}
+			bend_constraints.push_back(std::dynamic_pointer_cast<BendingConstraint>(ct));
 		}
 		else if (ct->type == 4) {
 			static bool hit4 = false;
@@ -54,6 +62,7 @@ void ADMMParallelSolver::convert_constraint2device() {
 
 	this->pin_constraint_cu = std::make_unique<PinConstraintDevice>(pin_constraints);
 	this->triangle_constraint_cu = std::make_unique<TriangleConstraintDevice>(tri_constraints);
+	this->bending_constraint_cu = std::make_unique<BendingConstraintDevice>(bending_constraints);
 }
 
 
@@ -339,27 +348,25 @@ void ADMMParallelSolver::step() {
 
 			}
 
-			{
-				if (enable_frictional_contact)
-				{ // frictional contact
-					//Timer local_project_timer("contact_local");
+			if (enable_frictional_contact)
+			{ // frictional contact
+				//Timer local_project_timer("contact_local");
 
-					/*p.block(0, 0, nDynVert, 3) =
-						(x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) + m_Uc) * m_dt_inv; // p as start velocity
-						*/
-					op_a_minus_b(solver_data_device->x_curr_device, solver_data_device->x_0_device, cache_nDynVertX3, nDynVert);
-					op_a_plus_b(cache_nDynVertX3, m_Uc_device, cache_nDynVertX3, nDynVert);
-					op_scale(cache_nDynVertX3, m_dt_inv, solver_data_device->p_device, nDynVert);
+				/*p.block(0, 0, nDynVert, 3) =
+					(x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) + m_Uc) * m_dt_inv; // p as start velocity
+					*/
+				op_a_minus_b(solver_data_device->x_curr_device, solver_data_device->x_0_device, cache_nDynVertX3, nDynVert);
+				op_a_plus_b(cache_nDynVertX3, m_Uc_device, cache_nDynVertX3, nDynVert);
+				op_scale(cache_nDynVertX3, m_dt_inv, solver_data_device->p_device, nDynVert);
 
-					if (need_recompute_Scc) {
-						//ADMMSolverFull_RL_damping::compute_Scc();
-						//ADMMParallelSolver::compute_Scc();
-						ADMMParallelSolver::compute_Scc_parallel();
-						need_recompute_Scc = false;
-					}
-					 ADMMParallelSolver::project_feasible_parallel();
-
+				if (need_recompute_Scc) {
+					//ADMMSolverFull_RL_damping::compute_Scc();
+					//ADMMParallelSolver::compute_Scc();
+					ADMMParallelSolver::compute_Scc_parallel();
+					need_recompute_Scc = false;
 				}
+					ADMMParallelSolver::project_feasible_parallel();
+
 			}
 		}
 

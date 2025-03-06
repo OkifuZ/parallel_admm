@@ -24,6 +24,7 @@
 
 #include "constraint/pin_constraint_device.h"
 #include "constraint/triangle_constraint_device.h"
+#include "constraint/bending_constraint_device.cuh"
 
 
 class ADMMSolverFull :public Solver {

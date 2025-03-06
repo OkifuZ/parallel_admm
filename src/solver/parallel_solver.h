@@ -1,5 +1,6 @@
 #pragma once
 #include "solver/admm_full_solver.h"
+#include "constraint/bending_constraint_device.cuh"
 
 
 class ContactDataDevice {
@@ -73,6 +74,9 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	int triangle_constraint_start_row{};
 	std::unique_ptr<PinConstraintDevice> pin_constraint_cu;
 	int pin_constraint_start_row{};
+	std::unique_ptr<BendingConstraintDevice> bending_constraint_cu;
+	int bending_constraint_start_row{};
+
 	thrust::device_vector<ADU::Real> DX_device;
 	thrust::device_vector<ADU::Real> m_Ue_device;
 	thrust::device_vector<ADU::Real> m_Uc_device;
