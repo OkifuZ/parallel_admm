@@ -62,7 +62,7 @@ void ADMMParallelSolver::convert_constraint2device() {
 
 	this->pin_constraint_cu = std::make_unique<PinConstraintDevice>(pin_constraints);
 	this->triangle_constraint_cu = std::make_unique<TriangleConstraintDevice>(tri_constraints);
-	this->bending_constraint_cu = std::make_unique<BendingConstraintDevice>(bending_constraints);
+	this->bending_constraint_cu = std::make_unique<BendingConstraintDevice>(bend_constraints);
 }
 
 
