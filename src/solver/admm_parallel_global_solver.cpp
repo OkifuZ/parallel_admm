@@ -32,6 +32,8 @@ void ADMMParallelSolver::convert_constraint2device() {
 				triangle_constraint_start_row = ct->start_row;
 			}
 			tri_constraints.push_back(std::dynamic_pointer_cast<TriangleConstraint>(ct));
+			//printf("tri w %f; ", ct->w);
+
 		}
 		else if (ct->type == 2) {
 		}
@@ -42,6 +44,12 @@ void ADMMParallelSolver::convert_constraint2device() {
 				bending_constraint_start_row = ct->start_row;
 			}
 			bend_constraints.push_back(std::dynamic_pointer_cast<BendingConstraint>(ct));
+			/*for (auto x : bend_constraints.back()->coeffs) {
+				printf("%f ", x);
+			}
+			printf("\n");*/
+			//printf("bend w %f; ", ct->w);
+
 		}
 		else if (ct->type == 4) {
 			static bool hit4 = false;
@@ -50,6 +58,7 @@ void ADMMParallelSolver::convert_constraint2device() {
 				pin_constraint_start_row = ct->start_row;
 			}
 			pin_constraints.push_back(std::dynamic_pointer_cast<PinConstraint>(ct));
+			//printf("pin w %f; ", ct->w);
 		}
 		else if (ct->type == 5) {
 		}
@@ -57,8 +66,9 @@ void ADMMParallelSolver::convert_constraint2device() {
 		}
 	}
 
-	std::cout << triangle_constraint_start_row << std::endl;
-	std::cout << pin_constraint_start_row << std::endl;
+	std::cout << "tri sr: " << triangle_constraint_start_row << std::endl;
+	std::cout << "pin sr: " << pin_constraint_start_row << std::endl;
+	std::cout << "bend sr: " << bending_constraint_start_row << std::endl;
 
 	this->pin_constraint_cu = std::make_unique<PinConstraintDevice>(pin_constraints);
 	this->triangle_constraint_cu = std::make_unique<TriangleConstraintDevice>(tri_constraints);
@@ -178,6 +188,7 @@ void ADMMParallelSolver::precompute() {
 	m_D.setFromTriplets(D_trips.begin(), D_trips.end());
 	m_W_e.setFromTriplets(We_trips.begin(), We_trips.end());
 	m_D_device = std::make_unique<CompactSparseMat>(m_D, false);
+	printf("m_D_device: c %d, r %d\n", m_D_device->cols, m_D_device->rows);
 
 	m_dt2DTWeTWe = m_dt2 * m_D.transpose() * m_W_e.transpose() * m_W_e;
 	m_dt2DTWeTWeD = m_dt2DTWeTWe * m_D;
@@ -306,6 +317,11 @@ void ADMMParallelSolver::step() {
 
 	int nDynVert = static_vert_begin;
 
+	x_curr.resize(m_nVert, 3);
+	x_curr.setZero();
+	b_curr.resize(nDynVert, 3);
+	b_curr.setZero();
+
 	do_pre_integration(m_nVert, nDynVert, m_dt, g, solver_data_device->x_0_device.data().get(), 
 		d_is_fixed.data().get(), d_M.data().get(),  solver_data_device->v_0_device.data().get(),
 		solver_data_device->x_curr_device.data().get(), M_x_tilde_device.data().get());
@@ -343,9 +359,8 @@ void ADMMParallelSolver::step() {
 
 				// TODO device ptr?
 				triangle_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + triangle_constraint_start_row * 3));
-				bending_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data()) + bending_constraint_start_row * 3)
+				bending_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + bending_constraint_start_row * 3) );
 				pin_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + pin_constraint_start_row * 3));
-
 			}
 
 			if (enable_frictional_contact)
@@ -391,9 +406,23 @@ void ADMMParallelSolver::step() {
 			// damp
 			//b_curr += b_ini;
 			// TODO
-
-            // GS_global(b_curr, x_curr, 45);
+			//printf("jac iter: %d \n", Global_Jacobi_iter);
             Jacobi_global(Global_Jacobi_iter);
+			// copy_thrustvector2mat(solver_data_device->x_curr_device, x_curr, nDynVert);
+			// copy_thrustvector2mat(solver_data_device->b_curr_device, b_curr, nDynVert);
+            // GS_global(b_curr, x_curr, 45);
+			/*tbb::parallel_invoke(
+				[&]() {
+					x_curr.block(0, 0, nDynVert, 1) = m_LLT_solver->solve(b_curr.col(0));
+				},
+				[&]() {
+					x_curr.block(0, 1, nDynVert, 1) = m_LLT_solver->solve(b_curr.col(1));
+				},
+				[&]() {
+					x_curr.block(0, 2, nDynVert, 1) = m_LLT_solver->solve(b_curr.col(2));
+				}
+			);*/
+			//copy_mat2thrustvector(x_curr, solver_data_device->x_curr_device, nDynVert);
 
 		}
 

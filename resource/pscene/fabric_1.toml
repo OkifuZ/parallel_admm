@@ -44,7 +44,7 @@ broad.strategy = 'rebuild'
 # k.stretch = 19000.0
 # k.min_limit = 0.95
 # k.max_limit = 1.05
-# k.bending = 10.0
+# k.bending = 0.0
 # k.use_limit = false
 # density = 4.0
 
@@ -58,51 +58,51 @@ t.rotate = [0, 0, 0]
 k.stretch = 19000.0
 k.min_limit = 0.95
 k.max_limit = 1.05
-k.bending = 1.0
+k.bending = 1.1
 k.use_limit = false
 density = 4.0
 
-[[mesh]]
-f.path = 'flat/flat_v10649.obj'
-f.type = 'tri'
-f.color = 1
-t.scale = 3.5
-t.translate = [0, 1.8, 0]
-t.rotate = [0, 30, 0]
-k.stretch = 15000.0
-k.min_limit = 0.95
-k.max_limit = 1.05
-k.bending = 1.0
-k.use_limit = false
-density = 4.0
+#[[mesh]]
+#f.path = 'flat/flat_v10649.obj'
+#f.type = 'tri'
+#f.color = 1
+#t.scale = 3.5
+#t.translate = [0, 1.8, 0]
+#t.rotate = [0, 30, 0]
+#k.stretch = 15000.0
+#k.min_limit = 0.95
+#k.max_limit = 1.05
+#k.bending = 0.0
+#k.use_limit = false
+#density = 4.0
 
-[[mesh]]
-f.path = 'flat/flat_v10649.obj'
-f.type = 'tri'
-f.color = 2
-t.scale = 3.5
-t.translate = [0, 2.5, 0]
-t.rotate = [0, 60, 0]
-k.stretch = 15000.0
-k.min_limit = 0.95
-k.max_limit = 1.05
-k.bending = 1.0
-k.use_limit = false
-density = 4.0
+#[[mesh]]
+#f.path = 'flat/flat_v10649.obj'
+#f.type = 'tri'
+#f.color = 2
+#t.scale = 3.5
+#t.translate = [0, 2.5, 0]
+#t.rotate = [0, 60, 0]
+#k.stretch = 15000.0
+#k.min_limit = 0.95
+#k.max_limit = 1.05
+#k.bending = 1.0
+#k.use_limit = false
+#density = 4.0
 
-[[mesh]]
-f.path = 'flat/flat_v10649.obj'
-f.type = 'tri'
-f.color = 3
-t.scale = 3.5
-t.translate = [0, 3.2, 0]
-t.rotate = [0, 90, 0]
-k.stretch = 15000.0
-k.min_limit = 0.95
-k.max_limit = 1.05
-k.bending = 1.0
-k.use_limit = false
-density = 4.0
+#[[mesh]]
+#f.path = 'flat/flat_v10649.obj'
+#f.type = 'tri'
+#f.color = 3
+#t.scale = 3.5
+#t.translate = [0, 3.2, 0]
+#t.rotate = [0, 90, 0]
+#k.stretch = 15000.0
+#k.min_limit = 0.95
+#k.max_limit = 1.05
+#k.bending = 1.0
+#k.use_limit = false
+#density = 4.0
 
 # [[mesh]]
 # f.path = 'flat/flat_v134.obj'

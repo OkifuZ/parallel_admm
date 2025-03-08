@@ -13,7 +13,7 @@
 
 #include <vector>
 
-#define DISABLE_BENDING
+//#define DISABLE_BENDING
 
 
 class Mesh2Constraint {
@@ -39,42 +39,49 @@ public:
                 curr_start_row += 2;
                 constraints.emplace_back(ct);
 
-                auto xct = std::make_shared<FEMTriangleConstraint>();
-                Real stiff = ct->k;
-                bool res = xct->initConstraint(mesh_data.verts, vinds(0), vinds(1), vinds(2), 
-                    stiff, stiff, stiff, 0.3_r, 0.3_r);
-                ct->Binv_XPBD = xct->m_invRestMat;
-                if (!res) ADU::make_exception("XPBD triangle constraint init issue");
-                //xct->stiffness = 1e6;
-                XPBD_constraints.push_back(xct);
+                //auto xct = std::make_shared<FEMTriangleConstraint>();
+                //Real stiff = ct->k;
+                //bool res = xct->initConstraint(mesh_data.verts, vinds(0), vinds(1), vinds(2), 
+                //    stiff, stiff, stiff, 0.3_r, 0.3_r);
+                //ct->Binv_XPBD = xct->m_invRestMat;
+                //if (!res) ADU::make_exception("XPBD triangle constraint init issue");
+                ////xct->stiffness = 1e6;
+                //XPBD_constraints.push_back(xct);
             }
+
+            printf("\ncur start row 1: %d\n", curr_start_row);
 
             #ifndef DISABLE_BENDING
             // bending
             for (int vi = mesh.start_vertIdx; vi < mesh.end_vertIdx; vi++) {
-                const std::vector<int>& ring_idx = mesh_data.get_adjacency(vi);
+               /* const std::vector<int>& ring_idx = mesh_data.get_adjacency(vi);
                 if (ring_idx.size() < 3) continue;
                 auto& ct = std::make_shared<BendingConstraint>(
                     vi, ring_idx, mesh_data.verts, material.tri_bending_k,
                     constraints.size(), curr_start_row);
                 curr_start_row += 1;
-                constraints.emplace_back(ct);
-                //if (mesh_data.on_boundary(vi)) {} // boundary points, ignore
-                //else {
-                //    const std::vector<int>& ring_idx = mesh_data.get_adjacency(vi);
-                //    auto& ct = std::make_shared<BendingConstraint>(
-                //        vi, ring_idx, mesh_data.verts, material.tri_bending_k,
-                //        constraints.size(), curr_start_row);
-                //    curr_start_row += 1;
-                //    constraints.emplace_back(ct);
-                //}
+                constraints.emplace_back(ct);*/
+                if (mesh_data.on_boundary(vi)) {
+                    
+                } // boundary points, ignore
+                else {
+                    const std::vector<int>& ring_idx = mesh_data.get_adjacency(vi);
+                    auto& ct = std::make_shared<BendingConstraint>(
+                        vi, ring_idx, mesh_data.verts, material.tri_bending_k,
+                        constraints.size(), curr_start_row);
+                    curr_start_row += 1;
+                    constraints.emplace_back(ct);
+                }
 
-                auto xct = std::make_shared<XPBDBendingConstraint>();
+                /*auto xct = std::make_shared<XPBDBendingConstraint>();
                 bool res = xct->initConstraint(ct);
                 if (!res) ADU::make_exception("XPBD bending constraint init issue");
                 xct->stiffness = 0.001_r;
-                XPBD_constraints.push_back(xct);
+                XPBD_constraints.push_back(xct);*/
             }
+
+            printf("cur start row 2: %d\n", curr_start_row);
+
             #endif
         }
         else if (mesh.type == MeshData::TET) {

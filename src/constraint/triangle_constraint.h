@@ -74,6 +74,7 @@ public:
 
 		// F^T = G^T * J * X
 		// G^T is ommitted here
+		//printf("tri: ");
 		Matf_32 G = S * Binv;
 		int cols[3] = { inds[0], inds[1], inds[2] };
 		if (local) {
@@ -86,7 +87,9 @@ public:
 			for (int j = 0; j < 3; ++j) {
 				triplets.emplace_back(start_row + 0, cols[j], G(j, 0));
 				triplets.emplace_back(start_row + 1, cols[j], G(j, 1));
+				//printf("%f %f ", G(j, 0), G(j, 1));
 			}
+			//printf("\n");
 		}
 		
 	}

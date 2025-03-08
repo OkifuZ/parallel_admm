@@ -60,6 +60,7 @@ src/mesh/*.cpp
 src/mediator/*.cpp
 
 src/contact/lbvh/*.cu
+src/constraint/*.cu
 src/mutils/*.cu
 src/solver/*.cu
 src/contact/*.cu

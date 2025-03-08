@@ -54,7 +54,7 @@ struct BendProxFunctor
 	__device__ void operator()(int idx) {
 		using namespace ADU;
 
-		ADU::Real* zi_block = zi + idx * dim * 3; // (2*3)^T
+		ADU::Real* zi_block = zi + idx * dim * 3; // (1*3)^T
 		Vecf_3 z{ zi_block[0], zi_block[1], zi_block[2] };
 
 		Vecf_3 p = z;
@@ -78,7 +78,7 @@ struct BendProxFunctor
 };
 
 
-void BendingConstraintDevice::run_proxy(ADU::Real* zi) 
+void BendingConstraintDevice::run_proxy(ADU::Real* zi)
 {
 	BendProxFunctor functor(
 		thrust::raw_pointer_cast(this->res_mean_curvature_norm.data()), 

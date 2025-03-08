@@ -40,9 +40,22 @@ public:
 		inds.insert(inds.end(), ring_inds.begin(), ring_inds.end());
 		dim = 1;
 
+		// area
+		const Vecf_3& v_middle = verts.row(middle_idx);
+		Real radius{ 0.0_r };
+		for (int i = 0; i < ring_inds.size(); i++) {
+			const Vecf_3& v = verts.row(ring_inds[i]);
+			radius += (v - v_middle).norm();
+		}
+		radius /= ring_inds.size();
+		varea = 3.1415926_r * radius * radius / 3.0_r;
+
 		// initial mean curvature at middle vertex
 		getLaplaceBeltramiDiscretisationMeanValueCoefficients(
 			middle_idx, ring_inds, verts, coeffs);
+		/*for (int i = 0; i < coeffs.size(); i++) {
+			coeffs[i] /= 2 * varea;
+		}*/
 		Real middle_coef = 0.0f;
 		for (int i = 0; i < coeffs.size(); i++) {
 			middle_coef += coeffs[i];
@@ -59,15 +72,7 @@ public:
 
 		rest_mean_curvature_norm = 0.0_r;
 		
-		// area
-		const Vecf_3& v_middle = verts.row(middle_idx);
-		Real radius{ 0.0_r };
- 		for (int i = 0; i < ring_inds.size(); i++) {
-			const Vecf_3& v = verts.row(ring_inds[i]);
-			radius += (v - v_middle).norm();
-		}
-		radius /= ring_inds.size();
-		varea = 3.1415926_r * radius * radius / 3.0_r;
+		
 		w = std::sqrt(k * varea);
 	}
 
@@ -88,16 +93,33 @@ public:
 	static ADU::Real getMeanValue(const ADU::Vecf_3& v1, const ADU::Vecf_3& v2, const ADU::Vecf_3& v3)
 	{
 		// tan a/2 = (1-cos a) / sin a = sin a / (1 + cos a)
-		ADU::Real numerator = (1 - getCosine(v1, v2, v3));
+
+		/*ADU::Real cos_x = getCosine(v1, v2, v3);
+		ADU::Real sin_x = getSine(v1, v2, v3);
+		ADU::Real cos_2x = 2 * cos_x * cos_x - 1;
+		ADU::Real sin_2x = 2 * sin_x * cos_x;
+		ADU::Real numerator = (1 - cos_2x);
 		if (numerator == 0)
 		{
 			return 0;
 		}
-		return numerator / getSine(v1, v2, v3);
+		return numerator / sin_2x;*/
+
+		/*ADU::Real numerator = (1 - getCosine(v1, v2, v3));
+		if (numerator == 0)
+		{
+			return 0;
+		}
+		return numerator / getSine(v1, v2, v3);*/
+		ADU::Vecf_3 a = v1 - v2;
+		ADU::Vecf_3 b = v3 - v2;
+		ADU::Real d = a.dot(b);
+		ADU::Real c = a.cross(b).norm();
+		return d / c;
 	}
 
 	static bool co_linear(const ADU::Vecf_3& v1, const ADU::Vecf_3& v2, const ADU::Vecf_3& v3) {
-		if ((v1 - v2).cross(v3 - v2).squaredNorm() < 1e-9) return true;
+		if ((v1 - v2).cross(v3 - v2).squaredNorm() < 1e-7) return true;
 		return false;
 	}
 
@@ -138,11 +160,12 @@ public:
 				final_value += counter_clockwise_mean_value;
 			}
 			if (final_value == 0.0_r) {
-				printf("%d, ", middle_idx);
-				ADU::make_exception(ADU::cformat("v %d: flat tri in bending constraints", middle_vertex));
+				printf("has inllegal point bending %d, ", middle_idx);
+				//ADU::make_exception(ADU::cformat("v %d: flat tri in bending constraints", middle_vertex));
 			}
 
-			coeffs.push_back(final_value / distance);
+			//coeffs.push_back(final_value / distance);
+			coeffs.push_back(final_value);
 		}
 	}
 
@@ -156,9 +179,14 @@ public:
 			}
 		}
 		else {
+
+			printf("bend: ");
 			for (int i = 0; i < inds.size(); i++) {
 				triplets.emplace_back(start_row, inds[i], coeffs[i]);
+				printf("%f ", coeffs[i]);
 			}
+			printf("\n");
+
 		}
 		
 	}
