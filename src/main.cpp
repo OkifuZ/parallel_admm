@@ -510,8 +510,10 @@ int main(int argc, const char* argv[]) {
     // constraints
     Solver::ConstraintsList cslist;
     Solver::XPBDConstraintList XPBD_cslist;
-    for (int i = 0; i < mesh_id_list.size(); i++) {
-        Mesh2Constraint::geometry_to_constraints(*app.mesh, mesh_id_list[i], material_list[i], cslist, XPBD_cslist);
+    for (int tid = 1; tid <= 3; tid++) {
+        for (int i = 0; i < mesh_id_list.size(); i++) {
+            Mesh2Constraint::geometry_to_constraints(*app.mesh, mesh_id_list[i], material_list[i], cslist, XPBD_cslist, tid);
+        }
     }
 
     // sum to nVerts

@@ -53,9 +53,10 @@ public:
 		// initial mean curvature at middle vertex
 		getLaplaceBeltramiDiscretisationMeanValueCoefficients(
 			middle_idx, ring_inds, verts, coeffs);
-		/*for (int i = 0; i < coeffs.size(); i++) {
+		for (int i = 0; i < coeffs.size(); i++) {
 			coeffs[i] /= 2 * varea;
-		}*/
+			coeffs[i] /= 100.0f;
+		}
 		Real middle_coef = 0.0f;
 		for (int i = 0; i < coeffs.size(); i++) {
 			middle_coef += coeffs[i];
@@ -180,12 +181,12 @@ public:
 		}
 		else {
 
-			printf("bend: ");
+			//printf("bend: ");
 			for (int i = 0; i < inds.size(); i++) {
 				triplets.emplace_back(start_row, inds[i], coeffs[i]);
-				printf("%f ", coeffs[i]);
+				//printf("%f ", coeffs[i]);
 			}
-			printf("\n");
+			//printf("\n");
 
 		}
 		
