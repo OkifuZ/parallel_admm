@@ -343,7 +343,7 @@ void ADMMParallelSolver::step() {
 
 				// TODO device ptr?
 				triangle_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + triangle_constraint_start_row * 3));
-				
+				bending_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data()) + bending_constraint_start_row * 3)
 				pin_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + pin_constraint_start_row * 3));
 
 			}
