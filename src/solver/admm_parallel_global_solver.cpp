@@ -94,7 +94,8 @@ void ADMMParallelSolver::init() {
 	}
 	int nDynVert = static_vert_begin;
 
-	comp_mat = std::make_unique<CompactSparseMat>(m_A_damp); // for parallel global solver
+	//comp_mat = std::make_unique<CompactSparseMat>(m_A_damp); // for parallel global solver
+	comp_mat = std::make_unique<CompactSparseMat>(m_A); // for parallel global solver
 	solver_data_device = std::make_unique<CuSolverData>(*comp_mat,
 		nDynVert, m_nVert, nDynVert, m_nVert, m_nCDim);
 	// comp_mat_device = std::make_unique<CuCompactSparseMat>(*comp_mat);
@@ -180,7 +181,7 @@ void ADMMParallelSolver::precompute() {
 	TripList We_trips;
 	for (int ci = 0; ci < m; ci++) {
 		const auto& ct = m_constraints[ci];
-		ct->get_D(D_trips, false);
+		// ct->get_D(D_trips, false);
  		for (int i = 0; i < ct->dim; i++) {
 			We_trips.emplace_back(ct->start_row + i, ct->start_row + i, ct->w);
 		}
@@ -358,9 +359,9 @@ void ADMMParallelSolver::step() {
 				op_a_plus_b(DX_device, m_Ue_device, solver_data_device->z_buffer, m_nCDim);
 
 				// TODO device ptr?
-				triangle_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + triangle_constraint_start_row * 3));
-				bending_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + bending_constraint_start_row * 3) );
-				pin_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + pin_constraint_start_row * 3));
+				// triangle_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + triangle_constraint_start_row * 3));
+				// bending_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + bending_constraint_start_row * 3) );
+				//pin_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + pin_constraint_start_row * 3));
 			}
 
 			if (enable_frictional_contact)
@@ -390,9 +391,10 @@ void ADMMParallelSolver::step() {
 
 			// global
 			//b_curr = M_x_tilde + m_dt2DTWeTWe * (z - m_Ue);
-			op_a_minus_b(solver_data_device->z_buffer, m_Ue_device, cache_nCDimX3, m_nCDim);
+			/*op_a_minus_b(solver_data_device->z_buffer, m_Ue_device, cache_nCDimX3, m_nCDim);
 			op_Ax(*m_dt2DTWeTWe_device, cache_nCDimX3, cache_nDynVertX3);
-			op_a_plus_b(M_x_tilde_device, cache_nDynVertX3, solver_data_device->b_curr_device, nDynVert);
+			op_a_plus_b(M_x_tilde_device, cache_nDynVertX3, solver_data_device->b_curr_device, nDynVert);*/
+			op_a_to_b(M_x_tilde_device, solver_data_device->b_curr_device, m_nVert);
 
 			// friction
 			if (enable_frictional_contact) {

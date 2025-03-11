@@ -81,7 +81,7 @@ void op_Ax(const CompactSparseMat& A, thrust::device_vector<ADU::Real>& x, thrus
 void op_a_plus_b(const thrust::device_vector<ADU::Real>& a, const thrust::device_vector<ADU::Real>& b, thrust::device_vector<ADU::Real>& result, int rows);
 void op_a_minus_b(const thrust::device_vector<ADU::Real>& a, const thrust::device_vector<ADU::Real>& b, thrust::device_vector<ADU::Real>& result, int rows);
 void op_scale(const thrust::device_vector<ADU::Real>& a, ADU::Real scale, thrust::device_vector<ADU::Real>& result, int rows);
-
+void op_a_to_b(const thrust::device_vector<ADU::Real>& a, thrust::device_vector<ADU::Real>& b, int rows);
 
 
 //void resizeThrust(thrust::device_vector<ADU::Real>& data, int newSize, ADU::Real defaultVal = 0.0);

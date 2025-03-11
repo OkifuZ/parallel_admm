@@ -13,7 +13,8 @@
 
 #include <vector>
 
-//#define DISABLE_BENDING
+#define DISABLE_BENDING
+//#define DISABLE_STRETCHING
 
 
 class Mesh2Constraint {
@@ -33,6 +34,7 @@ public:
 
         if (typeID == 1) {
             // tri
+#ifndef DISABLE_STRETCHING 
             if (mesh.type == MeshData::TRI) {
                 for (int fi = mesh.start_faceIdx; fi < mesh.end_faceIdx; fi++) {
                     const auto& vinds = mesh_data.faces.row(fi);
@@ -52,6 +54,7 @@ public:
                     //XPBD_constraints.push_back(xct);
                 }
             }
+#endif
         }
         if (typeID == 2) { // tet
             if (mesh.type == MeshData::TET) {

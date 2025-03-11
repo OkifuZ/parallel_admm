@@ -85,6 +85,11 @@ void op_a_plus_b(const thrust::device_vector<ADU::Real>& a, const thrust::device
     CUVec_a_plus_b(a.data().get(), b.data().get(), result.data().get(), rows);
 }
 
+void op_a_to_b(const thrust::device_vector<ADU::Real>& a, thrust::device_vector<ADU::Real>& b, int rows)
+{
+    thrust::copy(a.begin(), a.begin() + 3 * rows, b.begin());
+}
+
 
 void CUVec_a_plus_b(const ADU::Real* a, const ADU::Real* b, ADU::Real* result, int rows)
 {
