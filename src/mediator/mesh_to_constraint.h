@@ -13,7 +13,7 @@
 
 #include <vector>
 
-#define DISABLE_BENDING
+//#define DISABLE_BENDING
 //#define DISABLE_STRETCHING
 
 
@@ -80,24 +80,24 @@ public:
 #ifndef DISABLE_BENDING
                 // bending
                 for (int vi = mesh.start_vertIdx; vi < mesh.end_vertIdx; vi++) {
-                    const std::vector<int>& ring_idx = mesh_data.get_adjacency(vi);
+                    /*const std::vector<int>& ring_idx = mesh_data.get_adjacency(vi);
                     if (ring_idx.size() < 3) continue;
                     auto& ct = std::make_shared<BendingConstraint>(
                         vi, ring_idx, mesh_data.verts, material.tri_bending_k,
                         constraints.size(), curr_start_row);
                     curr_start_row += 1;
-                    constraints.emplace_back(ct);
-                    //if (mesh_data.on_boundary(vi)) {
-                    //    
-                    //} // boundary points, ignore
-                    //else {
-                    //    const std::vector<int>& ring_idx = mesh_data.get_adjacency(vi);
-                    //    auto& ct = std::make_shared<BendingConstraint>(
-                    //        vi, ring_idx, mesh_data.verts, material.tri_bending_k,
-                    //        constraints.size(), curr_start_row);
-                    //    curr_start_row += 1;
-                    //    constraints.emplace_back(ct);
-                    //}
+                    constraints.emplace_back(ct);*/
+                    if (mesh_data.on_boundary(vi)) {
+                        
+                    } // boundary points, ignore
+                    else {
+                        const std::vector<int>& ring_idx = mesh_data.get_adjacency(vi);
+                        auto& ct = std::make_shared<BendingConstraint>(
+                            vi, ring_idx, mesh_data.verts, material.tri_bending_k,
+                            constraints.size(), curr_start_row);
+                        curr_start_row += 1;
+                        constraints.emplace_back(ct);
+                    }
 
                     /*auto xct = std::make_shared<XPBDBendingConstraint>();
                     bool res = xct->initConstraint(ct);

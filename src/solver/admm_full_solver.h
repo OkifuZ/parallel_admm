@@ -42,7 +42,6 @@ public:
 	bool enable_frictional_contact{ true };
 	bool warmstart_Ue{ true };
 	bool warmstart_Uc{ true };
-	size_t admm_max_iter = 25;
 	size_t collision_detection_interval = 5;
 	size_t gs_max_iter = 10;
 	//ADU::Real contact_w{ static_cast<ADU::Real>(1000.0) };

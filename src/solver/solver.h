@@ -37,6 +37,7 @@ public:
 
 	ADU::Real g{ static_cast <ADU::Real>(0.98) };
 
+	size_t admm_max_iter = 25;
 
 	int m_nCDim{};
 	bool parallel = true;
@@ -66,7 +67,9 @@ public:
 			if (ct->type == 4) m_M_inv_vec(ct->inds[0]) = 0;
 		}
 
+
 		m_dt = dt;
+		//m_dt /= admm_max_iter;
 		m_dt2 = m_dt * m_dt;
 		m_dt_inv = 1.0_r / m_dt;
 		m_nVert = verts.rows();

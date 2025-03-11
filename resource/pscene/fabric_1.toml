@@ -17,19 +17,19 @@ Global_Jacobi_iter = 10
 contact.use_CCD = false
 admm.warmstart_Ue = true
 admm.warmstart_Uc = true
-contact.enable = false
+contact.enable = true
 contact.use_Jacobi = true
 contact.w_scale = 15
 contact.kappa = 1e5
 contact.beta = 1e5
 contact.unique = true
 contact.use_heu_wc = false
-contact.mu = 0.8
+contact.mu = 0.5
 damp.kl = 1e-4
 damp.km = 1e-3
 
 [DCD]
-narrow.max_collision = 200000
+narrow.max_collision = 300000
 narrow.thickness = 3e-2
 broad.radius = 3e-2
 broad.strategy = 'rebuild'
@@ -96,6 +96,34 @@ f.type = 'tri'
 f.color = 3
 t.scale = 3.5
 t.translate = [0, 3.2, 0]
+t.rotate = [0, 90, 0]
+k.stretch = 15000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1000.0
+k.use_limit = false
+density = 4.0
+
+[[mesh]]
+f.path = 'flat/flat_v10649.obj'
+f.type = 'tri'
+f.color = 4
+t.scale = 3.5
+t.translate = [0, 3.8, 0]
+t.rotate = [0, 90, 0]
+k.stretch = 15000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1000.0
+k.use_limit = false
+density = 4.0
+
+[[mesh]]
+f.path = 'flat/flat_v10649.obj'
+f.type = 'tri'
+f.color = 5
+t.scale = 3.5
+t.translate = [0, 4.2, 0]
 t.rotate = [0, 90, 0]
 k.stretch = 15000.0
 k.min_limit = 0.95

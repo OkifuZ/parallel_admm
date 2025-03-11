@@ -181,7 +181,7 @@ void ADMMParallelSolver::precompute() {
 	TripList We_trips;
 	for (int ci = 0; ci < m; ci++) {
 		const auto& ct = m_constraints[ci];
-		// ct->get_D(D_trips, false);
+		ct->get_D(D_trips, false);
  		for (int i = 0; i < ct->dim; i++) {
 			We_trips.emplace_back(ct->start_row + i, ct->start_row + i, ct->w);
 		}
@@ -323,19 +323,27 @@ void ADMMParallelSolver::step() {
 	b_curr.resize(nDynVert, 3);
 	b_curr.setZero();
 
-	do_pre_integration(m_nVert, nDynVert, m_dt, g, solver_data_device->x_0_device.data().get(), 
+	/*do_pre_integration(m_nVert, nDynVert, m_dt, g, solver_data_device->x_0_device.data().get(), 
 		d_is_fixed.data().get(), d_M.data().get(),  solver_data_device->v_0_device.data().get(),
-		solver_data_device->x_curr_device.data().get(), M_x_tilde_device.data().get());
+		solver_data_device->x_curr_device.data().get(), M_x_tilde_device.data().get());*/
 
 	if (!warmstart_Ue) { m_Ue.setZero(); }
 	if (!warmstart_Uc) { m_Uc.setZero(); }
 
 	Timer timer("ADMMParallelSolver::step()");
 
+	float dt_r = m_dt / admm_max_iter ;
+	float dt_r_inv = 1.0f / dt_r;
+
 	for (int admm_it = 0; admm_it < admm_max_iter; admm_it++) {
 		Timer per_iteration_timer("per_iteration");
 
 
+		do_pre_integration(m_nVert, nDynVert, dt_r, g, solver_data_device->x_0_device.data().get(),
+			d_is_fixed.data().get(), d_M.data().get(), solver_data_device->v_0_device.data().get(),
+			solver_data_device->x_curr_device.data().get(), M_x_tilde_device.data().get());
+
+		
 		// collision
 		if (enable_frictional_contact && prox_query && (admm_it % collision_detection_interval == 0)) {
 			Timer collision_timer("dynamic_collision_detection");
@@ -359,9 +367,9 @@ void ADMMParallelSolver::step() {
 				op_a_plus_b(DX_device, m_Ue_device, solver_data_device->z_buffer, m_nCDim);
 
 				// TODO device ptr?
-				// triangle_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + triangle_constraint_start_row * 3));
-				// bending_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + bending_constraint_start_row * 3) );
-				//pin_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + pin_constraint_start_row * 3));
+				triangle_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + triangle_constraint_start_row * 3));
+				bending_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + bending_constraint_start_row * 3) );
+				pin_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + pin_constraint_start_row * 3));
 			}
 
 			if (enable_frictional_contact)
@@ -373,7 +381,7 @@ void ADMMParallelSolver::step() {
 					*/
 				op_a_minus_b(solver_data_device->x_curr_device, solver_data_device->x_0_device, cache_nDynVertX3, nDynVert);
 				op_a_plus_b(cache_nDynVertX3, m_Uc_device, cache_nDynVertX3, nDynVert);
-				op_scale(cache_nDynVertX3, m_dt_inv, solver_data_device->p_device, nDynVert);
+				op_scale(cache_nDynVertX3, dt_r_inv, solver_data_device->p_device, nDynVert);
 
 				if (need_recompute_Scc) {
 					//ADMMSolverFull_RL_damping::compute_Scc();
@@ -391,19 +399,19 @@ void ADMMParallelSolver::step() {
 
 			// global
 			//b_curr = M_x_tilde + m_dt2DTWeTWe * (z - m_Ue);
-			/*op_a_minus_b(solver_data_device->z_buffer, m_Ue_device, cache_nCDimX3, m_nCDim);
+			op_a_minus_b(solver_data_device->z_buffer, m_Ue_device, cache_nCDimX3, m_nCDim);
 			op_Ax(*m_dt2DTWeTWe_device, cache_nCDimX3, cache_nDynVertX3);
-			op_a_plus_b(M_x_tilde_device, cache_nDynVertX3, solver_data_device->b_curr_device, nDynVert);*/
-			op_a_to_b(M_x_tilde_device, solver_data_device->b_curr_device, m_nVert);
+			op_a_plus_b(M_x_tilde_device, cache_nDynVertX3, solver_data_device->b_curr_device, nDynVert);
+			//op_a_to_b(M_x_tilde_device, solver_data_device->b_curr_device, m_nVert);
 
 			// friction
 			if (enable_frictional_contact) {
-				op_scale(solver_data_device->p_device, m_dt, cache_nDynVertX3, nDynVert);
+				//b_curr += m_dt2Wc * (m_dt * p.block(0, 0, nDynVert, 3) + x_0.block(0, 0, nDynVert, 3) - m_Uc);
+				op_scale(solver_data_device->p_device, dt_r, cache_nDynVertX3, nDynVert);
 				op_a_plus_b(cache_nDynVertX3, solver_data_device->x_0_device, cache_nDynVertX3, nDynVert);
 				op_a_minus_b(cache_nDynVertX3, m_Uc_device, cache_nDynVertX3, nDynVert);
 				op_Ax(*m_dt2Wc_device, cache_nDynVertX3, cache_nDynVertX3);
 				op_a_plus_b(solver_data_device->b_curr_device, cache_nDynVertX3, solver_data_device->b_curr_device, nDynVert);
-				//b_curr += m_dt2Wc * (m_dt * p.block(0, 0, nDynVert, 3) + x_0.block(0, 0, nDynVert, 3) - m_Uc);
 			}
 			// damp
 			//b_curr += b_ini;
@@ -437,16 +445,19 @@ void ADMMParallelSolver::step() {
 		if (enable_frictional_contact) {
 			// m_Uc += x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) - p.block(0, 0, nDynVert, 3) * m_dt;
 			op_a_minus_b(solver_data_device->x_curr_device, solver_data_device->x_0_device, cache_nDynVertX3, nDynVert);
-			op_scale(solver_data_device->p_device, m_dt, cache_nDynVertX3_bp1, nDynVert);
+			op_scale(solver_data_device->p_device, dt_r, cache_nDynVertX3_bp1, nDynVert);
 			op_a_minus_b(cache_nDynVertX3, cache_nDynVertX3_bp1, cache_nDynVertX3, nDynVert);
 			op_a_plus_b(m_Uc_device, cache_nDynVertX3, m_Uc_device, nDynVert);
 		}
+
+		do_post_process(m_nVert, nDynVert, dt_r, solver_data_device->v_0_device.data().get(),
+			solver_data_device->x_curr_device.data().get(), solver_data_device->x_0_device.data().get());
 	}
 
 	// copy x_curr to x_0
 	// get v_0
-	do_post_process(m_nVert, nDynVert, m_dt, solver_data_device->v_0_device.data().get(), 
-		solver_data_device->x_curr_device.data().get(), solver_data_device->x_0_device.data().get());
+	/*do_post_process(m_nVert, nDynVert, m_dt, solver_data_device->v_0_device.data().get(), 
+		solver_data_device->x_curr_device.data().get(), solver_data_device->x_0_device.data().get());*/
 
 	// x_0 to m_vertices
 	// v_0 to m_velocities
