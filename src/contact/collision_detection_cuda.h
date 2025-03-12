@@ -72,7 +72,7 @@ public:
     uint32_t* d_cpNum;
     uint32_t h_cpNum; // data 3
 
-    void init();
+    void init(size_t max_collision_number);
 
     void construct(bool copy_to_host = false);
 

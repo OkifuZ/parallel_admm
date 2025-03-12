@@ -600,7 +600,7 @@ int main(int argc, const char* argv[]) {
     /*bvh.init(); 
     bvh.construct(true);*/
 
-    app.bvh->init();
+    app.bvh->init(app.solver->prox_query->max_collision_num);
     app.bvh->construct(true);
     update_bvh_draw();
     

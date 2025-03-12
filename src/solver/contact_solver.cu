@@ -256,6 +256,7 @@ void compute_Scc_impl_cu(const BVH_GPU* bvh,
      //total_size = ct_data_device->d_start_idx.back(); // this should work and indeed work, but use the following line for safety (mentally)
     CUDA_SAFE_CALL(cudaMemcpy((void*)&total_size, thrust::raw_pointer_cast(ct_data_device->d_start_idx.data() + ct_data_device->d_start_idx.size() - 1), sizeof(int), cudaMemcpyDeviceToHost));
 
+    printf("total size: %d, we have: %d\n", total_size, ct_data_device->d_involved_cid.capacity());
     ct_data_device->d_vi_ct_count.resize(ct_data_device->d_vi_ct_nums.size(), 0);
     ct_data_device->d_involved_cid.resize(total_size, 0);
     ct_data_device->d_Gamma_i.resize(total_size, 0);

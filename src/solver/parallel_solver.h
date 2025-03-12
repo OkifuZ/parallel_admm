@@ -1,6 +1,7 @@
 #pragma once
 #include "solver/admm_full_solver.h"
 #include "constraint/bending_constraint_device.cuh"
+#include "constraint/tetrahedral_constraint_device.cuh"
 
 
 class ContactDataDevice {
@@ -49,8 +50,8 @@ public:
 		d_r_c.reserve(max_Contact);
 
 		// size of total_contact
-		d_involved_cid.reserve(max_Vert * 20);
-		d_Gamma_i.reserve(max_Vert * 20);
+		d_involved_cid.reserve(max_Vert * 30);
+		d_Gamma_i.reserve(max_Vert * 30);
 	}
 
 };
@@ -76,6 +77,8 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	int pin_constraint_start_row{};
 	std::unique_ptr<BendingConstraintDevice> bending_constraint_cu;
 	int bending_constraint_start_row{};
+	std::unique_ptr<TetrahedralConstraintDevice> tet_constraint_cu;
+	int tet_constraint_start_row{};
 
 	thrust::device_vector<ADU::Real> DX_device;
 	thrust::device_vector<ADU::Real> m_Ue_device;

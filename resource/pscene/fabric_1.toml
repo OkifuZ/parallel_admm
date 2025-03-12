@@ -10,10 +10,10 @@ pin = [0, 1, 2, 3]
 g = 3.98
 
 [solver]
-admm_max_iter = 11
+admm_max_iter = 15
 DCD_interval = 5
 GS_max_iter = 10
-Global_Jacobi_iter = 10
+Global_Jacobi_iter = 20
 contact.use_CCD = false
 admm.warmstart_Ue = true
 admm.warmstart_Uc = true
@@ -29,7 +29,7 @@ damp.kl = 1e-4
 damp.km = 1e-3
 
 [DCD]
-narrow.max_collision = 300000
+narrow.max_collision = 200000
 narrow.thickness = 3e-2
 broad.radius = 3e-2
 broad.strategy = 'rebuild'
@@ -46,10 +46,10 @@ broad.strategy = 'rebuild'
 # k.max_limit = 1.05
 # k.bending = 10.0
 # k.use_limit = false
-# density = 4.0
+# density = 1.0
 
 [[mesh]]
-f.path = 'flat/flat_v10649.obj'
+f.path = 'flat/flat_v31389.obj'
 f.type = 'tri'
 f.color = 0
 t.scale = 3.5
@@ -58,79 +58,92 @@ t.rotate = [0, 0, 0]
 k.stretch = 19000.0
 k.min_limit = 0.95
 k.max_limit = 1.05
-k.bending = 1000.1
+k.bending = 10.1
 k.use_limit = false
-density = 4.0
+density = 0.5
 
 [[mesh]]
-f.path = 'flat/flat_v10649.obj'
-f.type = 'tri'
-f.color = 1
-t.scale = 3.5
-t.translate = [0, 1.8, 0]
-t.rotate = [0, 30, 0]
-k.stretch = 15000.0
+f.path = 'tetmesh/octocat.msh'
+f.type = 'tet'
+f.color = 747
+t.scale = 0.07
+t.translate = [0, 2.3, 0]
+t.rotate = [-90, 0, 0]
+k.stretch = 3000.0
 k.min_limit = 0.95
 k.max_limit = 1.05
-k.bending = 1000.0
 k.use_limit = false
-density = 4.0
+density = 35.0
 
-[[mesh]]
-f.path = 'flat/flat_v10649.obj'
-f.type = 'tri'
-f.color = 2
-t.scale = 3.5
-t.translate = [0, 2.5, 0]
-t.rotate = [0, 60, 0]
-k.stretch = 15000.0
-k.min_limit = 0.95
-k.max_limit = 1.05
-k.bending = 1.0
-k.use_limit = false
-density = 4.0
+#[[mesh]]
+#f.path = 'flat/flat_v10649.obj'
+#f.type = 'tri'
+#f.color = 1
+#t.scale = 3.5
+#t.translate = [0, 1.8, 0]
+#t.rotate = [0, 30, 0]
+#k.stretch = 15000.0
+#k.min_limit = 0.95
+#k.max_limit = 1.05
+#k.bending = 10.0
+#k.use_limit = false
+#density = 1.0
+#
+#[[mesh]]
+#f.path = 'flat/flat_v10649.obj'
+#f.type = 'tri'
+#f.color = 2
+#t.scale = 3.5
+#t.translate = [0, 2.5, 0]
+#t.rotate = [0, 60, 0]
+#k.stretch = 15000.0
+#k.min_limit = 0.95
+#k.max_limit = 1.05
+#k.bending = 1.0
+#k.use_limit = false
+#density = 1.0
 
-[[mesh]]
-f.path = 'flat/flat_v10649.obj'
-f.type = 'tri'
-f.color = 3
-t.scale = 3.5
-t.translate = [0, 3.2, 0]
-t.rotate = [0, 90, 0]
-k.stretch = 15000.0
-k.min_limit = 0.95
-k.max_limit = 1.05
-k.bending = 1000.0
-k.use_limit = false
-density = 4.0
-
-[[mesh]]
-f.path = 'flat/flat_v10649.obj'
-f.type = 'tri'
-f.color = 4
-t.scale = 3.5
-t.translate = [0, 3.8, 0]
-t.rotate = [0, 90, 0]
-k.stretch = 15000.0
-k.min_limit = 0.95
-k.max_limit = 1.05
-k.bending = 1000.0
-k.use_limit = false
-density = 4.0
-
-[[mesh]]
-f.path = 'flat/flat_v10649.obj'
-f.type = 'tri'
-f.color = 5
-t.scale = 3.5
-t.translate = [0, 4.2, 0]
-t.rotate = [0, 90, 0]
-k.stretch = 15000.0
-k.min_limit = 0.95
-k.max_limit = 1.05
-k.bending = 1000.0
-k.use_limit = false
-density = 4.0
+#[[mesh]]
+#f.path = 'flat/flat_v10649.obj'
+#f.type = 'tri'
+#f.color = 3
+#t.scale = 3.5
+#t.translate = [0, 3.2, 0]
+#t.rotate = [0, 90, 0]
+#k.stretch = 15000.0
+#k.min_limit = 0.95
+#k.max_limit = 1.05
+#k.bending = 1000.0
+#k.use_limit = false
+#density = 4.0
+#
+#[[mesh]]
+#f.path = 'flat/flat_v10649.obj'
+#f.type = 'tri'
+#f.color = 4
+#t.scale = 3.5
+#t.translate = [0, 3.8, 0]
+#t.rotate = [0, 90, 0]
+#k.stretch = 15000.0
+#k.min_limit = 0.95
+#k.max_limit = 1.05
+#k.bending = 1000.0
+#k.use_limit = false
+#density = 4.0
+#
+#[[mesh]]
+#f.path = 'flat/flat_v10649.obj'
+#f.type = 'tri'
+#f.color = 5
+#t.scale = 3.5
+#t.translate = [0, 4.2, 0]
+#t.rotate = [0, 90, 0]
+#k.stretch = 15000.0
+#k.min_limit = 0.95
+#k.max_limit = 1.05
+#k.bending = 1000.0
+#k.use_limit = false
+#density = 4.0
 
 # [[mesh]]
 # f.path = 'flat/flat_v134.obj'
