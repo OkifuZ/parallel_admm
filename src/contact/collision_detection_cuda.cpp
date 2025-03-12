@@ -44,8 +44,8 @@ void BVH_GPU::init(size_t max_collision_number) {
     auto edges = mesh->surface_edges;
     auto tris = mesh->surface_tris;
 
-    this->v_num = mesh->surface_vinds.rows();
-    //this->v_num = verts.rows();
+    this->v_num_surf = mesh->surface_vinds.rows();
+    this->v_num = verts.rows();
     this->e_num = edges.rows();
     this->t_num = tris.rows();
 
@@ -54,7 +54,7 @@ void BVH_GPU::init(size_t max_collision_number) {
     CUDA_SAFE_CALL(cudaMalloc((void**)&d_verts, v_num * sizeof(float3)));
     CUDA_SAFE_CALL(cudaMalloc((void**)&d_faces, t_num * sizeof(uint3)));
     CUDA_SAFE_CALL(cudaMalloc((void**)&d_edges, e_num * sizeof(uint2)));
-    CUDA_SAFE_CALL(cudaMalloc((void**)&d_surfVertIdx, v_num * sizeof(uint32_t)));
+    CUDA_SAFE_CALL(cudaMalloc((void**)&d_surfVertIdx, v_num_surf * sizeof(uint32_t)));
     CUDA_SAFE_CALL(cudaMalloc((void**)&d_contact_info, max_collision_number * sizeof(Result<ADU::Real>)));
     CUDA_SAFE_CALL(cudaMalloc((void**)&d_collisonPairs, max_collision_number * sizeof(int4)));
     CUDA_SAFE_CALL(cudaMalloc((void**)&d_cpNum, sizeof(uint32_t)));
@@ -62,10 +62,13 @@ void BVH_GPU::init(size_t max_collision_number) {
     h_contact_info.reserve(max_collision_number);
     h_collisionPairs.reserve(max_collision_number);
 
-    std::vector<uint32_t> h_surfVertIdx(v_num);
-    std::iota(h_surfVertIdx.begin(), h_surfVertIdx.end(), 0);
+    std::vector<uint32_t> h_surfVertIdx(v_num_surf);
+    for (int i = 0; i < v_num; i++) {
+        h_surfVertIdx[i] = mesh->surface_vinds(i);
+    }
+    /*std::iota(h_surfVertIdx.begin(), h_surfVertIdx.end(), 0);*/
     
-    CUDA_SAFE_CALL(cudaMemcpy((void*)d_surfVertIdx, h_surfVertIdx.data(), v_num * sizeof(uint32_t), cudaMemcpyHostToDevice));
+    CUDA_SAFE_CALL(cudaMemcpy((void*)d_surfVertIdx, h_surfVertIdx.data(), v_num_surf * sizeof(uint32_t), cudaMemcpyHostToDevice));
     CUDA_SAFE_CALL(cudaMemcpy((void*)d_faces, tris.data(), t_num * sizeof(uint3), cudaMemcpyHostToDevice));
     CUDA_SAFE_CALL(cudaMemcpy((void*)d_edges, edges.data(), e_num * sizeof(uint2), cudaMemcpyHostToDevice));
     CUDA_SAFE_CALL(cudaMemcpy((void*)d_verts, verts.data(), v_num * sizeof(float3), cudaMemcpyHostToDevice));
@@ -101,7 +104,7 @@ void BVH_GPU::update(const ADU::Matf_X3& verts, bool copy_to_host) {
     const auto& edges = mesh->surface_edges;
     const auto& tris = mesh->surface_tris;
 
-    this->v_num = verts.rows();
+    this->v_num = v_num;
     this->e_num = edges.rows();
     this->t_num = tris.rows();
 
@@ -145,7 +148,7 @@ void BVH_GPU::update(ADU::Real* verts_device, int vnum, bool copy_to_host) {
 void BVH_GPU::dcd() {
 
     CUDA_SAFE_CALL(cudaMemset(d_cpNum, 0, sizeof(uint32_t)));
-    this->bvh_f.discreteCollisionDetection(ContactParameter::get_thickness());
+    this->bvh_f.discreteCollisionDetection(ContactParameter::get_thickness(), v_num_surf);
     this->bvh_e.discreteCollisionDetection(ContactParameter::get_thickness());
     CUDA_SAFE_CALL(cudaMemcpy(&h_cpNum, d_cpNum, sizeof(uint32_t), cudaMemcpyDeviceToHost));
     printf("cp nums: %d\n", h_cpNum);

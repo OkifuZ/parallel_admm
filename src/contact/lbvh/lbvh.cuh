@@ -77,7 +77,7 @@ public:
     void SelfCollitionDetect(float dHat);
     void SelfCollitionFullDetect(float dHat, const float3* moveDir, const float& alpha);
 
-    void discreteCollisionDetection(float thickness);
+    void discreteCollisionDetection(float thickness, int vnum);
 };
 
 class lbvh_e : public lbvh{

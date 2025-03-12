@@ -63,6 +63,7 @@ public:
     std::vector<int4> h_collisionPairs;
 
 
+    size_t v_num_surf{};
     size_t v_num{};
     size_t e_num{};
     size_t t_num{};

@@ -1832,8 +1832,8 @@ void lbvh_e::discreteCollisionDetection(float thickness) {
 }
 
 
-void lbvh_f::discreteCollisionDetection(float thickness) {
-    int numbers = this->vert_number;
+void lbvh_f::discreteCollisionDetection(float thickness, int vnum) {
+    int numbers = vnum;
     const unsigned int threadNum = 256;
     int blockNum = (numbers + threadNum - 1) / threadNum;
 
