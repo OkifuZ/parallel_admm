@@ -44,7 +44,8 @@ void BVH_GPU::init(size_t max_collision_number) {
     auto edges = mesh->surface_edges;
     auto tris = mesh->surface_tris;
 
-    this->v_num = verts.rows();
+    this->v_num = mesh->surface_vinds.rows();
+    //this->v_num = verts.rows();
     this->e_num = edges.rows();
     this->t_num = tris.rows();
 
