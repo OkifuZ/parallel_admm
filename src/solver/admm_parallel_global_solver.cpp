@@ -334,7 +334,7 @@ void ADMMParallelSolver::step() {
 
 	x_curr.resize(m_nVert, 3);
 	x_curr.setZero();
-	b_curr.resize(m_nVert, 3);
+	b_curr.resize(nDynVert, 3);
 	b_curr.setZero();
 
 	do_pre_integration(m_nVert, nDynVert, m_dt, g, solver_data_device->x_0_device.data().get(), 

@@ -21,7 +21,7 @@ struct APPConfig {
     bool out_bin{ false };
     int end_frame{ 2000 };
 
-    bool use_GPU{ true };
+    bool use_GPU{ false };
 
 
 

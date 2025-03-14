@@ -4,24 +4,25 @@ out_file = 'C:\codebase\admm_elasticity\result\dance_x3'
 # out_file = 'F:\PBA\admm_soft\admm-elasticity\result\dance\'
 seperate_out = true
 show_windows = true
-GPU = false
+GPU = true
 
 [global]
-dt = 0.02
+dt = 0.01
 pin = []
 # pin = [0, 1]
 g = 4.98
 # density = 10.0
 
 [solver]
-admm_max_iter = 60
+admm_max_iter = 50
 DCD_interval = 6
-GS_max_iter = 4
-contact.use_CCD = true
+GS_max_iter = 5
+Global_Jacobi_iter = 15
+contact.use_CCD = false
 admm.warmstart_Ue = true
 admm.warmstart_Uc = true
 contact.enable = true
-contact.w_scale = 50
+contact.w_scale = 25
 contact.kappa = 1e6
 contact.beta = 1e5
 contact.mu = 0.1
@@ -56,12 +57,12 @@ f.color = 3
 t.scale = 10.5
 t.translate = [0.05, 0.05, 0]
 t.rotate = [0, 90, 0]
-k.stretch = 15000.0
+k.stretch = 55000.0
 k.min_limit = 0.95
 k.max_limit = 1.05
 k.bending = 1.0
 k.use_limit = false
-density = 2.0
+density = 5.0
 # animate = "sequence/Capoeira.npz"
 # animate = "sequence/Rumba.npz"
 # animate = "sequence/Rotate.npz"

@@ -72,6 +72,8 @@ struct JacobiFunctor {
 
     __device__ void operator()(int i) const {
 
+        if (i > rows) return;
+
         Real a_ii = diag_data[i];
 
         // Load b_i_p (Vecf_3 is assumed to be an array of size 3)
