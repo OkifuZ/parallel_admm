@@ -91,6 +91,7 @@ src/zensim/math/bit/*.hpp
 src/contact/lbvh/*.cuh
 src/mutils/*.cuh
 src/solver/*.cuh
+src/constraint/*.cuh
 src/contact/*.cuh
 )
 
