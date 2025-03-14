@@ -334,7 +334,7 @@ void ADMMParallelSolver::step() {
 
 	x_curr.resize(m_nVert, 3);
 	x_curr.setZero();
-	b_curr.resize(nDynVert, 3);
+	b_curr.resize(m_nVert, 3);
 	b_curr.setZero();
 
 	do_pre_integration(m_nVert, nDynVert, m_dt, g, solver_data_device->x_0_device.data().get(), 
@@ -356,7 +356,7 @@ void ADMMParallelSolver::step() {
 		// collision
 		if (enable_frictional_contact && prox_query && (admm_it % collision_detection_interval == 0)) {
 			Timer collision_timer("dynamic_collision_detection");
-			bvh->update(solver_data_device->x_curr_device.data().get(), m_nVert, true);
+			bvh->update(solver_data_device->x_curr_device.data().get(), m_nVert, false);
 			bvh->dcd();
 			// TODO: will this actually work?
 			convert_DCD_info(bvh, solver_data_device->x_curr_device, ct_data_device.get());
@@ -426,10 +426,10 @@ void ADMMParallelSolver::step() {
 			//b_curr += b_ini;
 			// TODO
 			//printf("jac iter: %d \n", Global_Jacobi_iter);
-            Jacobi_global(Global_Jacobi_iter);
-			// copy_thrustvector2mat(solver_data_device->x_curr_device, x_curr, nDynVert);
-			// copy_thrustvector2mat(solver_data_device->b_curr_device, b_curr, nDynVert);
-            // GS_global(b_curr, x_curr, 45);
+             Jacobi_global(Global_Jacobi_iter);
+			 /*copy_thrustvector2mat(solver_data_device->x_curr_device, x_curr, nDynVert);
+			 copy_thrustvector2mat(solver_data_device->b_curr_device, b_curr, nDynVert);*/
+             //GS_global(b_curr, x_curr, 45);
 			/*tbb::parallel_invoke(
 				[&]() {
 					x_curr.block(0, 0, nDynVert, 1) = m_LLT_solver->solve(b_curr.col(0));
@@ -440,8 +440,8 @@ void ADMMParallelSolver::step() {
 				[&]() {
 					x_curr.block(0, 2, nDynVert, 1) = m_LLT_solver->solve(b_curr.col(2));
 				}
-			);*/
-			//copy_mat2thrustvector(x_curr, solver_data_device->x_curr_device, nDynVert);
+			);
+			copy_mat2thrustvector(x_curr, solver_data_device->x_curr_device, nDynVert);*/
 
 		}
 

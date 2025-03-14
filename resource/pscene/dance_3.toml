@@ -1,0 +1,106 @@
+scene_name = "dance_3"
+# out_file = './'
+# out_file = 'F:\PBA\admm_soft\admm-elasticity\result\10-layers-skew-mu005\'
+out_file = 'C:\codebase\admm_elasticity\result\dance_Z_whole6'
+seperate_out = true
+show_windows = true
+
+
+[global]
+dt = 0.02
+pin = []
+g = 2.98
+# density = 10.0
+
+[solver]
+admm_max_iter = 51
+DCD_interval = 5
+GS_max_iter = 3
+contact.use_CCD = true
+admm.warmstart_Ue = true
+admm.warmstart_Uc = true
+contact.enable = true
+contact.w_scale = 40
+contact.kappa = 1e6
+contact.beta = 1e5
+contact.mu = 1.0
+contact.unique = true
+damp.kl = 5e-5
+damp.km = 0
+
+[DCD]
+narrow.max_collision = 100000
+narrow.thickness = 4e-2
+broad.radius = 4e-2
+broad.strategy = 'rebuild'
+
+
+[[mesh]]
+f.path = 'body/smpl_tri.obj'
+f.type = 'static'
+f.color = 3
+t.scale = 10.5
+t.translate = [0.05, 0.05, 0]
+t.rotate = [0, 90, 0]
+k.stretch = 15000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.bending = 1.0
+k.use_limit = false
+density = 0.3
+# animate = "sequence/Capoeira.npz"
+# animate = "sequence/Rumba.npz"
+# animate = "sequence/Breakdone.npz"
+# animate = "sequence/Hippop.npz"
+# animate = "sequence/Twist2.npz"
+animate = "sequence/hippop3.npz"
+# animate = ""
+
+
+[[mesh]]
+# f.path = 'hood/garment_meshes/pants_shorter_3519.obj'
+# f.path = 'hood/garment_meshes/pants_shorter_6461.obj'
+f.path = 'hood/garment_meshes/longskirt_7374.obj'
+f.type = 'tri'
+f.color = 7
+# t.scale = 10.0
+t.scale = 9.9
+t.translate = [0.115, 12.7, 0.02]
+# t.translate = [0.12, 12.7, 0.02]
+t.rotate = [0, 90, 0]
+k.stretch = 1500.0
+k.min_limit = 0.97
+k.max_limit = 1.03
+k.bending = 0.008
+k.use_limit = false
+density = 0.4
+
+[[mesh]]
+f.path = 'hood/garment_meshes/longsleeve_6722.obj'
+f.type = 'tri'
+f.color = 8
+t.scale = 11.7
+t.translate = [-0.06, 12.14, -0.02]
+t.rotate = [3, 90, 0]
+k.stretch = 2000.0
+k.min_limit = 0.98
+k.max_limit = 1.02
+k.bending = 0.003
+k.use_limit = false
+density = 0.5
+
+
+[mesh_post]
+center_ids = []
+
+
+[[collider]]
+type = 'plane'
+center = [0, -100, 0]
+halfside = 5.0
+normal = [0, 1, 0]
+
+[viewer]
+scale = 10
+color.background = [0.1, 0.1, 0.1]
+enable_ground = false

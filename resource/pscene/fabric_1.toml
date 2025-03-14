@@ -1,6 +1,6 @@
-scene_name = "fabric_2"
-out_file = 'D:\data\padmm_result\fabric_2'
-seperate_out = false
+scene_name = "homer"
+out_file = 'D:\data\mesh\homer'
+seperate_out = true
 show_windows = true
 GPU = true
 
@@ -13,13 +13,13 @@ g = 3.98
 admm_max_iter = 15
 DCD_interval = 5
 GS_max_iter = 10
-Global_Jacobi_iter = 20
+Global_Jacobi_iter = 10
 contact.use_CCD = false
 admm.warmstart_Ue = true
 admm.warmstart_Uc = true
 contact.enable = true
 contact.use_Jacobi = true
-contact.w_scale = 15
+contact.w_scale = 35
 contact.kappa = 1e5
 contact.beta = 1e5
 contact.unique = true
@@ -55,25 +55,38 @@ f.color = 0
 t.scale = 3.5
 t.translate = [0, 0.8, 0]
 t.rotate = [0, 0, 0]
-k.stretch = 19000.0
-k.min_limit = 0.95
-k.max_limit = 1.05
-k.bending = 10.1
-k.use_limit = false
-density = 0.5
-
-[[mesh]]
-f.path = 'tetmesh/torus.msh'
-f.type = 'tet'
-f.color = 747
-t.scale = 2.5
-t.translate = [0, 2.3, 0]
-t.rotate = [-90, 0, 0]
 k.stretch = 3000.0
 k.min_limit = 0.95
 k.max_limit = 1.05
+k.bending = 2.1
 k.use_limit = false
-density = 35.0
+density = 0.5
+
+#[[mesh]]
+#f.path = 'tetmesh/homer.msh'
+#f.type = 'tet'
+#f.color = 747
+#t.scale = 6.0
+#t.translate = [0, 2.3, 0]
+#t.rotate = [-0, 0, 0]
+#k.stretch = 43000.0
+#k.min_limit = 0.95
+#k.max_limit = 1.05
+#k.use_limit = false
+#density = 10.0
+
+[[mesh]]
+f.path = 'tetmesh/spot.msh'
+f.type = 'tet'
+f.color = 747
+t.scale = 1.5
+t.translate = [0, 2.3, 0]
+t.rotate = [-0, 0, 0]
+k.stretch = 13000.0
+k.min_limit = 0.95
+k.max_limit = 1.05
+k.use_limit = false
+density = 10.0
 
 #[[mesh]]
 #f.path = 'flat/flat_v10649.obj'

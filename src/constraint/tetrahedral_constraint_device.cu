@@ -81,22 +81,24 @@ struct TetProxFunctor {
         F.col(2) = ADU::Vecf_3(zi_block[6], zi_block[7], zi_block[8]);
 
         ADU::Matf_33 U, V;
-        Vecf_3 S;
-        SVD_impl_tet(F, U, S, V);
-        Matf_33 P = U * Matf_33::Identity() * V.transpose();
+        Vecf_3 S_;
+        SVD_impl_tet(F, U, S_, V);
+        Matf_33 S = Matf_33::Identity();
+        //if (F.determinant() < 0) S(2, 2) = -1.0f;
+        Matf_33 P = U * S * V.transpose();
 
-        F = 0.5f * (P + F).transpose();
-        zi_block[0] = F(0, 0);
-        zi_block[1] = F(0, 1);
-        zi_block[2] = F(0, 2);
-        
-        zi_block[3] = F(1, 0);
-        zi_block[4] = F(1, 1);
-        zi_block[5] = F(1, 2);
-        
-        zi_block[6] = F(2, 0);
-        zi_block[7] = F(2, 1);
-        zi_block[8] = F(2, 2);
+        F = 0.5f * (P + F);
+        zi_block[0] = F.col(0)(0);
+        zi_block[1] = F.col(0)(1);
+        zi_block[2] = F.col(0)(2);
+
+        zi_block[3] = F.col(1)(0);
+        zi_block[4] = F.col(1)(1);
+        zi_block[5] = F.col(1)(2);
+
+        zi_block[6] = F.col(2)(0);
+        zi_block[7] = F.col(2)(1);
+        zi_block[8] = F.col(2)(2);
     }
 
 };

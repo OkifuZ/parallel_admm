@@ -63,7 +63,7 @@ void BVH_GPU::init(size_t max_collision_number) {
     h_collisionPairs.reserve(max_collision_number);
 
     std::vector<uint32_t> h_surfVertIdx(v_num_surf);
-    for (int i = 0; i < v_num; i++) {
+    for (int i = 0; i < v_num_surf; i++) {
         h_surfVertIdx[i] = mesh->surface_vinds(i);
     }
     /*std::iota(h_surfVertIdx.begin(), h_surfVertIdx.end(), 0);*/
@@ -77,8 +77,8 @@ void BVH_GPU::init(size_t max_collision_number) {
     CUDA_SAFE_CALL(cudaMemset((void*)d_contact_info, 0, max_collision_number * sizeof(Result<ADU::Real>)));
     CUDA_SAFE_CALL(cudaMemset((void*)d_collisonPairs, 0, max_collision_number * sizeof(int4)));
 
-    bvh_f.init(nullptr, d_verts, d_faces, d_surfVertIdx, d_collisonPairs, d_cpNum, t_num, v_num, d_contact_info);
-    bvh_e.init(nullptr, d_verts, nullptr, d_edges, d_collisonPairs, d_cpNum, e_num, v_num, d_contact_info);
+    bvh_f.init(nullptr, d_verts, d_faces, d_surfVertIdx, d_collisonPairs, d_cpNum, t_num, v_num_surf, d_contact_info);
+    bvh_e.init(nullptr, d_verts, nullptr, d_edges, d_collisonPairs, d_cpNum, e_num, v_num_surf, d_contact_info);
     bvh_e.face_number = t_num;
     size_t bvs_max_size = 2 * this->t_num - 1 + 2 * this->e_num - 1 + 100000;
     bvs.reserve(bvs_max_size);
