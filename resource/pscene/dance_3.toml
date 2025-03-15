@@ -4,6 +4,7 @@ scene_name = "dance_3"
 out_file = 'C:\codebase\admm_elasticity\result\dance_Z_whole6'
 seperate_out = true
 show_windows = true
+GPU = true
 
 
 [global]
@@ -17,6 +18,7 @@ admm_max_iter = 51
 DCD_interval = 5
 GS_max_iter = 3
 contact.use_CCD = true
+Global_Jacobi_iter = 15
 admm.warmstart_Ue = true
 admm.warmstart_Uc = true
 contact.enable = true

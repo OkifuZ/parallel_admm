@@ -4,7 +4,7 @@ scene_name = "dance_Y_whole2"
 out_file = 'C:\codebase\admm_elasticity\result\dance_Y_whole2'
 seperate_out = true
 show_windows = true
-GPU = false
+GPU = true
 
 
 [global]
@@ -14,8 +14,8 @@ g = 2.98
 # density = 10.0
 
 [solver]
-admm_max_iter = 49
-DCD_interval = 4
+admm_max_iter = 30
+DCD_interval = 5
 GS_max_iter = 3
 Global_Jacobi_iter = 15
 contact.use_CCD = true
@@ -126,7 +126,7 @@ t.rotate = [0, 90, 0]
 k.stretch = 2000.0
 k.min_limit = 0.97
 k.max_limit = 1.03
-k.bending = 0.01
+k.bending = 1.01
 k.use_limit = false
 density = 0.2
 
@@ -155,7 +155,7 @@ t.rotate = [3, 90, 0]
 k.stretch = 2000.0
 k.min_limit = 0.98
 k.max_limit = 1.02
-k.bending = 0.003
+k.bending = 1.003
 k.use_limit = false
 density = 0.2
 

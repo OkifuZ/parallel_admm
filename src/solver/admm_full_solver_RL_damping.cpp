@@ -300,7 +300,7 @@ void ADMMSolverFull_RL_damping::step_fast() {
 					if (enable_frictional_contact)
 					{ // frictional contact
 						//Timer local_project_timer("contact_local");
-
+						 
 						p.block(0, 0, nDynVert, 3) =
 							(x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) + m_Uc) * m_dt_inv; // p as start velocity 
 
