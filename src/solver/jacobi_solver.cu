@@ -104,6 +104,10 @@ void copy_mat2thrustvector(const ADU::Matf_X3& mat, thrust::device_vector<ADU::R
     thrust::copy(mat.data(), mat.data() + len * 3, tar.data());
 }
 
+void copy_mat2thrustvector(const ADU::Matf_X3& mat, thrust::device_vector<ADU::Real>& tar, int st_row, int ed_row) {
+    thrust::copy(mat.data() + st_row * 3, mat.data() + ed_row * 3, tar.data() + st_row * 3);
+}
+
 void copy_vec2thrustvector(const ADU::Vecf_X& vec, thrust::device_vector<ADU::Real>& tar, int len) {
     if (vec.rows() < len || tar.size() < len) {
         throw std::runtime_error("Size of vec must be 3 times the number of rows in tar.");
@@ -125,6 +129,12 @@ void copy_thrustvector2thrust(thrust::device_vector<ADU::Real>& vec, thrust::dev
     // Check if the size of vec matches 3 times the number of rows in tar
    
     thrust::copy(vec.begin(), vec.begin() + size, tar.data());
+}
+
+void copy_thrustvector2thrust(thrust::device_vector<ADU::Real>& vec, thrust::device_vector<ADU::Real>& tar, int bg, int end) {
+    // Check if the size of vec matches 3 times the number of rows in tar
+
+    thrust::copy(vec.begin() + bg, vec.begin() + end, tar.data() + bg);
 }
 
 

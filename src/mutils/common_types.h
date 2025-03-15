@@ -31,6 +31,7 @@ namespace ADU {
 
 	using Matf_XX = Eigen::Matrix<Real, Eigen::Dynamic, Eigen::Dynamic>;
 	using Matf_X3 = Eigen::Matrix<Real, Eigen::Dynamic, 3, DefaultOreder>;
+	using Matd_X3 = Eigen::Matrix<double, Eigen::Dynamic, 3, DefaultOreder>;
 	using Matf_3X = Eigen::Matrix<Real, 3, Eigen::Dynamic>;
 	using Matf_X2 = Eigen::Matrix<Real, Eigen::Dynamic, 2, DefaultOreder>;
 	using Matf_2X = Eigen::Matrix<Real, 2, Eigen::Dynamic>;

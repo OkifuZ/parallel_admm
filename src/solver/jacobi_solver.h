@@ -55,9 +55,11 @@ struct CuSolverData {
 };
 
 void copy_mat2thrustvector(const ADU::Matf_X3& mat, thrust::device_vector<ADU::Real>& tar, int rows) ;
+void copy_mat2thrustvector(const ADU::Matf_X3& mat, thrust::device_vector<ADU::Real>& tar, int st_row, int ed_row);
 void copy_vec2thrustvector(const ADU::Vecf_X& vec, thrust::device_vector<ADU::Real>& tar, int len);
 void copy_thrustvector2mat(thrust::device_vector<ADU::Real>& vec, ADU::Matf_X3& tar , int rows) ;
 void copy_thrustvector2thrust(thrust::device_vector<ADU::Real>& vec, thrust::device_vector<ADU::Real>& tar, int size);
+void copy_thrustvector2thrust(thrust::device_vector<ADU::Real>& vec, thrust::device_vector<ADU::Real>& tar, int bg, int end);
 
 void cu_jacobi_global(const CuCompactSparseMat& A,
     const thrust::device_vector<ADU::Real>& b,

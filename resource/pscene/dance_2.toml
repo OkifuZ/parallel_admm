@@ -4,6 +4,7 @@ scene_name = "dance_Y_whole2"
 out_file = 'C:\codebase\admm_elasticity\result\dance_Y_whole2'
 seperate_out = true
 show_windows = true
+GPU = false
 
 
 [global]
@@ -16,6 +17,7 @@ g = 2.98
 admm_max_iter = 49
 DCD_interval = 4
 GS_max_iter = 3
+Global_Jacobi_iter = 15
 contact.use_CCD = true
 admm.warmstart_Ue = true
 admm.warmstart_Uc = true
@@ -75,7 +77,7 @@ k.max_limit = 1.05
 k.bending = 1.0
 k.use_limit = false
 density = 0.3
-# animate = "sequence/Capoeira.npz"
+# animate = "sequence/hippop3.npz"
 # animate = "sequence/Rumba.npz"
 animate = "sequence/Breakdone.npz"
 # animate = ""

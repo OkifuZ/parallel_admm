@@ -7,16 +7,16 @@ show_windows = true
 GPU = true
 
 [global]
-dt = 0.01
+dt = 0.02
 pin = []
 # pin = [0, 1]
 g = 4.98
 # density = 10.0
 
 [solver]
-admm_max_iter = 50
+admm_max_iter = 20
 DCD_interval = 6
-GS_max_iter = 5
+GS_max_iter = 15
 Global_Jacobi_iter = 15
 contact.use_CCD = false
 admm.warmstart_Ue = true
@@ -57,16 +57,16 @@ f.color = 3
 t.scale = 10.5
 t.translate = [0.05, 0.05, 0]
 t.rotate = [0, 90, 0]
-k.stretch = 55000.0
+k.stretch = 155000.0
 k.min_limit = 0.95
 k.max_limit = 1.05
 k.bending = 1.0
 k.use_limit = false
 density = 5.0
 # animate = "sequence/Capoeira.npz"
-# animate = "sequence/Rumba.npz"
+animate = "sequence/Rumba.npz"
 # animate = "sequence/Rotate.npz"
-animate = ""
+# animate = ""
 
 # [[mesh]]
 # # f.path = 'hood/garment_meshes/tank_good.obj'
@@ -107,10 +107,10 @@ f.color = 7
 t.scale = 12.5
 t.translate = [-0.05, 11.8, -0]
 t.rotate = [0, 90, 0]
-k.stretch = 8000.0
+k.stretch = 3000.0
 k.min_limit = 0.98
 k.max_limit = 1.02
-k.bending = 0.01
+k.bending = 1.0
 # k.use_limit = true
 k.use_limit = false
 density = 2.0

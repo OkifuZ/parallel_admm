@@ -47,11 +47,15 @@ void ScriptAnimator::read_point_animate(int mesh_id, const std::string& npz_path
 
     ScriptedData script_data;
     int frame_size = points.shape[1] * points.shape[2];
+    ADU::Matf_X3 tmp_data(points.shape[1], points.shape[2]);
     for (int fn = 0; fn < points.shape[0]; fn++) {
-        Eigen::Map<ADU::Matf_X3> tmp_data_map(&(points.data<ADU::Real>()[frame_size * fn]),  points.shape[1], points.shape[2]);
-        script_data.points_data.push_back(tmp_data_map);
+        Eigen::Map<ADU::Matd_X3> tmp_data_map(&(points.data<double>()[frame_size * fn]), points.shape[1], points.shape[2]);
+        tmp_data = tmp_data_map.cast<ADU::Real>();
+        //Eigen::Map<ADU::Matf_X3> tmp_data_map(&(points.data<ADU::Real>()[frame_size * fn]), points.shape[1], points.shape[2]);
+        script_data.points_data.push_back(tmp_data);
     }
 
+    std::cout << "points data shape:\n";
     std::cout << points.shape[0] << "  " << points.shape[1] << "  " << points.shape[2] << "\n";
 
     script_data.frame_nu = points.shape[0];
@@ -129,7 +133,6 @@ void ScriptAnimator::animate_points(int mesh_id, const ADU::Matf_X3& verts_prev,
     const auto& script_data = m_script_data[m_mesh_id_2_script_idx[mesh_id]];
     const auto& mesh_obj = mesh->mesh_list[mesh_id];
 
-    m_curr_frame += 1;
     if (m_curr_frame >= int(script_data.frame_nu)) {
         m_curr_frame = int(script_data.frame_nu);
         
@@ -156,9 +159,14 @@ void ScriptAnimator::animate_points(int mesh_id, const ADU::Matf_X3& verts_prev,
     const auto& rotq = mesh_obj->m_rotate;
     const auto scale = mesh_obj->m_scale;
     const auto& curr_points = script_data.points_data[m_curr_frame];
+    //std::cout << "curr points shape: " << curr_points.rows() << ", " << curr_points.cols() << "\n";
+    //std::cout << mesh_obj->start_vertIdx << ", " << mesh_obj->end_vertIdx << "\n";
+    
     tbb::parallel_for(tbb::blocked_range<size_t>(mesh_obj->start_vertIdx, mesh_obj->end_vertIdx), [&](const tbb::blocked_range<size_t>& r) {
         for (int vi = r.begin(); vi < r.end(); vi++) {
             verts.row(vi) = trans + rotq * (scale * curr_points.row(vi - mesh_obj->start_vertIdx).transpose());
+            //verts.row(vi) = (scale * curr_points.row(vi - mesh_obj->start_vertIdx).transpose());
+            //verts.row(vi) = trans + rotq * (scale * curr_points.row(0).transpose());
             velocity.row(vi) = (verts.row(vi) - verts_prev.row(vi)) / dt;
         }
         });
@@ -178,19 +186,19 @@ void ScriptAnimator::animate(int mesh_id, const ADU::Matf_X3& verts_prev, ADU::M
     if (m_mesh_id_2_script_idx.count(mesh_id) == 0) ADU::make_exception("animate no attached script");
 
     const auto& script_data = m_script_data[m_mesh_id_2_script_idx[mesh_id]];
+
     if (script_data.type == SCR_TYPE::RIGID) {
         animate_rigid(mesh_id, verts_prev, verts, velocity, dt);
     }
     else {
         animate_points(mesh_id, verts_prev, verts, velocity, dt);
     }
-
-
-
 }
 
 
 void ScriptAnimator::animate_all(const ADU::Matf_X3& verts_prev, ADU::Matf_X3& verts, ADU::Matf_X3& velocity, ADU::Real dt) {
+    m_curr_frame += 1;
+
     for (auto& miter : m_mesh_id_2_script_idx) {
         animate(miter.first, verts_prev, verts, velocity, dt);
     }

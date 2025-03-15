@@ -97,10 +97,7 @@ void ADMMParallelSolver::init() {
 
 	precompute();
 
-	if (animator) {
-		animator->reset();
-		animator->animate_all(m_vertices, m_vertices, m_velocities, this->m_dt);
-	}
+
 	int nDynVert = static_vert_begin;
 
 	//comp_mat = std::make_unique<CompactSparseMat>(m_A_damp); // for parallel global solver
@@ -108,6 +105,11 @@ void ADMMParallelSolver::init() {
 	solver_data_device = std::make_unique<CuSolverData>(*comp_mat,
 		nDynVert, m_nVert, nDynVert, m_nVert, m_nCDim);
 	// comp_mat_device = std::make_unique<CuCompactSparseMat>(*comp_mat);
+
+
+	
+
+	
 
     jacobi_buffer.resize(nDynVert, 3);
 	jacobi_buffer.setZero();
@@ -150,6 +152,13 @@ void ADMMParallelSolver::init() {
 
 	copy_mat2thrustvector(x_0, solver_data_device->x_0_device, m_nVert);
 	copy_mat2thrustvector(v_0, solver_data_device->v_0_device, m_nVert);
+
+	if (animator) {
+		animator->reset();
+		animator->animate_all(m_vertices, m_vertices, m_velocities, this->m_dt);
+		copy_mat2thrustvector(m_vertices, solver_data_device->x_0_device, nDynVert, m_nVert);
+		copy_mat2thrustvector(m_velocities, solver_data_device->v_0_device, nDynVert, m_nVert);
+	}
 
 	printf("ADMMParallelSolver init done\n");
 
@@ -337,18 +346,28 @@ void ADMMParallelSolver::step() {
 	b_curr.resize(nDynVert, 3);
 	b_curr.setZero();
 
+	
+
+	if (animator) {
+		animator->animate_all(m_vertices, x_curr, m_velocities, this->m_dt);
+		copy_mat2thrustvector(x_curr, solver_data_device->x_0_device, nDynVert, m_nVert);
+		copy_mat2thrustvector(m_velocities, solver_data_device->v_0_device, nDynVert, m_nVert);
+	}
+
 	do_pre_integration(m_nVert, nDynVert, m_dt, g, solver_data_device->x_0_device.data().get(), 
 		d_is_fixed.data().get(), d_M.data().get(),  solver_data_device->v_0_device.data().get(),
 		solver_data_device->x_curr_device.data().get(), M_x_tilde_device.data().get());
+
 
 	if (!warmstart_Ue) { m_Ue.setZero(); }
 	if (!warmstart_Uc) { m_Uc.setZero(); }
 
 	Timer timer("ADMMParallelSolver::step()");
 
-	float dt_r = m_dt ;
+	float dt_r = m_dt;
 	float dt_r_inv = 1.0f / dt_r;
-
+	copy_thrustvector2thrust(solver_data_device->v_0_device, solver_data_device->p_device, nDynVert * 3, m_nVert * 3);
+	//thrust::copy(solver_data_device->v_0_device.begin() + nDynVert * 3, solver_data_device->v_0_device.end(), solver_data_device->p_device.begin() + nDynVert * 3);
 
 	for (int admm_it = 0; admm_it < admm_max_iter; admm_it++) {
 		Timer per_iteration_timer("per_iteration");
@@ -458,8 +477,6 @@ void ADMMParallelSolver::step() {
 			op_a_minus_b(cache_nDynVertX3, cache_nDynVertX3_bp1, cache_nDynVertX3, nDynVert);
 			op_a_plus_b(m_Uc_device, cache_nDynVertX3, m_Uc_device, nDynVert);
 		}
-
-		
 	}
 
 	// copy x_curr to x_0
