@@ -382,6 +382,13 @@ int main(int argc, const char* argv[]) {
             auto material = PhyxMaterial(mesh.density, mesh.k.stretch, mesh.k.min_limit, mesh.k.max_limit, mesh.k.use_limit);
             mesh_id_list.push_back(mesh_id);
             material_list.push_back(material);
+
+            //for (int i = 0; i < app.mesh->verts.rows(); i++) {
+            //    auto& pos = app.mesh->verts.row(i);
+            //    //printf("%f, ", pos.x());
+            //    if (pos.x() < 0.8) printf("%d, ", i);
+            //}
+            //printf("end pin\n");
         }
     }
     printf("done loading mesh\n");
@@ -405,6 +412,7 @@ int main(int argc, const char* argv[]) {
             material_list.push_back(material);
             app.mesh->mesh_list[mesh_id]->is_static = true;
             if (mesh.animate_path != "") mesh_animate_info.push_back({ mesh_id, mesh.animate_path });
+
         }
     }
 
