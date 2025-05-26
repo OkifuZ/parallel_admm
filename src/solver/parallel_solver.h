@@ -161,6 +161,8 @@ class ADMMParallelSolver : public ADMMSolverFull_RL_damping {
 	thrust::device_vector<int> d_is_fixed;
 	thrust::device_vector<ADU::Real> d_M;
 
+	virtual void reset(const ADU::Matf_X3& ini_verts, bool need_precompute = false);
+
 public:
 	void convert_constraint2device();
 

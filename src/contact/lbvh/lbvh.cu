@@ -1,11 +1,3 @@
-//
-// mlbvh.cu
-// GIPC
-//
-// created by Kemeng Huang on 2022/12/01
-// Copyright (c) 2024 Kemeng Huang. All rights reserved.
-//
-
 #include "contact/lbvh/lbvh.cuh"
 #include <cmath>
 #include "mutils/cuda_tools.cuh"

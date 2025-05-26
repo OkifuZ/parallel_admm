@@ -97,7 +97,6 @@ void ADMMParallelSolver::init() {
 
 	precompute();
 
-
 	int nDynVert = static_vert_begin;
 
 	//comp_mat = std::make_unique<CompactSparseMat>(m_A_damp); // for parallel global solver
@@ -106,10 +105,6 @@ void ADMMParallelSolver::init() {
 		nDynVert, m_nVert, nDynVert, m_nVert, m_nCDim);
 	// comp_mat_device = std::make_unique<CuCompactSparseMat>(*comp_mat);
 
-
-	
-
-	
 
     jacobi_buffer.resize(nDynVert, 3);
 	jacobi_buffer.setZero();
@@ -163,6 +158,15 @@ void ADMMParallelSolver::init() {
 	printf("ADMMParallelSolver init done\n");
 
 }
+
+void ADMMParallelSolver::reset(const ADU::Matf_X3& ini_verts, bool need_precompute) {
+	ADMMSolverFull::reset(ini_verts, need_precompute);
+
+	copy_mat2thrustvector(this->m_vertices, solver_data_device->x_0_device, m_nVert);
+	copy_mat2thrustvector(this->m_velocities, solver_data_device->v_0_device, m_nVert);
+}
+
+
 
 
 void ADMMParallelSolver::precompute() {
@@ -375,7 +379,7 @@ void ADMMParallelSolver::step() {
 		// collision
 		if (enable_frictional_contact && prox_query && (admm_it % collision_detection_interval == 0)) {
 			Timer collision_timer("dynamic_collision_detection");
-			bvh->update(solver_data_device->x_curr_device.data().get(), m_nVert, false);
+			bvh->update(solver_data_device->x_curr_device.data().get(), m_nVert, admm_it + collision_detection_interval >= admm_max_iter);
 			bvh->dcd();
 			// TODO: will this actually work?
 			convert_DCD_info(bvh, solver_data_device->x_curr_device, ct_data_device.get());

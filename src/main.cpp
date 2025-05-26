@@ -581,10 +581,12 @@ int main(int argc, const char* argv[]) {
                 app_config.colliders[i].normal));
     }
 
-    app.solver->animator = std::make_unique<ScriptAnimator>();
-    app.solver->animator->mesh = app.mesh;
-    for (const auto& p : mesh_animate_info) {
-        app.solver->animator->attach_animate2mesh(p.first, (resource_path / p.second).string());
+    if (!mesh_animate_info.empty()) {
+        app.solver->animator = std::make_unique<ScriptAnimator>();
+        app.solver->animator->mesh = app.mesh;
+        for (const auto& p : mesh_animate_info) {
+            app.solver->animator->attach_animate2mesh(p.first, (resource_path / p.second).string());
+        }
     }
 
     app.solver->init(app.mesh->verts, app.mass, app.dt);

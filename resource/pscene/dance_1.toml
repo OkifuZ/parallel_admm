@@ -14,26 +14,26 @@ g = 4.98
 # density = 10.0
 
 [solver]
-admm_max_iter = 20
-DCD_interval = 6
+admm_max_iter = 30
+DCD_interval = 5
 GS_max_iter = 15
-Global_Jacobi_iter = 15
+Global_Jacobi_iter = 3
 contact.use_CCD = false
 admm.warmstart_Ue = true
 admm.warmstart_Uc = true
 contact.enable = true
-contact.w_scale = 25
+contact.w_scale = 15
 contact.kappa = 1e6
 contact.beta = 1e5
-contact.mu = 0.1
+contact.mu = 0.5
 contact.unique = true
-damp.kl = 2e-5
-damp.km = 0
+damp.kl = 1e-5
+damp.km = 1e-5
 
 [DCD]
 narrow.max_collision = 50000
-narrow.thickness = 4e-2
-broad.radius = 4e-2
+narrow.thickness = 5e-2
+broad.radius = 5e-2
 broad.strategy = 'rebuild'
 
 # [[mesh]]
@@ -103,17 +103,17 @@ f.path = 'hood/garment_meshes/dress_5294.obj'
 # f.path = 'hood/garment_meshes/tank_good.obj'
 # f.path = 'hood/garment_meshes/tshirt_unzipped.obj'
 f.type = 'tri'
-f.color = 7
+f.color = 8
 t.scale = 12.5
 t.translate = [-0.05, 11.8, -0]
 t.rotate = [0, 90, 0]
-k.stretch = 3000.0
+k.stretch = 10000.0
 k.min_limit = 0.98
 k.max_limit = 1.02
-k.bending = 1.0
+k.bending = 2.0
 # k.use_limit = true
 k.use_limit = false
-density = 2.0
+density = 1.0
 
 
 

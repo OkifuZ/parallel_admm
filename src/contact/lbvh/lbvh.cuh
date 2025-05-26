@@ -1,11 +1,3 @@
-//
-// mlbvh.cuh
-// GIPC
-//
-// created by Kemeng Huang on 2022/12/01
-// Copyright (c) 2024 Kemeng Huang. All rights reserved.
-//
-
 #pragma once
 #ifndef _MLBVH_CUH_
 #define _MLBVH_CUH_

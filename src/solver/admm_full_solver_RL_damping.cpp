@@ -252,6 +252,12 @@ void ADMMSolverFull_RL_damping::step_fast() {
 	rr_list.push_back({});
 #endif // PROFILE_RR
 
+
+	x_prev = x_curr;
+	if (step_cnt == 15) admm_max_iter = 800;
+	else {
+		admm_max_iter = 30;
+	}
 	for (int admm_it = 0; admm_it < admm_max_iter; admm_it++) {
 		Timer per_iteration_timer("per_iteration");
 
@@ -280,6 +286,8 @@ void ADMMSolverFull_RL_damping::step_fast() {
 		}
 
 		{
+			x_prev = x_curr;
+
 			Timer local_project_timer("elastic_local & contact_local");
 			tbb::parallel_invoke(
 				[&]() {
@@ -343,8 +351,17 @@ void ADMMSolverFull_RL_damping::step_fast() {
 		DX = m_D * x_curr.block(0, 0, nDynVert, 3);
 		m_Ue += DX - z;
 		m_Uc += x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3) - p.block(0, 0, nDynVert, 3) * m_dt;
+
+		// ADMM test
+		if (this->step_cnt == 15) {
+			double residual = 0;
+			residual = (x_prev - x_curr).norm() / x_curr.rows();
+			printf("%.15f, ", residual);
+		}
 	}
 	
+	printf("\n\n");
+
 	m_velocities.block(0, 0, nDynVert, 3) = (x_curr.block(0, 0, nDynVert, 3) - x_0.block(0, 0, nDynVert, 3)) / m_dt;
 	m_velocities.block(nDynVert, 0, m_nVert - nDynVert, 3) = v_0.block(nDynVert, 0, m_nVert - nDynVert, 3);
 	m_vertices = x_curr;
@@ -416,7 +433,7 @@ void ADMMSolverFull_RL_damping::project_feasible(ADU::Matf_X3& p,
 	ProximalQuery::ContactInfoList& contacts,
 	ADU::Real mu, size_t max_GS_iter)
 {
-	std::cout << "here" << "\n";
+	//std::cout << "here" << "\n";
 	ADMMSolverFull_RL_damping::_project_feasible_plain(p, contacts, mu, max_GS_iter);
 }
 
