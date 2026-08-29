@@ -43,7 +43,7 @@ damp.kl = 1e-4
 damp.km = 1e-4
 
 [DCD]
-narrow.max_collision = 20000
+narrow.max_collision = 100000
 narrow.thickness = 2e-3
 broad.radius = 2e-3
 broad.strategy = 'rebuild'

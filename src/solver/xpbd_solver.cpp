@@ -35,6 +35,10 @@ void XPBDSolver::init(const Matf_X3& verts, const Vecf_X& mass, Real dt) {
     m_M_vec = mass;
     m_M_inv_vec = mass;
     for (int i = 0; i < m_M_inv_vec.rows(); i++) m_M_inv_vec(i) = 1.0_r / m_M_vec(i);
+    // Pin vertices are infinitely heavy: gravity skips them (step) and the
+    // elastic/contact constraints must not move them either (matches the
+    // type-4 handling in Solver::init used by the ADMM path).
+    for (int i : m_pin_inds_set) m_M_inv_vec(i) = 0;
 
     m_dt = dt;
     m_dt2 = m_dt * m_dt;

@@ -328,22 +328,24 @@ struct APPConfig {
             }
         }
 
-        // collider
-        auto& collider_list_config = *collider_config.as_array();
-        for (int i = 0; i < collider_list_config.size(); i++) {
-            auto collider = APPConfig::Collider();
-            auto& collider_cfg = *collider_list_config[i].as_table();
+        // collider (optional section; absent in many scenes)
+        if (auto* collider_list = collider_config.as_array()) {
+            for (int i = 0; i < collider_list->size(); i++) {
+                auto collider = APPConfig::Collider();
+                auto* collider_cfg = (*collider_list)[i].as_table();
+                if (!collider_cfg) continue;
 
-            collider.type = _CTML(collider_cfg["type"].value<std::string>());
-            if (collider.type == "plane") {
-                for (int i = 0; i < 3; i++) {
-                    collider.center(i) = _CTML(collider_cfg["center"][i].value<Real>());
+                collider.type = _CTML((*collider_cfg)["type"].value<std::string>());
+                if (collider.type == "plane") {
+                    for (int j = 0; j < 3; j++) {
+                        collider.center(j) = _CTML((*collider_cfg)["center"][j].value<Real>());
+                    }
+                    collider.halfside = _CTML((*collider_cfg)["halfside"].value<Real>());
+                    for (int j = 0; j < 3; j++) {
+                        collider.normal(j) = _CTML((*collider_cfg)["normal"][j].value<Real>());
+                    }
+                    app_config.colliders.push_back(collider);
                 }
-                collider.halfside = *collider_cfg["halfside"].value<Real>();
-                for (int i = 0; i < 3; i++) {
-                    collider.normal(i) = _CTML(collider_cfg["normal"][i].value<Real>());
-                }
-                app_config.colliders.push_back(collider);
             }
         }
 

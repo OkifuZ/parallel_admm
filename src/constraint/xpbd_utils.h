@@ -128,6 +128,8 @@ namespace XPBD_utils {
 		psi = static_cast<Real>(0.5) * psi;
 		Real energy = area * psi;
 
+		if (!std::isfinite(energy)) return false;
+
 		// compute gradient
 		Eigen::Matrix<Real, 3, 2> H = area * piolaKirchhoffStres * invRestMat.transpose();
 		Vecf_3 gradC[3];
@@ -159,6 +161,7 @@ namespace XPBD_utils {
 
 			//const Real s_0 = (energy + alpha * multiplier) / (sum_normGradC + alpha);
 			const Real s = (energy + alpha * multiplier - grad_c_beta) / (sum_normGradC + alpha);
+			if (!std::isfinite(s)) return false;
 			//const Real s = (energy + alpha * multiplier) / (sum_normGradC + alpha);
 			multiplier -= s;
 
@@ -432,6 +435,9 @@ namespace XPBD_utils {
 		// By choosing the constraint function as sqrt(2 U'), the potential energy used in XPBD: 
 		// U = 0.5 * alpha^-1 * C^2
 		// gives us exactly the required potential energy of the elastic solid. 
+		// Inverted/degenerate tets can yield U' < 0 -> sqrt(negative) = NaN;
+		// skip such constraints instead of poisoning the whole simulation.
+		if (!(U_ >= 0.0) || !std::isfinite(U_)) return false;
 		const Real C = sqrt(2.0 * U_);
 
 		Real sum_normGradU_ =
@@ -439,6 +445,8 @@ namespace XPBD_utils {
 			invMass1 * gradU_[1].squaredNorm() +
 			invMass2 * gradU_[2].squaredNorm() +
 			invMass3 * gradU_[3].squaredNorm();
+
+		if (!std::isfinite(sum_normGradU_)) return false;
 
 		Real grad_c_beta = 0.0_r;
 		if (in_ADMM) {
@@ -460,12 +468,30 @@ namespace XPBD_utils {
 		//const Real s = (C * C + C * alpha * multiplier) / sum_normGradU_;
 		// compute scaling factor
 		const Real s = (C * C * C + C * C * alpha * multiplier - grad_c_beta * C) / sum_normGradU_;
+		if (!std::isfinite(s)) return false;
 		multiplier -= s;
+		// Clamp the accumulated multiplier: explosive feedback through it is
+		// the usual way XPBD simulations blow up after an inverted tet.
+		multiplier = std::max(-static_cast<Real>(1.0), std::min(static_cast<Real>(1.0), multiplier));
 
 		corr0 = -s * invMass0 * gradU_[0];
 		corr1 = -s * invMass1 * gradU_[1];
 		corr2 = -s * invMass2 * gradU_[2];
 		corr3 = -s * invMass3 * gradU_[3];
+
+		// Clamp the per-iteration position correction of this constraint
+		// (normal corrections are ~1e-3 m; anything beyond 1 m is a blow-up).
+		Real corr_max = corr0.norm();
+		corr_max = std::max(corr_max, corr1.norm());
+		corr_max = std::max(corr_max, corr2.norm());
+		corr_max = std::max(corr_max, corr3.norm());
+		if (corr_max > static_cast<Real>(1.0)) {
+			const Real scale = static_cast<Real>(1.0) / corr_max;
+			corr0 *= scale;
+			corr1 *= scale;
+			corr2 *= scale;
+			corr3 *= scale;
+		}
 
 		return true;
 	}
@@ -540,6 +566,7 @@ namespace XPBD_utils {
 		ADU::Vecf_3 q = p0 * b0 + p1 * b1 + p2 * b2;
 		ADU::Vecf_3 n = p - q;
 		ADU::Real dist = n.norm();
+		if (!(dist > static_cast<ADU::Real>(1e-12))) return false; // guard NaN/zero in normalize
 		n.normalize();
 		ADU::Real C = dist - restDist;
 		ADU::Vecf_3 grad = n;
@@ -634,6 +661,7 @@ namespace XPBD_utils {
 		ADU::Vecf_3 q1 = p2 * b2 + p3 * b3;
 		ADU::Vecf_3 n = q0 - q1;
 		ADU::Real dist = n.norm();
+		if (!(dist > static_cast<ADU::Real>(1e-12))) return false; // guard NaN/zero in normalize
 		n.normalize();
 		ADU::Real C = dist - restDist;
 		ADU::Vecf_3 grad0 = n * b0;
