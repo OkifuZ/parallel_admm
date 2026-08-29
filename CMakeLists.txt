@@ -53,6 +53,7 @@ file(GLOB SOURCE_FILES
     src/solver/core/*.cpp
     src/solver/backend_cpu/*.cpp
     src/constraint/*.cpp
+    src/constraint/xpbd/*.cpp
     src/mutils/*.cpp
     src/contact/*.cpp
     src/contact/simpleBVH/*.cpp
@@ -73,6 +74,7 @@ file(GLOB HEADER_FILES
     src/solver/backend_cpu/*.h
     src/solver/backend_gpu/*.h
     src/constraint/*.h
+    src/constraint/xpbd/*.h
     src/mutils/*.h
     src/contact/*.h
     src/contact/simpleBVH/*.hpp
