@@ -1,7 +1,7 @@
 scene_name = "contact_case"
 # out_file = './'
 out_file = 'F:\PBA\admm_soft\admm-elasticity\result\contact_case\'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

@@ -1,6 +1,6 @@
 scene_name = "testGN"
 out_file = 'C:\codebase\admm_elasticity\result\testGN'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

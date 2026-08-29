@@ -220,4 +220,3 @@ void TriangleConstraintDevice::run_proxy(ADU::Real* zi) {
         functor
     );
 }
-

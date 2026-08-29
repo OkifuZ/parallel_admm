@@ -1,7 +1,7 @@
 scene_name = "arma_xpbd_it100"
 # out_file = './'
 out_file = 'C:\codebase\admm_elasticity\result\arma_xpbd_it100\'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

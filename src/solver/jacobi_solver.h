@@ -5,18 +5,6 @@
 #include <thrust/device_vector.h>
 #include <cstdio>
 
-namespace thrust {
-
-    template <typename T1, typename T2>
-    class pair;
-
-    template <typename T>
-    class device_allocator;
-
-    template <typename T, typename Alloc>
-    class device_vector;
-}  // namespace thrust
-
 struct CuCompactSparseMat {
     thrust::device_vector<ADU::Real> diag_data{};
     thrust::device_vector<ADU::Real> offdiag_data{}; // [Values]

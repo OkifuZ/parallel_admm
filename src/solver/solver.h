@@ -111,19 +111,19 @@ public:
 		}
 	}
 
-	const ADU::Matf_X3& getVertices() const {
+	virtual const ADU::Matf_X3& getVertices() const {
 		return m_vertices;
 	}
 
-	ADU::Matf_X3& getVertices() {
+	virtual ADU::Matf_X3& getVertices() {
 		return m_vertices;
 	}
 
-	const ADU::Matf_X3& getVelocities() const {
+	virtual const ADU::Matf_X3& getVelocities() const {
 		return m_velocities;
 	}
 
-	ADU::Matf_X3& getVelocities() {
+	virtual ADU::Matf_X3& getVelocities() {
 		return m_velocities;
 	}
 

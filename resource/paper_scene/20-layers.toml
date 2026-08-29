@@ -1,6 +1,6 @@
 scene_name = "20-layers-wostab"
 out_file = 'F:\PBA\admm_soft\admm-elasticity\result\20-layers-wostab'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

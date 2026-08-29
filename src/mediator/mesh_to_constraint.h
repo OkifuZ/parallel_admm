@@ -19,7 +19,7 @@
 
 class Mesh2Constraint {
 public:
-    static size_t curr_start_row;
+    inline static size_t curr_start_row = 0;
 
     std::vector<int> invalid_inds;
 
@@ -237,6 +237,3 @@ public:
         }
     }
 };
-
-size_t Mesh2Constraint::curr_start_row = 0;
-

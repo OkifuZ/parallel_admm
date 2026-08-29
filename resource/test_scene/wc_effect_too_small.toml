@@ -1,6 +1,6 @@
 scene_name = "wc_effect_too_small"
 out_file = 'C:\codebase\admm_elasticity\result\wc_effect_too_small'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

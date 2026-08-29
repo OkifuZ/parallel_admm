@@ -1,7 +1,7 @@
 #pragma once
 
 #include "solver/solver.h"
-#include "solver/admm_full_solver.h"
+#include "solver/backend_cpu/admm_impl_cpu.h"
 #include "mutils/timer.h"
 #include "mutils/exception_handle.h"
 #include "constraint/pin_constraint.h"
@@ -29,7 +29,7 @@ public:
 		Timer timer("XPBDSolver::init()");
 		this->solver = solver;
 		if (!solver) make_exception("XPBD empty ADMM solver");
-		ADMMSolverFull_RL_damping* admm_solver = reinterpret_cast<ADMMSolverFull_RL_damping*>(solver);
+		ADMMImplCPU* admm_solver = reinterpret_cast<ADMMImplCPU*>(solver);
 		this->m_maxIterations = max_iter;
 		this->m_subSteps = substep;
 
@@ -51,7 +51,7 @@ public:
 
 		using namespace ADU;
 		if (!solver) make_exception("XPBD empty ADMM solver");
-		ADMMSolverFull_RL_damping* admm_solver = reinterpret_cast<ADMMSolverFull_RL_damping*>(solver);
+		ADMMImplCPU* admm_solver = reinterpret_cast<ADMMImplCPU*>(solver);
 		using namespace ADU;
 		Timer timer("XPBDSolver::step()");
 
@@ -221,7 +221,7 @@ public:
 	virtual void reset(const ADU::Matf_X3& ini_verts, bool need_precompute = false) {
 		using namespace ADU;
 		if (!solver) make_exception("XPBD empty ADMM solver");
-		ADMMSolverFull_RL_damping* admm_solver = reinterpret_cast<ADMMSolverFull_RL_damping*>(solver);
+		ADMMImplCPU* admm_solver = reinterpret_cast<ADMMImplCPU*>(solver);
 		admm_solver->m_vertices = ini_verts;
 		admm_solver->m_velocities.setZero();
 	}

@@ -71,7 +71,7 @@ public:
 		MeshObject() {}
 	};
 
-	void compuite_AABB() {
+	void compute_AABB() {
 		using namespace ADU;
 		for (auto& mc : mesh_list) {
 			int st_idx = mc->start_vertIdx;
@@ -100,9 +100,9 @@ public:
 		}
 	}
 
-	ADU::Mati_X3 getFaceInds(int mesh_id) {
+	ADU::Mati_X3 getFaceInds(int mesh_id) const {
 		using namespace ADU;
-		if (mesh_id >= mesh_list.size()) ADU::make_exception("getFaceInds out of inidices");
+		if (mesh_id >= mesh_list.size()) ADU::make_exception("getFaceInds out of indices");
 		const auto& mesh_obj = mesh_list[mesh_id];
 		Mati_X3 mesh_faces(mesh_obj->end_faceIdx - mesh_obj->start_faceIdx, 3);
 		for (int fi = mesh_obj->start_faceIdx; fi < mesh_obj->end_faceIdx; fi++) {
@@ -118,7 +118,7 @@ public:
 
 	ADU::Vecf_3 getMassCenter(int mesh_id, ADU::Vecf_X& mass, ADU::Matf_X3& pos) {
 		using namespace ADU;
-		if (mesh_id >= mesh_list.size()) ADU::make_exception("getMassCenter out of inidices");
+		if (mesh_id >= mesh_list.size()) ADU::make_exception("getMassCenter out of indices");
 		const auto& mesh_obj = mesh_list[mesh_id];
 		Vecf_3 center = Vecf_3::Zero();
 		Real total_mass = 0.0_r;
@@ -131,7 +131,7 @@ public:
 
 	ADU::Vecf_3 getMassWeightedVelocity(int mesh_id, ADU::Vecf_X& mass, ADU::Matf_X3& vel) {
 		using namespace ADU;
-		if (mesh_id >= mesh_list.size()) ADU::make_exception("getMassCenter out of inidices");
+		if (mesh_id >= mesh_list.size()) ADU::make_exception("getMassCenter out of indices");
 		const auto& mesh_obj = mesh_list[mesh_id];
 		Vecf_3 vel_center = Vecf_3::Zero();
 		Real total_mass = 0.0_r;
@@ -348,7 +348,7 @@ public:
 		mesh_list[i]->m_translate = trans;
 	}
 
-	void roatate(const ADU::Matf_33& rotate, size_t i) {
+	void rotate(const ADU::Matf_33& rotate, size_t i) {
 		if (i > mesh_list.size()) throw std::runtime_error("Error MeshData get_mesh: invalid idx");
 		auto& mesh = mesh_list[i];
 		for (int vi = mesh->start_vertIdx; vi < mesh->end_vertIdx; vi++) {
@@ -356,7 +356,7 @@ public:
 		}
 	}
 
-	void roatate(const ADU::Quatf& quat, size_t i) {
+	void rotate(const ADU::Quatf& quat, size_t i) {
 		if (i > mesh_list.size()) throw std::runtime_error("Error MeshData get_mesh: invalid idx");
 		auto& mesh = mesh_list[i];
 		for (int vi = mesh->start_vertIdx; vi < mesh->end_vertIdx; vi++) {
@@ -403,9 +403,9 @@ public:
 		mesh_list[i]->m_scale_z = sc_z;
 	}
 
-	void centerlize(size_t i) {
+	void centralize(size_t i) {
 		using namespace ADU;
-		if (i > mesh_list.size()) throw std::runtime_error("Error MeshData centerlize: invalid idx");
+		if (i > mesh_list.size()) throw std::runtime_error("Error MeshData centralize: invalid idx");
 		auto& mesh = mesh_list[i];
 		Vecf_3 center = Vecf_3::Zero();
 		int n_vert = mesh->end_vertIdx - mesh->start_vertIdx;

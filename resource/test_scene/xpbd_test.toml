@@ -1,6 +1,6 @@
 scene_name = "wc_effect_heu"
 out_file = 'C:\codebase\admm_elasticity\result\wc_effect_heu'
-seperate_out = false
+separate_out = false
 show_windows = true
 end_frame = 1000
 

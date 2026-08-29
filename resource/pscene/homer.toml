@@ -1,6 +1,6 @@
 scene_name = "bar_mhsl"
 out_file = 'D:\data\4_8\bar_mhsl'
-seperate_out = false
+separate_out = false
 show_windows = true
 GPU = true
 

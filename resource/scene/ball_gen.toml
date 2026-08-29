@@ -1,7 +1,7 @@
 
 scene_name = "ball"
 out_file = 'F:\PBA\admm_soft\admm-elasticity\result\ball'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

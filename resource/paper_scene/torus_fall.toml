@@ -1,7 +1,7 @@
 scene_name = "torus_fall_mu08"
 # out_file = './'
 out_file = 'F:\PBA\admm_soft\admm-elasticity\result\torus_fall_mu08\'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

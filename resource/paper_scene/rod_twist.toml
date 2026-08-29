@@ -1,6 +1,6 @@
 scene_name = "rod_twist"
 out_file = 'F:\PBA\admm_soft\admm-elasticity\result\rod_twist'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

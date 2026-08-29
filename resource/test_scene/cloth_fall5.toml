@@ -1,7 +1,7 @@
 scene_name = "cloth_fall"
 # out_file = './'
 out_file = 'C:\codebase\admm_elasticity\result\cloth_fall5\'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 end_frame = 500

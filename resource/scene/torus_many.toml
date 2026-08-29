@@ -1,7 +1,7 @@
 scene_name = "torus"
 # out_file = 'F:\PBA\admm_soft\admm-elasticity\result\torus'
 out_file = './torus_out_3.1'
-seperate_out = false
+separate_out = false
 show_windows = false
 
 [global]

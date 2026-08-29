@@ -1,6 +1,6 @@
 scene_name = "2-layers"
 out_file = 'F:\PBA\admm_soft\admm-elasticity\result\2-layers'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 # this scene can be used to justify the meaning of chebyshev

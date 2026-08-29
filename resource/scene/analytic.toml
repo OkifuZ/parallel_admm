@@ -2,7 +2,7 @@ scene_name = "analytic_cloth_mu07"
 # out_file = './'
 out_file = 'C:\codebase\admm_elasticity\result\analytic_mu08'
 # out_file = 'F:\PBA\admm_soft\admm-elasticity\result\dance\'
-seperate_out = true
+separate_out = true
 show_windows = true
 
 [global]

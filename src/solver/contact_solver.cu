@@ -9,7 +9,7 @@
 #include "mutils/dist_g.cuh"
 
 #include "solver/contact_solver.cuh"
-#include "parallel_solver.h"
+#include "solver/backend_gpu/admm_impl_gpu.h"
 
 
 using namespace  ADU;

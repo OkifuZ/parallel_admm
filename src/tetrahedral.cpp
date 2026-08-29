@@ -13,7 +13,7 @@
 
 #include "src_config.h"
 #include "mesh/mesh_container.h"
-#include "solver/admm_full_solver.h"
+#include "solver/backend_cpu/admm_impl_cpu.h"
 #include "constraint/constraint.h"
 #include "constraint/tetrahedral_constraint.h"
 #include "constraint/triangle_constraint.h"
@@ -124,8 +124,8 @@ int main() {
 
     app.mesh->get_mass(1.0_r, app.mass);
 
-    app.solver = std::make_unique<ADMMSolverFull>();
-    static_cast<ADMMSolverFull*>(app.solver.get())->warmstart_Ue = true;
+    app.solver = std::make_unique<ADMMImplCPU>();
+    static_cast<ADMMImplCPU*>(app.solver.get())->warmstart_Ue = true;
     app.solver->parallel = true;
 
     Solver::ConstraintsList cslist;

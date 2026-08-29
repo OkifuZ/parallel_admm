@@ -11,7 +11,7 @@
 
 #include "src_config.h"
 #include "mesh/mesh_container.h"
-#include "solver/admm_full_solver.h"
+#include "solver/backend_cpu/admm_impl_cpu.h"
 #include "constraint/constraint.h"
 #include "constraint/triangle_constraint.h"
 #include "constraint/tetrahedral_constraint.h"
@@ -116,7 +116,7 @@ int main() {
     //size_t mesh_id1 = app.mesh->add_mesh((resource_path / "flat/flat.obj").string(), MeshData::TRI);
     //app.mesh->scale(2.0f, mesh_id1);
     //Eigen::Quaternion<ADU::Real> q(Eigen::AngleAxisd(3.1415926_r * 0.5_r, ADU::Vecf_3::UnitX()));
-    //app.mesh->roatate(q, mesh_id1);
+    //app.mesh->rotate(q, mesh_id1);
     //app.mesh->scale(0.6f, mesh_id1);
     app.mesh->scale(2.0f, mesh_id1);
     app.mesh->translate({ 0, 1.0_r, 0 }, mesh_id1);
@@ -129,7 +129,7 @@ int main() {
     //size_t mesh_id2 = app.mesh->add_mesh((resource_path / "tetmesh/middle_ball.msh").string(), MeshData::TET);
     //size_t mesh_id2 = app.mesh->add_mesh((resource_path / "tetmesh/tet-pyramid.msh").string(), MeshData::TET);
     //size_t mesh_id2 = app.mesh->add_mesh((resource_path / "tetmesh/tet.msh").string(), MeshData::TET);
-    //app.mesh->centerlize(mesh_id2);
+    //app.mesh->centralize(mesh_id2);
     //app.mesh->scale(0.2_r, mesh_id2);
     //app.mesh->scale(8.0_r, mesh_id2);
     //app.mesh->scale(2.0_r, mesh_id2);
@@ -146,21 +146,21 @@ int main() {
     size_t mesh_id4 = app.mesh->add_mesh((resource_path / "flat/flat_v377.obj").string(), MeshData::TRI);
     app.mesh->scale(1.6f, mesh_id4);
     Eigen::Quaternion<ADU::Real> q4(Eigen::AngleAxisd(3.1415926_r * 0.25_r, ADU::Vecf_3::UnitY()));
-    app.mesh->roatate(q4, mesh_id4);
+    app.mesh->rotate(q4, mesh_id4);
     app.mesh->translate({ 0, 3.0_r, 0 }, mesh_id4);
     auto material_id4 = PhyxMaterial(1.0_r, 100.0_r, 0.95_r, 1.05_r, 0.1_r);
 
     size_t mesh_id5 = app.mesh->add_mesh((resource_path / "flat/flat_v377.obj").string(), MeshData::TRI);
     app.mesh->scale(1.4f, mesh_id5);
     Eigen::Quaternion<ADU::Real> q5(Eigen::AngleAxisd(3.1415926_r * 0.5_r, ADU::Vecf_3::UnitY()));
-    app.mesh->roatate(q5, mesh_id5);
+    app.mesh->rotate(q5, mesh_id5);
     app.mesh->translate({ 0, 3.5_r, 0 }, mesh_id5);
     auto material_id5 = PhyxMaterial(1.0_r, 100.0_r, 0.95_r, 1.05_r, 0.1_r);
 
     size_t mesh_id6 = app.mesh->add_mesh((resource_path / "flat/flat_v377.obj").string(), MeshData::TRI);
     app.mesh->scale(1.2f, mesh_id6);
     Eigen::Quaternion<ADU::Real> q6(Eigen::AngleAxisd(3.1415926_r * 0.75_r, ADU::Vecf_3::UnitY()));
-    app.mesh->roatate(q6, mesh_id6);
+    app.mesh->rotate(q6, mesh_id6);
     app.mesh->translate({ 0, 4.0_r, 0 }, mesh_id6);
     auto material_id6 = PhyxMaterial(1.0_r, 100.0_r, 0.95_r, 1.05_r, 0.1_r);
 
@@ -182,8 +182,8 @@ int main() {
 
     app.mesh->get_mass(0.1_r, app.mass);
 
-    app.solver = std::make_unique<ADMMSolverFull>();
-    ADMMSolverFull* solver = static_cast<ADMMSolverFull*>(app.solver.get());
+    app.solver = std::make_unique<ADMMImplCPU>();
+    ADMMImplCPU* solver = static_cast<ADMMImplCPU*>(app.solver.get());
     solver->enable_frictional_contact = true;
     solver->warmstart_Ue = true;
     solver->warmstart_Uc = true;

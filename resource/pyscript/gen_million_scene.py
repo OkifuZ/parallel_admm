@@ -5,7 +5,7 @@ scene_file_part1 = r'''
 
 scene_name = "one million"
 out_file = 'C:\codebase\admm_elasticity\result\one million'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

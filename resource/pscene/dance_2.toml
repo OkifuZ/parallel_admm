@@ -2,7 +2,7 @@ scene_name = "dance_Y_whole2"
 # out_file = './'
 # out_file = 'F:\PBA\admm_soft\admm-elasticity\result\10-layers-skew-mu005\'
 out_file = 'C:\codebase\admm_elasticity\result\dance_Y_whole2'
-seperate_out = true
+separate_out = true
 show_windows = true
 GPU = true
 

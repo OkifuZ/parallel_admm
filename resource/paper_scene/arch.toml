@@ -1,7 +1,7 @@
 scene_name = "arch_mu08"
 # out_file = 'F:\PBA\admm_soft\admm-elasticity\result\arch_mu08'
 out_file = 'C:\hou_proj\simulation_result'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

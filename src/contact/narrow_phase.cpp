@@ -43,7 +43,7 @@ void ProximalQuery::proximal_query(const ADU::Matf_X3& pos) {
 		}
 	}
 
-	ADU::Timer narrowphase_timer("narrow_pahse");
+	ADU::Timer narrowphase_timer("narrow_phase");
 	{
 		ADU::Timer query_point_triangle_timer("query_point_triangle");
 		query_point_triangle(pos);
@@ -92,7 +92,7 @@ void ProximalQuery::proximal_query_with_CCD(const ADU::Matf_X3& pos_t0, const AD
 		}
 	}
 
-	ADU::Timer narrowphase_timer("narrow_pahse_with_CCD");
+	ADU::Timer narrowphase_timer("narrow_phase_with_CCD");
 	{
 		ADU::Timer query_point_triangle_timer("query_point_triangle_with_CCD");
 		//query_point_triangle(pos);

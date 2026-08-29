@@ -2,7 +2,7 @@
 
 scene_name = "one million"
 out_file = 'D:\data\result\one_million_17'
-seperate_out = false
+separate_out = false
 show_windows = false
 end_frame= 2000
 

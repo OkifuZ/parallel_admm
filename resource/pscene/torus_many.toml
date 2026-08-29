@@ -1,7 +1,7 @@
 scene_name = "mydonut_999"
 # out_file = 'F:\PBA\admm_soft\admm-elasticity\result\mydonut_999'
 out_file = './mydonut_999_out_3.1'
-seperate_out = false
+separate_out = false
 show_windows = true
 GPU = true
 

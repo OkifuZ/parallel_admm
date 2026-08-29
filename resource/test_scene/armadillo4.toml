@@ -1,6 +1,6 @@
 scene_name = "armd_ADMM_iter100"
 out_file = 'C:\codebase\admm_elasticity\result\armd_ADMM_iter100\'
-seperate_out = false
+separate_out = false
 show_windows = true
 end_frame = 2000
 

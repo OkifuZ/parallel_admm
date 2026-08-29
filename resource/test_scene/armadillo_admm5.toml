@@ -1,7 +1,7 @@
 scene_name = "arma_admm_w25"
 # out_file = './'
 out_file = 'C:\codebase\admm_elasticity\result\arma_admm_w25\'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

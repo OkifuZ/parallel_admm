@@ -4,7 +4,7 @@
 #include <Eigen/Core>
 
 #include "src_config.h"
-#include "solver/admm_full_solver.h"
+#include "solver/solver.h"
 #include "solver/PBD_solver.h"
 #include "solver/XPBD_solver.h"
 
@@ -34,7 +34,7 @@
 #include "mutils/dist_g.cuh"
 #include "contact/contact_util.cuh"
 
-#include "solver/admm_full_solver.h"
+#include "solver/solver.h"
 
 
 

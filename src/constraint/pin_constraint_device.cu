@@ -111,4 +111,3 @@ void PinConstraintDevice::run_proxy(ADU::Real* zi) {
         functor
     );
 }
-

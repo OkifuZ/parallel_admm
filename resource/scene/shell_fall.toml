@@ -1,6 +1,6 @@
 scene_name = "shell_fall"
 out_file = 'F:\PBA\admm_soft\admm-elasticity\result\shell_fall'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

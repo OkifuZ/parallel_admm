@@ -1,6 +1,6 @@
 scene_name = "5-layers"
 out_file = 'F:\PBA\admm_soft\admm-elasticity\result\5-layers\5-layers'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

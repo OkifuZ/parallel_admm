@@ -1,7 +1,7 @@
 # todo
 scene_name = "10-layers"
 out_file = 'F:\PBA\admm_soft\admm-elasticity\result\10-layers'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]

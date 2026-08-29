@@ -9,14 +9,14 @@
 template <typename T>
 inline T _CTML(std::optional<T> x){
     if (x) return *x;
-    else make_exception("CTML_ APPConfig toml file invalid");
+    else ADU::make_exception("CTML_ APPConfig toml file invalid");
 }
 
 
 struct APPConfig {
     std::string scene_name{};
     std::string out_file{};
-    bool seperate_out{ false };
+    bool separate_out{ false };
     bool show_windows{ true };
     bool out_bin{ false };
     int end_frame{ 2000 };
@@ -152,7 +152,7 @@ struct APPConfig {
         table config = parse_file(toml_path);
         app_config.scene_name = _CTML(config["scene_name"].value<std::string>());
         app_config.out_file = _CTML(config["out_file"].value<std::string>());
-        app_config.seperate_out = _CTML(config["seperate_out"].value<bool>());
+        app_config.separate_out = _CTML(config["separate_out"].value<bool>());
         app_config.show_windows = _CTML(config["show_windows"].value<bool>());
         auto out_bin_temp = config["out_bin"].value<bool>();
         if (out_bin_temp) app_config.out_bin = *out_bin_temp;

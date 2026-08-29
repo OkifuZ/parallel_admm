@@ -1,7 +1,7 @@
 scene_name = "grid"
 # out_file = './'
 out_file = 'F:\PBA\admm_soft\admm-elasticity\result\grid\'
-seperate_out = false
+separate_out = false
 show_windows = true
 
 [global]
