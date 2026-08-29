@@ -1,4 +1,4 @@
-#include "mediator/contact_display_helper.h"
+#include "contact/contact_display.h"
 #include "solver/solver.h"
 #include "polyscope/point_cloud.h"
 

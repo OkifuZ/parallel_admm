@@ -56,3 +56,62 @@
   GPU 是否应用阻尼需核实（行为差异风险）。
 - CPU `_project_feasible_plain` 全串行 GS；`sequential_greedy_coloring` 已实现但被
   硬编码关闭（`coloring_parallel_contact = false`），`find_contact_islands()` 为空。
+
+---
+
+## Phase C：效率优化（完成，默认行为不变）
+
+1. **矩阵导出加开关**：`[solver.admm] dump_A = true`（默认 false）才写 `m_A_damp` 到磁盘。
+2. **CPU step_fast 缓冲复用**：x_0/v_0/x_tilde/M_x_tilde/b/b_ini/x_curr/z/DX/p 移为
+   `ADMMImplCPUBase` 成员，避免每步 Eigen 分配；GPU 侧删除重复的 host 成员
+   （x_curr/p/b_curr，其中 b_curr 本就未被使用）。
+3. **GPU 死 LLT 移除**：GPU precompute 的 `m_A_damp` 装配与 `SimplicialLLT` 分解
+   从未被 GPU step（Jacobi）使用，删除。
+4. **GPU headless 免同步**：`ADMMSolver::set_sync_to_host(false)` 时 GPU step 跳过
+   每步 device→host 下载；app 在无窗口且无 animator 时自动关闭。
+   （注意：animator 依赖 host 数据，故有 animator 时保持同步。）
+5. **coloring 并行接触投影（opt-in）**：`[solver.contact] coloring = true` 时 CPU
+   接触 GS 按贪心染色并行（颜色顺序执行、颜色内并行）；单接触更新提取为
+   `_project_one_contact` 与串行路径共享；未染色溢出接触保持串行兜底。
+   默认关闭 → 数值与原来完全一致。
+
+### 未做（记录原因）
+- 多 RHS LLT：现状为 3 列并行单列 solve（3 线程），Eigen 稀疏三角求解本身不并行，
+  并行 3 列已是合理方案；多 RHS 单次 solve 反而串行，未改。
+- `use_jacobi`、`GS_global`、`find_contact_islands`、`compute_SaSb`：死代码/空桩，
+  保留待清理（见 Phase D 记录）。
+- GPU 阻尼缺失疑点：GPU step 无 `b_ini`（`m_Damp_Mat * x_0`）项，与 CPU 行为差异
+  需在运行时验证后处理。
+
+---
+
+## Phase D：模块化拆散（完成）+ 清理候选
+
+### D1. mediator 拆散（module-modularization-design.md 全 Phase 完成）
+
+| 原路径 | 新路径 |
+|--------|--------|
+| mediator/toml_to_config.h | **config/app_config.h** |
+| mediator/mesh_from_config.h | **config/mesh_from_config.h** |
+| mediator/mesh_to_constraint.h | **constraint/mesh_to_constraint.h** |
+| mediator/solver_config_applier.h/.cpp | **solver/solver_config_applier.h/.cpp** |
+| mediator/DCD_validation_check.h | **contact/dcd_validation.h** |
+| mediator/bvh_display_helper.h | **contact/bvh_display.h** |
+| mediator/contact_display_helper.h/.cpp | **contact/contact_display.h/.cpp** |
+| mediator/export_frame.h | **mesh/export_frame.h**（并移除对 config 的不必要 include） |
+| mediator/app_context.h | **app/app_context.h** |
+| mediator/app_initializer.h/.cpp | **app/app_initializer.h/.cpp** |
+| mediator/toml_to_scene.h | 删除（空文件） |
+
+CMake GLOB 同步更新（src/app、src/config 加入，src/mediator 移除）。
+`src/mediator/` 目录已不存在。
+
+### D2. 清理候选（未做，低优先级）
+- `solver/PBD_solver.h`：仅含注释掉的类，已无任何引用 → 可归档/删除。
+- `solver/backend_gpu/admm_impl_gpu.h` 中 `GS_global` 声明+实现未被调用 → 可删。
+- `use_jacobi`（config/impl 成员）只写不读 → 可删（保留 toml 兼容解析）。
+- `mutils/helper_cuda.h`、`helper_string.h`、`constraint/spring_constraint.h`：
+  未被 main 依赖链引用（见 src-unused-files-and-zensim.md）。
+- `find_contact_islands()`/`compute_SaSb()` 空桩；collision_detection_cuda.cpp
+  两处 "TODO init got memory leak!" 注释待核实。
+- twobody/triangle/tetrahedral.cpp：可选 target 已注释且代码已过期（不参与构建）。

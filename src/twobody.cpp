@@ -19,8 +19,8 @@
 #include "constraint/pin_constraint.h"
 #include "contact/broad_phase.h"
 
-#include "mediator/mesh_to_constraint.h"
-#include "mediator/DCD_validation_check.h"
+#include "constraint/mesh_to_constraint.h"
+#include "contact/dcd_validation.h"
 
 #include "mutils/exception_handle.h"
 #include "mutils/common_types.h"

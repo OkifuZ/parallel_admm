@@ -12,7 +12,7 @@
 #include "contact/collision_detection_cuda.h"
 #include "mesh/mesh_container.h"
 #include "solver/solver.h"
-#include "mediator/toml_to_config.h"
+#include "config/app_config.h"
 
 namespace polyscope {
 class SurfaceMesh;

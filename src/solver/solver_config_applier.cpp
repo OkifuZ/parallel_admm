@@ -1,4 +1,4 @@
-#include "mediator/solver_config_applier.h"
+#include "solver/solver_config_applier.h"
 
 namespace ADU {
 

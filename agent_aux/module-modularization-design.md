@@ -1,5 +1,10 @@
 # 模块化优化设计（Constraint / Contact / Mediator / Utils）
 
+> **状态：2026-03 已全部执行完成**（Phase 1–4 的 mediator 拆散）。执行记录见
+> [refactor-phase-a-b.md](refactor-phase-a-b.md) 的 Phase D 部分；
+> `src/mediator/` 已不存在。Phase 5（contact↔constraint 解耦）与 Phase 6
+> （约束工厂等）仍为可选后续。
+
 遵循 [refactor-guidelines.md](refactor-guidelines.md)。Solver 内部已完成 backend 抽象（IADMMBackend, IContactSolver, backend_cpu / backend_gpu），本文档聚焦 constraint、contact、mutils 的职责边界与优化方向。
 
 **原则：mediator 不应作为独立模块存在**，其内容按职责归入 config、constraint、solver、contact、mesh、app 等模块。

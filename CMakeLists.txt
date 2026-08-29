@@ -57,7 +57,8 @@ file(GLOB SOURCE_FILES
     src/contact/*.cpp
     src/contact/simpleBVH/*.cpp
     src/mesh/*.cpp
-    src/mediator/*.cpp
+    src/app/*.cpp
+    src/config/*.cpp
     src/contact/lbvh/*.cu
     src/constraint/*.cu
     src/mutils/*.cu
@@ -76,7 +77,8 @@ file(GLOB HEADER_FILES
     src/contact/*.h
     src/contact/simpleBVH/*.hpp
     src/mesh/*.h
-    src/mediator/*.h
+    src/app/*.h
+    src/config/*.h
     src/zensim/math/matrix/*.h
     src/zensim/math/matrix/*.hpp
     src/zensim/math/bit/*.h

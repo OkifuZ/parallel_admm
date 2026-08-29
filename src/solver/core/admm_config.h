@@ -7,7 +7,7 @@
 namespace ADU {
 
 /// ADMM tuning parameters, derived from APPConfig by the application layer
-/// (mediator/solver_config_applier.h) and handed to the backend through
+/// (solver/solver_config_applier.h) and handed to the backend through
 /// ADMMSolver::apply_config(). Plain data struct: no solver/impl types, so
 /// any backend (CPU/GPU/future) can consume it.
 struct ADMMSolverConfig {

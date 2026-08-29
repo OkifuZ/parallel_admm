@@ -2,7 +2,7 @@
 
 #include "mesh/mesh_container.h"
 #include "mesh/mesh_phy_material.h"
-#include "mediator/toml_to_config.h"
+#include "config/app_config.h"
 
 namespace ADU {
 

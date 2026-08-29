@@ -1,7 +1,6 @@
 #pragma once
 
 #include "mesh/mesh_container.h"
-#include "mediator/toml_to_config.h"
 #include "mutils/cformat.h"
 #include "igl/writeOBJ.h"
 #include "igl/writePLY.h"

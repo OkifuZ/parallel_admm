@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mediator/toml_to_config.h"
+#include "config/app_config.h"
 #include "mesh/mesh_container.h"
 #include "mutils/common_types.h"
 #include "solver/core/admm_config.h"
