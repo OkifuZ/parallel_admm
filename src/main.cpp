@@ -74,11 +74,10 @@ void main_loop() {
         g_ctx.app.mesh->clear_color();
     }
     if (g_ctx.app.show_windows && g_ctx.app.vis_contactP) {
-        auto* inner = static_cast<ADMMSolver*>(g_ctx.app.solver.get())->inner_solver();
         ICollisionDetector* det = g_ctx.config.use_GPU
             ? static_cast<ICollisionDetector*>(g_ctx.app.bvh)
-            : static_cast<ICollisionDetector*>(inner->prox_query.get());
-        update_contact_display(det, inner, g_ctx.app.vis_contactP);
+            : static_cast<ICollisionDetector*>(g_ctx.app.inner->prox_query.get());
+        update_contact_display(det, g_ctx.app.inner, g_ctx.app.vis_contactP);
     }
     if (g_ctx.app.show_windows && g_ctx.app.vis_bvh) {
         g_ctx.app.vis_bvh->updateNodePositions(g_ctx.app.bvh_nodes);
@@ -116,7 +115,7 @@ int main(int argc, const char* argv[]) {
     polyscope::init();
 
     if (g_ctx.app.show_windows) {
-        Solver* inner = static_cast<ADMMSolver*>(g_ctx.app.solver.get())->inner_solver();
+        Solver* inner = g_ctx.app.inner;
 
         polyscope::registerSurfaceMesh("surface", g_ctx.app.mesh->verts, g_ctx.app.mesh->surface_tris);
         polyscope::registerPointCloud("contact", inner->prox_query->get_contact_points());
@@ -150,7 +149,7 @@ int main(int argc, const char* argv[]) {
     polyscope::state::userCallback = main_loop;
     polyscope::show();
 
-    Solver* inner = static_cast<ADMMSolver*>(g_ctx.app.solver.get())->inner_solver();
+    Solver* inner = g_ctx.app.inner;
     ICollisionDetector* det = g_ctx.config.use_GPU
         ? static_cast<ICollisionDetector*>(g_ctx.app.bvh)
         : static_cast<ICollisionDetector*>(inner->prox_query.get());

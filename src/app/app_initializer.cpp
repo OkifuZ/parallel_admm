@@ -3,10 +3,12 @@
 #include "contact/dcd_validation.h"
 #include "config/mesh_from_config.h"
 #include "constraint/mesh_to_constraint.h"
+#include "constraint/xpbd/mesh_to_xpbd_constraint.h"
 #include "solver/solver_config_applier.h"
 #include "config/app_config.h"
 #include "solver/admm_solver_factory.h"
 #include "solver/core/admm_solver.h"
+#include "solver/xpbd_solver.h"
 #include "contact/broad_phase.h"
 #include "contact/narrow_phase.h"
 #include "mesh/mesh_container.h"
@@ -95,33 +97,72 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
 
     ctx.app.mesh->get_mass(ctx.app.mass);
 
-    ctx.app.solver = create_solver(ctx.config.use_GPU ? SolverType::ADMM_GPU : SolverType::ADMM_CPU);
-    auto* admm_solver = static_cast<ADMMSolver*>(ctx.app.solver.get());
-    Solver* inner = admm_solver->inner_solver();
-
-    SolverSetupContext solver_ctx{ ctx.app.mass, ctx.app.dt, is_static,
-        static_mesh_id_begin, static_vert_begin, surf_vinds_set, ctx.app.mesh.get() };
-    admm_solver->apply_config(build_solver_config(ctx.config, solver_ctx));
-
-    Solver::ConstraintsList cslist;
-    for (int tid = 1; tid <= 3; tid++) {
-        for (size_t i = 0; i < mesh_id_list.size(); i++) {
-            Mesh2Constraint::geometry_to_constraints(*ctx.app.mesh, mesh_id_list[i], material_list[i], cslist, tid);
-        }
+    // --- solver creation & typed configuration ---
+    SolverType solver_type = SolverType::ADMM_CPU;
+    if (ctx.config.solver.type == "xpbd") {
+        solver_type = SolverType::XPBD;
+    } else {
+        solver_type = ctx.config.use_GPU ? SolverType::ADMM_GPU : SolverType::ADMM_CPU;
     }
+    ctx.app.solver = create_solver(solver_type);
+    ADMMSolver* admm_solver = nullptr;
+    Solver* inner = nullptr;
 
-    admm_solver->addPins(ctx.config.global.pin_ids);
+    if (solver_type == SolverType::XPBD) {
+        auto* xpbd = static_cast<XPBDSolver*>(ctx.app.solver.get());
+        inner = xpbd;
+
+        XPBDConfig xpbd_cfg;
+        xpbd_cfg.substeps = ctx.config.xpbd.substeps;
+        xpbd_cfg.max_iter = ctx.config.xpbd.XPBD_iter;
+        xpbd_cfg.contact_stiffness = ctx.config.xpbd.contact_stiffness;
+        xpbd_cfg.use_GS_contact = ctx.config.xpbd.use_GS_contact;
+        xpbd_cfg.g = ctx.config.global.g;
+        xpbd->apply_config(xpbd_cfg);
+
+        // XPBD constraints: tri stretch / tet strain / bending (per mesh).
+        XPBDSolver::XPBDConstraintList xpbd_cslist;
+        for (size_t i = 0; i < mesh_id_list.size(); i++) {
+            build_xpbd_constraints(*ctx.app.mesh, mesh_id_list[i], material_list[i], xpbd_cslist);
+        }
+        xpbd->set_constraints(xpbd_cslist);
+    } else {
+        admm_solver = static_cast<ADMMSolver*>(ctx.app.solver.get());
+        inner = admm_solver->inner_solver();
+
+        SolverSetupContext solver_ctx{ ctx.app.mass, ctx.app.dt, is_static,
+            static_mesh_id_begin, static_vert_begin, surf_vinds_set, ctx.app.mesh.get() };
+        admm_solver->apply_config(build_solver_config(ctx.config, solver_ctx));
+
+        Solver::ConstraintsList cslist;
+        for (int tid = 1; tid <= 3; tid++) {
+            for (size_t i = 0; i < mesh_id_list.size(); i++) {
+                Mesh2Constraint::geometry_to_constraints(*ctx.app.mesh, mesh_id_list[i], material_list[i], cslist, tid);
+            }
+        }
+
+        // Constraint dimension is known only after assembly; finalize AFTER all
+        // constraints are registered so the GPU backend converts a complete list
+        // (regression fix: convert_constraint2device used to run too early).
+        admm_solver->add_constraints(cslist);
+        admm_solver->set_constraint_dim(Mesh2Constraint::curr_start_row);
+        admm_solver->finalize_constraints();
+    }
+    ctx.app.inner = inner;
+
+    // Generic setup shared by all solver types.
+    inner->addPins(ctx.config.global.pin_ids);
 
     ctx.app.pin_v.resize(ctx.config.global.pin_ids.size(), 3);
-    Mesh2Constraint::pin_to_constraints(*ctx.app.mesh, ctx.config.global.pin_ids, cslist, ctx.app.pin_v, is_static, ctx.app.pin_start, ctx.app.pin_end);
-
-    admm_solver->add_constraints(cslist);
-
-    // Constraint dimension is known only after assembly; finalize AFTER all
-    // constraints are registered so the GPU backend converts a complete list
-    // (regression fix: convert_constraint2device used to run too early).
-    admm_solver->set_constraint_dim(Mesh2Constraint::curr_start_row);
-    admm_solver->finalize_constraints();
+    for (int pi = 0; pi < ctx.config.global.pin_ids.size(); pi++) {
+        ctx.app.pin_v.row(pi) = ctx.app.mesh->verts.row(ctx.config.global.pin_ids[pi]);
+    }
+    if (solver_type != SolverType::XPBD) {
+        // ADMM pin constraints (positions driven through the prox step).
+        Solver::ConstraintsList& cslist = admm_solver->inner_solver()->getConstraints();
+        Mesh2Constraint::pin_to_constraints(*ctx.app.mesh, ctx.config.global.pin_ids, cslist,
+            ctx.app.pin_v, is_static, ctx.app.pin_start, ctx.app.pin_end);
+    }
 
     ContactParameter::set_broadphase_radius(ctx.config.dcd.broad.radius);
     ContactParameter::set_thickness(ctx.config.dcd.narrow.thickness);
@@ -158,7 +199,9 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
 
     // Headless runs (no window, no export, no animator) never read host x/v,
     // so the GPU backend can skip the per-step device -> host download.
-    admm_solver->set_sync_to_host(ctx.app.show_windows || (inner->animator != nullptr));
+    if (admm_solver) {
+        admm_solver->set_sync_to_host(ctx.app.show_windows || (inner->animator != nullptr));
+    }
 
     ctx.app.bvh_holder = std::make_shared<BVH_GPU>();
     ctx.app.bvh = ctx.app.bvh_holder.get();

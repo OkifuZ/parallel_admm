@@ -2,6 +2,7 @@
 
 #include "solver/core/admm_backend.h"
 #include "solver/core/admm_solver.h"
+#include "solver/xpbd_solver.h"
 #include <memory>
 
 namespace ADU {
@@ -11,10 +12,10 @@ namespace ADU {
 std::unique_ptr<IADMMBackend> create_admm_backend(bool use_gpu);
 
 /// Unified solver creation entry. Extensible: future solver types
-/// (XPBD revival, projective dynamics, ...) get a slot here without
-/// touching the application layer.
-enum class SolverType { ADMM_CPU, ADMM_GPU };
+/// (projective dynamics, ...) get a slot here without touching the
+/// application layer.
+enum class SolverType { ADMM_CPU, ADMM_GPU, XPBD };
 
-std::unique_ptr<ADMMSolver> create_solver(SolverType type);
+std::unique_ptr<Solver> create_solver(SolverType type);
 
 } // namespace ADU

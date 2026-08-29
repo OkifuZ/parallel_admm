@@ -1,6 +1,7 @@
 #pragma once
 
 #include "solver/solver.h"
+#include "solver/xpbd_config.h"
 #include "constraint/xpbd/xpbd_constraint.h"
 
 namespace ADU {
@@ -20,7 +21,10 @@ public:
     void step() override;
     void reset(const Matf_X3& ini_verts, bool need_precompute = false) override;
 
-    // --- XPBD tuning (set by the app layer from the [xpbd] TOML section) ---
+    /// Apply typed tuning parameters (from the [xpbd] TOML section).
+    void apply_config(const XPBDConfig& cfg);
+
+    // --- XPBD tuning (applied via apply_config; kept public for tests) ---
     unsigned int m_subSteps = 1;
     unsigned int m_maxIterations = 400;
     ADU::Real contact_stiffness = 10;

@@ -12,6 +12,15 @@ XPBDSolver::XPBDSolver() {
 
 XPBDSolver::~XPBDSolver() = default;
 
+void XPBDSolver::apply_config(const XPBDConfig& cfg) {
+    m_subSteps = cfg.substeps;
+    m_maxIterations = cfg.max_iter;
+    contact_stiffness = cfg.contact_stiffness;
+    use_GS_contact = cfg.use_GS_contact;
+    g = cfg.g;
+    // P4 will wire: enable_frictional_contact / use_CCD / mu
+}
+
 void XPBDSolver::init(const Matf_X3& verts, const Vecf_X& mass, Real dt) {
     // Mirrors Solver::init but without the ADMM constraint-container check:
     // XPBD keeps its own constraint list (m_xpbd_constraints).

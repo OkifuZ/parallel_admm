@@ -35,17 +35,23 @@ struct APPConfig {
 
     Global global;
 
-    // DEPRECATED: XPBD solver archived (archive/xpbd/). Fields kept only for
-    // backward compatibility with old scene TOMLs; they are parsed but ignored.
+    // XPBD solver parameters ([xpbd] TOML section). Kept for backward
+    // compatibility with old scene files and used when [solver] type = "xpbd".
     struct XPBD {
         bool use_XPBD{ false };
         int XPBD_iter{ 100 };
+        int substeps{ 1 };
+        ADU::Real contact_stiffness{ 10 };
+        bool use_GS_contact{ true };
     };
 
     XPBD xpbd;
 
     struct Solver
     {
+        /// Solver selection: "admm" (default; use_GPU picks the backend) or "xpbd".
+        std::string type{ "admm" };
+
         struct ADMM {
             int admm_max_iter;
             int DCD_interval;
@@ -198,11 +204,20 @@ struct APPConfig {
         if (xpbd_config) {
             app_config.xpbd.use_XPBD = _CTML(xpbd_config["enable"].value<bool>());
             app_config.xpbd.XPBD_iter = _CTML(xpbd_config["iter"].value<int>());
+            auto substeps = xpbd_config["substeps"].value<int>();
+            if (substeps) app_config.xpbd.substeps = *substeps;
+            auto ct_stiff = xpbd_config["contact_stiffness"].value<ADU::Real>();
+            if (ct_stiff) app_config.xpbd.contact_stiffness = *ct_stiff;
+            auto use_gs = xpbd_config["use_GS_contact"].value<bool>();
+            if (use_gs) app_config.xpbd.use_GS_contact = *use_gs;
         }
 
 
 
         // solver
+        auto solver_type = solver_config["type"].value<std::string>();
+        if (solver_type) app_config.solver.type = *solver_type;
+
         app_config.solver.admm.admm_max_iter = _CTML(solver_config["admm_max_iter"].value<int>());
         app_config.solver.admm.DCD_interval = _CTML(solver_config["DCD_interval"].value<int>());
         app_config.solver.admm.GS_max_iter = _CTML(solver_config["GS_max_iter"].value<int>());

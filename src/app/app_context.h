@@ -26,6 +26,10 @@ namespace ADU {
 struct APP {
     std::string name{};
     std::unique_ptr<Solver> solver;
+    /// The solver instance owning simulation state and generic setup
+    /// (ADMM: inner impl via inner_solver(); XPBD: the solver itself).
+    /// Set by init_app; use this instead of casting solver.
+    Solver* inner{};
 
     int end_frame = 2000;
 
