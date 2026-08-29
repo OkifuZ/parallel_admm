@@ -1,7 +1,7 @@
 #pragma once
 #include "constraint/constraint.h"
 #include "mutils/common_types.h"
-#include "constraint/XPBD_constraints.h"
+#include "constraint/xpbd_utils.h"
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>

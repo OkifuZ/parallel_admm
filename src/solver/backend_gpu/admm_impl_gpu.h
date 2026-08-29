@@ -43,7 +43,7 @@ public:
     void precompute() override;
     void reset(const Matf_X3& ini_verts, bool need_precompute = false) override;
     void step() override;
-    void compute_Scc(bool is_XPBD = false) override;
+    void compute_Scc() override;
     void _project_feasible_plain(Matf_X3& p, ProximalQuery::ContactInfoList& contacts, Real mu, size_t max_jacobi_iter) override;
 
     std::vector<std::array<float, 3>>& getContactPoints();
@@ -51,7 +51,7 @@ public:
 
     int Global_Jacobi_iter = 20;
 
-    void do_compute_Scc(bool is_XPBD) { compute_Scc(is_XPBD); }
+    void do_compute_Scc() { compute_Scc(); }
     void do_project_feasible_parallel() { project_feasible_parallel(); }
 
 protected:

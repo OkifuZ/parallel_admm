@@ -35,6 +35,8 @@ struct APPConfig {
 
     Global global;
 
+    // DEPRECATED: XPBD solver archived (archive/xpbd/). Fields kept only for
+    // backward compatibility with old scene TOMLs; they are parsed but ignored.
     struct XPBD {
         bool use_XPBD{ false };
         int XPBD_iter{ 100 };

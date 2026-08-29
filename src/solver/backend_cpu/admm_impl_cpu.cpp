@@ -19,6 +19,35 @@
 
 namespace ADU {
 
+void ADMMImplCPU::apply_config(const ADMMSolverConfig& cfg) {
+    static_mesh_id_begin = cfg.static_mesh_id_begin;
+    static_vert_begin = cfg.static_vert_begin;
+    vinds_surf_set = cfg.vinds_surf_set;
+
+    admm_max_iter = cfg.admm_max_iter;
+    collision_detection_interval = cfg.DCD_interval;
+    gs_max_iter = cfg.gs_max_iter;
+    warmstart_Ue = cfg.warmstart_Ue;
+    warmstart_Uc = cfg.warmstart_Uc;
+    use_jacobi = cfg.use_jacobi;
+    g = cfg.g;
+
+    enable_frictional_contact = cfg.enable_frictional_contact;
+    use_CCD = cfg.use_CCD;
+    use_unique_contact = cfg.use_unique_contact;
+    mu = cfg.mu;
+    kappa = cfg.kappa;
+    beta = cfg.beta;
+    use_heuristic_W_c = cfg.use_heuristic_wc;
+    heu_sigma = cfg.wc_sigma;
+    heu_beta = cfg.wc_beta;
+    contact_w_list = cfg.contact_w_list;
+    contact_w_inv_list = cfg.contact_w_inv_list;
+
+    damp_k_L = cfg.damp_k_L;
+    damp_k_M = cfg.damp_k_M;
+}
+
 void ADMMImplCPUBase::precompute() {
     make_exception("ADMMImplCPUBase::precompute() deprecated");
 }
@@ -302,40 +331,25 @@ void ADMMImplCPU::step_fast() {
     step_cnt++;
 }
 
-void ADMMImplCPU::compute_Scc(bool is_XPBD) {
+void ADMMImplCPU::compute_Scc() {
     using namespace ADU;
     auto& contacts = prox_query->contact_info_list;
     size_t nContact = contacts.size();
     Gamma_c.resize(nContact, Vecf_4::Zero());
     K_c.resize(nContact, Vecf_3::Zero());
 
-    if (!is_XPBD) {
-        tbb::parallel_for(tbb::blocked_range<size_t>(0, nContact), [&](const tbb::blocked_range<size_t>& r) {
-            for (size_t ci = r.begin(); ci < r.end(); ci++) {
-                const auto& ct = contacts[ci];
-                Real Sc = epsilon;
-                for (int i = 0; i < 4; i++) Sc += ct.bary[i] * ct.bary[i] * (contact_w_inv_list(ct.vinds[i]));
-                for (int i = 0; i < 4; i++) {
-                    if (contact_w_list(ct.vinds[i]) > 1e7_r) Gamma_c[ci](i) = 0;
-                    else Gamma_c[ci](i) = ct.bary[i] / (Sc * contact_w_list(ct.vinds[i]));
-                }
-                K_c[ci] = this->m_dt_inv * ct.h_cN * ct.normal * gamma;
+    tbb::parallel_for(tbb::blocked_range<size_t>(0, nContact), [&](const tbb::blocked_range<size_t>& r) {
+        for (size_t ci = r.begin(); ci < r.end(); ci++) {
+            const auto& ct = contacts[ci];
+            Real Sc = epsilon;
+            for (int i = 0; i < 4; i++) Sc += ct.bary[i] * ct.bary[i] * (contact_w_inv_list(ct.vinds[i]));
+            for (int i = 0; i < 4; i++) {
+                if (contact_w_list(ct.vinds[i]) > 1e7_r) Gamma_c[ci](i) = 0;
+                else Gamma_c[ci](i) = ct.bary[i] / (Sc * contact_w_list(ct.vinds[i]));
             }
-        });
-    } else {
-        tbb::parallel_for(tbb::blocked_range<size_t>(0, nContact), [&](const tbb::blocked_range<size_t>& r) {
-            for (size_t ci = r.begin(); ci < r.end(); ci++) {
-                const auto& ct = contacts[ci];
-                Real Sc = epsilon;
-                for (int i = 0; i < 4; i++) Sc += ct.bary[i] * ct.bary[i] * (m_M_inv_vec(ct.vinds[i]));
-                for (int i = 0; i < 4; i++) {
-                    if (m_M_vec(ct.vinds[i]) > 1e7_r) Gamma_c[ci](i) = 0;
-                    else Gamma_c[ci](i) = ct.bary[i] / (Sc * m_M_vec(ct.vinds[i]));
-                }
-                K_c[ci] = this->m_dt_inv * ct.h_cN * ct.normal * gamma;
-            }
-        });
-    }
+            K_c[ci] = this->m_dt_inv * ct.h_cN * ct.normal * gamma;
+        }
+    });
 }
 
 void ADMMImplCPU::project_feasible(ADU::Matf_X3& p, ProximalQuery::ContactInfoList& contacts, ADU::Real mu, size_t max_GS_iter) {

@@ -419,8 +419,7 @@ void ADMMImplGPU::compute_Scc_parallel() {
     compute_Scc_impl();
 }
 
-void ADMMImplGPU::compute_Scc(bool is_XPBD) {
-    (void)is_XPBD;
+void ADMMImplGPU::compute_Scc() {
     using namespace ADU;
     auto& contacts = prox_query->contact_info_list;
     size_t nContact = contacts.size();

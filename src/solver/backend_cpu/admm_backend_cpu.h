@@ -19,6 +19,10 @@ public:
     IContactSolver* contact_solver() override { return contact_solver_.get(); }
     Solver* as_solver() override { return impl_.get(); }
 
+    void apply_config(const ADMMSolverConfig& cfg) override { impl_->apply_config(cfg); }
+    void finalize_constraints() override {} // CPU: host constraints are used directly
+    void set_constraint_dim(int n) override { impl_->m_nCDim = n; }
+
     ADMMImplCPU* impl() { return impl_.get(); }
     const ADMMImplCPU* impl() const { return impl_.get(); }
 

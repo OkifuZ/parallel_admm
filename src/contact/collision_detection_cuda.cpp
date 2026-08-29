@@ -5,8 +5,6 @@
 
 #include "src_config.h"
 #include "solver/solver.h"
-#include "solver/PBD_solver.h"
-#include "solver/XPBD_solver.h"
 
 #include "mutils/exception_handle.h"
 #include "mutils/cformat.h"
@@ -171,6 +169,37 @@ void BVH_GPU::unique_contactInfo() {
 }
 
 
+
+void BVH_GPU::download_contact_info() {
+    h_contact_info.resize(h_cpNum);
+    if (h_cpNum > 0) {
+        CUDA_SAFE_CALL(cudaMemcpy((void*)h_contact_info.data(), (void*)d_contact_info, h_cpNum * sizeof(Result<float>), cudaMemcpyDeviceToHost));
+    }
+}
+
+std::vector<std::array<float, 3>> BVH_GPU::points() {
+    download_contact_info();
+    std::vector<std::array<float, 3>> pts(h_cpNum);
+    for (size_t i = 0; i < pts.size(); i++) {
+        const auto& res = h_contact_info[i];
+        const ADU::Vecf_3 mid = (res.closest[0] + res.closest[1]) * static_cast<ADU::Real>(0.5);
+        pts[i] = { mid.x(), mid.y(), mid.z() };
+    }
+    return pts;
+}
+
+std::vector<std::array<float, 3>> BVH_GPU::normals() {
+    download_contact_info();
+    std::vector<std::array<float, 3>> normals(h_cpNum);
+    for (size_t i = 0; i < normals.size(); i++) {
+        const auto& res = h_contact_info[i];
+        ADU::Vecf_3 n = res.closest[0] - res.closest[1];
+        const ADU::Real len = n.norm();
+        if (len > 0) n /= len;
+        normals[i] = { n.x(), n.y(), n.z() };
+    }
+    return normals;
+}
 
 void BVH_GPU::convert_contactInfo_device2host(ProximalQuery::ContactInfoList& ct_info, const ADU::Matf_X3& pos) {
     using namespace ADU;

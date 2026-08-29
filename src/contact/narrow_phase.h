@@ -2,6 +2,7 @@
 
 
 #include "mutils/common_types.h"
+#include "contact/icollision_detector.h"
 #include "mesh/mesh_container.h"
 #include "contact/contact_parameter.h"
 #include "contact/broad_phase.h"
@@ -13,7 +14,7 @@
 #include <limits>
 
 
-class ProximalQuery {
+class ProximalQuery : public ADU::ICollisionDetector {
 public:
 
 	//using ContactInfoList = std::vector<ContactInfo>;
@@ -73,6 +74,15 @@ public:
 	ADU::Matf_X3& get_contact_normals();
 
 	ADU::Matf_X3& get_contact_edges_points();
+
+	// --- ICollisionDetector ---
+	void detect(const ADU::Matf_X3& pos) override { proximal_query(pos); }
+	size_t contact_count() const override { return contact_info_list.size(); }
+	size_t max_slots() const override { return max_collision_num; }
+	size_t peak_contact_count() const override { return hist_max_collision_num; }
+	std::vector<std::array<float, 3>> points() override;
+	std::vector<std::array<float, 3>> normals() override;
+	void clear() override { contact_info_list.clear(); }
 
 	ADU::Matf_X3& get_SaSb_mean() {
 		S_vecs.setZero();

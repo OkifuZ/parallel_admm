@@ -11,7 +11,6 @@
 #include "mutils/common_types.h"
 #include "contact/collision_detection_cuda.h"
 #include "mesh/mesh_container.h"
-#include "solver/XPBD_solver.h"
 #include "solver/solver.h"
 #include "mediator/toml_to_config.h"
 
@@ -27,7 +26,6 @@ namespace ADU {
 struct APP {
     std::string name{};
     std::unique_ptr<Solver> solver;
-    std::unique_ptr<XPBDSolver> XPBD_solver;
 
     int end_frame = 2000;
 
@@ -35,9 +33,6 @@ struct APP {
     Vecf_X mass;
     Real dt = 0.0333_r;
     int sub_step = 1;
-
-    bool enable_XPBD{ false };
-    int XPBD_iter{ 100 };
 
     int pin_start{};
     int pin_end{};

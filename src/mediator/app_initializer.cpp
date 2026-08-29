@@ -58,8 +58,6 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
     ctx.app.dt = ctx.config.global.dt / ctx.app.sub_step;
 
     ctx.app.mesh = std::make_shared<MeshData>();
-    ctx.app.enable_XPBD = ctx.config.xpbd.use_XPBD;
-    ctx.app.XPBD_iter = ctx.config.xpbd.XPBD_iter;
 
     std::cout << "loading mesh...\n";
     auto load_result = load_meshes_from_config(*ctx.app.mesh, ctx.config, resource_path);
@@ -97,30 +95,33 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
 
     ctx.app.mesh->get_mass(ctx.app.mass);
 
-    ctx.app.solver = std::make_unique<ADMMSolver>(create_admm_backend(ctx.config.use_GPU));
-    Solver* inner = static_cast<ADMMSolver*>(ctx.app.solver.get())->inner_solver();
+    ctx.app.solver = create_solver(ctx.config.use_GPU ? SolverType::ADMM_GPU : SolverType::ADMM_CPU);
+    auto* admm_solver = static_cast<ADMMSolver*>(ctx.app.solver.get());
+    Solver* inner = admm_solver->inner_solver();
 
     SolverSetupContext solver_ctx{ ctx.app.mass, ctx.app.dt, is_static,
         static_mesh_id_begin, static_vert_begin, surf_vinds_set, ctx.app.mesh.get() };
-    apply_solver_config(inner, ctx.config, solver_ctx);
-    setup_parallel_backend(inner, ctx.config);
+    admm_solver->apply_config(build_solver_config(ctx.config, solver_ctx));
 
     Solver::ConstraintsList cslist;
-    Solver::XPBDConstraintList XPBD_cslist;
     for (int tid = 1; tid <= 3; tid++) {
         for (size_t i = 0; i < mesh_id_list.size(); i++) {
-            Mesh2Constraint::geometry_to_constraints(*ctx.app.mesh, mesh_id_list[i], material_list[i], cslist, XPBD_cslist, tid);
+            Mesh2Constraint::geometry_to_constraints(*ctx.app.mesh, mesh_id_list[i], material_list[i], cslist, tid);
         }
     }
 
-    inner->addPins(ctx.config.global.pin_ids);
+    admm_solver->addPins(ctx.config.global.pin_ids);
 
     ctx.app.pin_v.resize(ctx.config.global.pin_ids.size(), 3);
     Mesh2Constraint::pin_to_constraints(*ctx.app.mesh, ctx.config.global.pin_ids, cslist, ctx.app.pin_v, is_static, ctx.app.pin_start, ctx.app.pin_end);
 
-    inner->add_constraints(cslist);
-    inner->add_XPBDConstraints(XPBD_cslist);
-    inner->m_nCDim = Mesh2Constraint::curr_start_row;
+    admm_solver->add_constraints(cslist);
+
+    // Constraint dimension is known only after assembly; finalize AFTER all
+    // constraints are registered so the GPU backend converts a complete list
+    // (regression fix: convert_constraint2device used to run too early).
+    admm_solver->set_constraint_dim(Mesh2Constraint::curr_start_row);
+    admm_solver->finalize_constraints();
 
     ContactParameter::set_broadphase_radius(ctx.config.dcd.broad.radius);
     ContactParameter::set_thickness(ctx.config.dcd.narrow.thickness);
@@ -155,19 +156,13 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
 
     ctx.app.solver->init(ctx.app.mesh->verts, ctx.app.mass, ctx.app.dt);
 
-    if (ctx.app.enable_XPBD) {
-        std::cout << "enable XPBD, initializing...\n";
-        ctx.app.XPBD_solver = std::make_unique<XPBDSolver>();
-        std::cout << "xpbd iter: " << ctx.app.XPBD_iter << "\n";
-        ctx.app.XPBD_solver->init(inner, ctx.app.XPBD_iter, ctx.app.sub_step);
-        ctx.app.XPBD_solver->contact_stiffness = ctx.config.solver.contact.w_scale;
-    }
-
     ctx.app.bvh_holder = std::make_shared<BVH_GPU>();
     ctx.app.bvh = ctx.app.bvh_holder.get();
     BVH_GPU& bvh = *ctx.app.bvh_holder;
-    bvh.solver = ctx.app.solver.get();
-    ctx.app.solver->bvh = &bvh;
+    bvh.solver = inner;
+    // NOTE: set the BVH on the INNER solver (which owns the simulation state);
+    // the facade's inherited member is never used.
+    inner->bvh = &bvh;
     bvh.mesh = ctx.app.mesh.get();
 
     ctx.app.bvh->init(inner->prox_query->max_collision_num);

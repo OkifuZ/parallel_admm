@@ -11,7 +11,7 @@ class ContactSolverCPU : public IContactSolver {
 public:
     explicit ContactSolverCPU(ADMMImplCPU* impl) : impl_(impl) {}
 
-    void compute_Scc(bool is_XPBD = false) override { impl_->compute_Scc(is_XPBD); }
+    void compute_Scc() override { impl_->compute_Scc(); }
     void project_feasible(Matf_X3* p, void* contacts, Real mu, size_t max_iter) override;
 
 private:

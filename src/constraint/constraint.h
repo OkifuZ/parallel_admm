@@ -1,7 +1,6 @@
 #pragma once
 
 #include "mutils/common_types.h"
-#include "XPBD_constraints.h"
 #include <mutils/common_type_hostonly.h>
 
 #include <array>
@@ -24,8 +23,6 @@ public:
 	int dim = 0;
 	int start_row{};
 	int global_m{};
-
-	//std::shared_ptr<XPBDConstraint> XPBD_ct;
 
 	Constraint() {}
 

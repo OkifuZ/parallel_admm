@@ -10,4 +10,14 @@ std::unique_ptr<IADMMBackend> create_admm_backend(bool use_gpu) {
     return std::make_unique<ADMMBackendCPU>();
 }
 
+std::unique_ptr<ADMMSolver> create_solver(SolverType type) {
+    switch (type) {
+    case SolverType::ADMM_GPU:
+        return std::make_unique<ADMMSolver>(create_admm_backend(true));
+    case SolverType::ADMM_CPU:
+    default:
+        return std::make_unique<ADMMSolver>(create_admm_backend(false));
+    }
+}
+
 } // namespace ADU

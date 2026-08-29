@@ -4,7 +4,6 @@
 #include "contact/contact.h"
 #include "constraint/constraint.h"
 #include "constraint/nodal_collision_constraint.h"
-#include "constraint/XPBD_constraints.h"
 #include "contact/narrow_phase.h"
 #include "animator.h"
 
@@ -25,7 +24,6 @@ class Solver {
 public:
 
 
-	using XPBDConstraintList = std::vector<std::shared_ptr<XPBDConstraint>>;
 	using ConstraintsList = std::vector<std::shared_ptr<Constraint>>;
 	using NodalCollisionConstraintsList = std::vector<std::shared_ptr<NodalCollisionConstraint>>;
 	using ObstacleList = std::vector<std::shared_ptr<Obstacle>>;
@@ -36,11 +34,6 @@ public:
 	BVH_GPU* bvh;
 
 	ADU::Real g{ static_cast <ADU::Real>(0.98) };
-
-	size_t admm_max_iter = 25;
-
-	int m_nCDim{};
-	bool parallel = true;
 
 	std::unique_ptr<ProximalQuery> prox_query{ nullptr };
 
@@ -80,7 +73,7 @@ public:
 		
 	}
 
-	void add_constraints(const ConstraintsList& constraints_) {
+	virtual void add_constraints(const ConstraintsList& constraints_) {
 		this->m_constraints.insert(this->m_constraints.end(), constraints_.begin(), constraints_.end());
 
 		/*std::cout << "constraints: ";
@@ -90,7 +83,7 @@ public:
 		std::cout << std::endl;*/
 	}
 
-	void add_nodal_constraints(const NodalCollisionConstraintsList& constraints_) {
+	virtual void add_nodal_constraints(const NodalCollisionConstraintsList& constraints_) {
 		m_nodal_collision_constraint_start = m_constraints.size();
 		for (const auto& ct : constraints_) {
 			m_vInd_cInd.insert({ct->inds[0], m_constraints.size()});
@@ -98,10 +91,6 @@ public:
 		}
 		m_nodal_collision_constraint_end = m_constraints.size();
 		m_enable_nodal_obstacle_collision = true;
-	}
-
-	void add_XPBDConstraints(const XPBDConstraintList& constraints_) {
-		this->m_XPBDconstraints.insert(this->m_XPBDconstraints.end(), constraints_.begin(), constraints_.end());
 	}
 
 	virtual void step() {
@@ -135,11 +124,11 @@ public:
 		return m_constraints;
 	}
 
-	void addPins(const std::vector<int>& pin_inds) {
+	virtual void addPins(const std::vector<int>& pin_inds) {
 		m_pin_inds_set.insert(pin_inds.begin(), pin_inds.end());
 	}
 
-	void addObstacle(const std::shared_ptr<Obstacle>& obstacle) {
+	virtual void addObstacle(const std::shared_ptr<Obstacle>& obstacle) {
 		m_obstacles.push_back(obstacle);
 	}
 
@@ -155,16 +144,12 @@ public:
 		return m_obstacles;
 	}
 
-	ADU::Veci_X m_vStatic;
-
 	void animate_step();
 
 	ADU::Matf_X3 m_vertices;
 	ADU::Matf_X3 m_velocities;
 	ADU::Vecf_X m_M_vec;
 	ADU::Vecf_X m_M_inv_vec;
-	ADU::SpMatf m_M_bar_vec;
-	ADU::Vecf_X m_M_bar_inv_vec;
 
 	std::unordered_set<int> m_pin_inds_set;
 
@@ -172,8 +157,6 @@ public:
 	int m_nodal_collision_constraint_start{};
 	int m_nodal_collision_constraint_end{};
 	bool m_enable_nodal_obstacle_collision{ false };
-
-	XPBDConstraintList m_XPBDconstraints;
 
 	ObstacleList m_obstacles;
 

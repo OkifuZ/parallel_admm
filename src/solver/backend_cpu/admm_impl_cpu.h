@@ -6,6 +6,7 @@
 #include "mutils/common_types.h"
 #include <mutils/common_type_hostonly.h>
 
+#include "solver/core/admm_config.h"
 #include "solver/compact_sparse_matrix.h"
 #include "solver/solver.h"
 #include "constraint/constraint.h"
@@ -31,6 +32,11 @@ public:
 
     using TripList = std::vector<ADU::Tripf>;
     using SolverT = Eigen::SimplicialLLT<ADU::SpMatf>;
+
+    // ADMM-specific state (moved out of the generic Solver base).
+    size_t admm_max_iter = 25;
+    int m_nCDim{};
+    bool parallel = true;
 
     bool enable_frictional_contact{ true };
     bool warmstart_Ue{ true };
@@ -103,6 +109,8 @@ public:
 
     virtual void init();
     virtual void precompute();
+    /// Apply typed tuning parameters (from scene config). No constraint dependency.
+    void apply_config(const ADMMSolverConfig& cfg);
     virtual void project_feasible(ADU::Matf_X3& p, ProximalQuery::ContactInfoList& contacts, ADU::Real mu, size_t max_jacobi_iter);
     virtual void _project_feasible_plain(ADU::Matf_X3& p, ProximalQuery::ContactInfoList& contacts, ADU::Real mu, size_t max_jacobi_iter);
 
@@ -118,11 +126,10 @@ public:
     std::vector<ProximalQuery::ContactInfoList> contact_islands;
     void find_contact_islands();
 
-    virtual void compute_Scc(bool is_XPBD = false);
+    virtual void compute_Scc();
     virtual void step();
     void step_fast();
 
-    int m_maxXPBDIterations = 50;
     int step_cnt = 0;
     std::vector<std::vector<ADU::Real>> primal_residual, dual_residual, combined_residual, x_residual, time_spans;
     void compute_SaSb();

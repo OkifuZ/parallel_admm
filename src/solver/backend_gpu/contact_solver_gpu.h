@@ -12,7 +12,7 @@ class ContactSolverGPU : public IContactSolver {
 public:
     explicit ContactSolverGPU(ADMMBackendGPU* backend) : backend_(backend) {}
 
-    void compute_Scc(bool is_XPBD = false) override;
+    void compute_Scc() override;
     void project_feasible(Matf_X3* p, void* contacts, Real mu, size_t max_iter) override;
 
 private:

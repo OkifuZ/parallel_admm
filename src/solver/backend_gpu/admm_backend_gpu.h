@@ -19,10 +19,17 @@ public:
     IContactSolver* contact_solver() override { return contact_solver_.get(); }
     Solver* as_solver() override { return impl_.get(); }
 
+    void apply_config(const ADMMSolverConfig& cfg) override {
+        impl_->apply_config(cfg);
+        impl_->Global_Jacobi_iter = cfg.global_jacobi_iter;
+    }
+    void finalize_constraints() override { impl_->convert_constraint2device(); }
+    void set_constraint_dim(int n) override { impl_->m_nCDim = n; }
+
     ADMMImplGPU* impl() { return impl_.get(); }
     const ADMMImplGPU* impl() const { return impl_.get(); }
 
-    void ContactSolverGPU_do_compute_Scc(bool is_XPBD) { impl_->do_compute_Scc(is_XPBD); }
+    void ContactSolverGPU_do_compute_Scc() { impl_->do_compute_Scc(); }
     void ContactSolverGPU_do_project_feasible() { impl_->do_project_feasible_parallel(); }
 
 private:

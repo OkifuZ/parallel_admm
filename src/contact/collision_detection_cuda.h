@@ -30,6 +30,7 @@
 #include "mutils/dist_g.cuh"
 
 #include "contact/narrow_phase.h"
+#include "contact/icollision_detector.h"
 
 //void Init_CUDA() {
 //    cudaError_t cudaStatus = cudaSetDevice(0);
@@ -41,7 +42,7 @@
 
 class Solver;
 
-class BVH_GPU {
+class BVH_GPU : public ADU::ICollisionDetector {
 public:
 
     size_t max_collision_number = 100000;
@@ -86,5 +87,19 @@ public:
     void unique_contactInfo();
 
     void dcd();
+
+    // --- ICollisionDetector ---
+    // Host entry: upload positions, rebuild/refit BVH, run detection.
+    void detect(const ADU::Matf_X3& pos) override { update(pos); dcd(); }
+    size_t contact_count() const override { return h_cpNum; }
+    size_t max_slots() const override { return max_collision_number; }
+    size_t peak_contact_count() const override { return hist_max_collision_num; }
+    std::vector<std::array<float, 3>> points() override;
+    std::vector<std::array<float, 3>> normals() override;
+    void clear() override { h_cpNum = 0; }
+
+private:
+    /// Download device contact results into h_contact_info (visualization).
+    void download_contact_info();
 
 };

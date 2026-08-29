@@ -536,6 +536,24 @@ ADU::Matf_X3& ProximalQuery::get_contact_normals() {
 	return contact_normals;
 }
 
+std::vector<std::array<float, 3>> ProximalQuery::points() {
+	std::vector<std::array<float, 3>> pts(contact_count());
+	for (size_t ci = 0; ci < pts.size(); ci++) {
+		const auto& ct = contact_info_list[ci];
+		pts[ci] = { ct.point.x(), ct.point.y(), ct.point.z() };
+	}
+	return pts;
+}
+
+std::vector<std::array<float, 3>> ProximalQuery::normals() {
+	std::vector<std::array<float, 3>> normals(contact_count());
+	for (size_t ci = 0; ci < normals.size(); ci++) {
+		const auto& ct = contact_info_list[ci];
+		normals[ci] = { ct.normal.x(), ct.normal.y(), ct.normal.z() };
+	}
+	return normals;
+}
+
 
 ADU::Matf_X3& ProximalQuery::get_contact_edges_points() {
 	/*contact_edges_points.setZero();

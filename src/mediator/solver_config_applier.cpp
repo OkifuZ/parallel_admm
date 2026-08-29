@@ -1,54 +1,54 @@
 #include "mediator/solver_config_applier.h"
-#include "solver/backend_cpu/admm_impl_cpu.h"
-#include "solver/backend_gpu/admm_impl_gpu.h"
 
 namespace ADU {
 
-void apply_solver_config(Solver* inner, const APPConfig& cfg, const SolverSetupContext& ctx) {
-    auto* impl = dynamic_cast<ADMMImplCPU*>(inner);
-    if (!impl) return;
-    impl->static_mesh_id_begin = ctx.static_mesh_id_begin;
-    impl->static_vert_begin = ctx.static_vert_begin;
-    impl->vinds_surf_set = ctx.surf_vinds_set;
-    impl->enable_frictional_contact = cfg.solver.contact.enable;
-    impl->warmstart_Ue = cfg.solver.admm.warmstart_Ue;
-    impl->warmstart_Uc = cfg.solver.admm.warmstart_Uc;
-    impl->admm_max_iter = cfg.solver.admm.admm_max_iter;
-    impl->collision_detection_interval = cfg.solver.admm.DCD_interval;
-    impl->gs_max_iter = cfg.solver.admm.GS_max_iter;
-    Real w_scale = cfg.solver.contact.w_scale;
-    impl->kappa = cfg.solver.contact.kappa;
-    impl->beta = cfg.solver.contact.beta;
-    impl->mu = cfg.solver.contact.mu;
-    impl->g = cfg.global.g;
-    impl->use_CCD = cfg.solver.contact.use_CCD;
-    impl->use_jacobi = cfg.solver.contact.use_jacobi;
-    impl->coloring_parallel_contact = false;
-    impl->damp_k_L = cfg.solver.damp.kl;
-    impl->damp_k_M = cfg.solver.damp.km;
-    impl->m_vStatic = ctx.is_static;
-    impl->use_unique_contact = cfg.solver.contact.unique;
-    impl->contact_w_list.resize(ctx.mesh->verts.rows());
-    impl->contact_w_inv_list.resize(ctx.mesh->verts.rows());
-    impl->contact_w_list.setConstant(1e12_r);
-    impl->contact_w_inv_list.setZero();
+ADMMSolverConfig build_solver_config(const APPConfig& cfg, const SolverSetupContext& ctx) {
+    ADMMSolverConfig c;
+
+    // --- mesh / setup ---
+    c.static_mesh_id_begin = ctx.static_mesh_id_begin;
+    c.static_vert_begin = ctx.static_vert_begin;
+    c.vinds_surf_set = ctx.surf_vinds_set;
+    c.is_static = ctx.is_static;
+
+    // --- integration / iterations ---
+    c.admm_max_iter = cfg.solver.admm.admm_max_iter;
+    c.DCD_interval = cfg.solver.admm.DCD_interval;
+    c.gs_max_iter = cfg.solver.admm.GS_max_iter;
+    c.global_jacobi_iter = cfg.solver.admm.Global_Jacobi_iter;
+    c.warmstart_Ue = cfg.solver.admm.warmstart_Ue;
+    c.warmstart_Uc = cfg.solver.admm.warmstart_Uc;
+    c.use_jacobi = cfg.solver.contact.use_jacobi;
+    c.g = cfg.global.g;
+
+    // --- frictional contact ---
+    c.enable_frictional_contact = cfg.solver.contact.enable;
+    c.use_CCD = cfg.solver.contact.use_CCD;
+    c.use_unique_contact = cfg.solver.contact.unique;
+    c.mu = cfg.solver.contact.mu;
+    c.kappa = cfg.solver.contact.kappa;
+    c.beta = cfg.solver.contact.beta;
+
+    c.contact_w_list.resize(ctx.mesh->verts.rows());
+    c.contact_w_inv_list.resize(ctx.mesh->verts.rows());
+    c.contact_w_list.setConstant(1e12_r);
+    c.contact_w_inv_list.setZero();
     if (cfg.solver.contact.use_heu_wc) {
-        impl->use_heuristic_W_c = true;
-        impl->heu_sigma = cfg.solver.contact.wc_sigma;
-        impl->heu_beta = cfg.solver.contact.wc_beta;
+        c.use_heuristic_wc = true;
+        c.wc_sigma = cfg.solver.contact.wc_sigma;
+        c.wc_beta = cfg.solver.contact.wc_beta;
     } else {
         for (int vi = 0; vi < ctx.static_vert_begin; vi++) {
-            impl->contact_w_list(vi) = ctx.mass(vi) / (ctx.dt * ctx.dt) * w_scale;
-            impl->contact_w_inv_list(vi) = 1.0_r / impl->contact_w_list(vi);
+            c.contact_w_list(vi) = ctx.mass(vi) / (ctx.dt * ctx.dt) * cfg.solver.contact.w_scale;
+            c.contact_w_inv_list(vi) = 1.0_r / c.contact_w_list(vi);
         }
     }
-}
 
-void setup_parallel_backend(Solver* inner, const APPConfig& cfg) {
-    auto* gpu = dynamic_cast<ADMMImplGPU*>(inner);
-    if (!gpu) return;
-    gpu->Global_Jacobi_iter = cfg.solver.admm.Global_Jacobi_iter;
-    gpu->convert_constraint2device();
+    // --- damping ---
+    c.damp_k_L = cfg.solver.damp.kl;
+    c.damp_k_M = cfg.solver.damp.km;
+
+    return c;
 }
 
 } // namespace ADU

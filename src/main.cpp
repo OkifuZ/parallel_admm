@@ -14,6 +14,7 @@
 #include "mediator/contact_display_helper.h"
 #include "mediator/export_frame.h"
 #include "solver/core/admm_solver.h"
+#include "contact/icollision_detector.h"
 #include "mutils/timer.h"
 #include "src_config.h"
 
@@ -44,11 +45,7 @@ void main_loop() {
 
         g_ctx.app.step = false;
 
-        if (g_ctx.app.enable_XPBD && g_ctx.app.XPBD_solver) {
-            g_ctx.app.XPBD_solver->step();
-        } else {
-            for (int i = 0; i < g_ctx.app.sub_step; i++) g_ctx.app.solver->step();
-        }
+        for (int i = 0; i < g_ctx.app.sub_step; i++) g_ctx.app.solver->step();
 
         if (g_ctx.app.show_windows && g_ctx.app.bvh) {
             update_bvh_geometry(g_ctx.app.bvh, g_ctx.app.bvh_nodes, g_ctx.app.bvh_edges);
@@ -77,8 +74,11 @@ void main_loop() {
         g_ctx.app.mesh->clear_color();
     }
     if (g_ctx.app.show_windows && g_ctx.app.vis_contactP) {
-        auto* admm_solver = static_cast<ADMMSolver*>(g_ctx.app.solver.get());
-        update_contact_display(admm_solver, g_ctx.config.use_GPU, g_ctx.app.vis_contactP);
+        auto* inner = static_cast<ADMMSolver*>(g_ctx.app.solver.get())->inner_solver();
+        ICollisionDetector* det = g_ctx.config.use_GPU
+            ? static_cast<ICollisionDetector*>(g_ctx.app.bvh)
+            : static_cast<ICollisionDetector*>(inner->prox_query.get());
+        update_contact_display(det, inner, g_ctx.app.vis_contactP);
     }
     if (g_ctx.app.show_windows && g_ctx.app.vis_bvh) {
         g_ctx.app.vis_bvh->updateNodePositions(g_ctx.app.bvh_nodes);
@@ -150,12 +150,11 @@ int main(int argc, const char* argv[]) {
     polyscope::state::userCallback = main_loop;
     polyscope::show();
 
-    if (g_ctx.config.use_GPU) {
-        std::cout << "max collision num: " << g_ctx.app.bvh->hist_max_collision_num << "\n";
-    } else {
-        Solver* inner = static_cast<ADMMSolver*>(g_ctx.app.solver.get())->inner_solver();
-        std::cout << "max collision num: " << inner->prox_query->hist_max_collision_num << "\n";
-    }
+    Solver* inner = static_cast<ADMMSolver*>(g_ctx.app.solver.get())->inner_solver();
+    ICollisionDetector* det = g_ctx.config.use_GPU
+        ? static_cast<ICollisionDetector*>(g_ctx.app.bvh)
+        : static_cast<ICollisionDetector*>(inner->prox_query.get());
+    std::cout << "max collision num: " << det->peak_contact_count() << "\n";
     std::cout << "logger:\n";
     std::cout << ADU::Timer::getLog();
 }

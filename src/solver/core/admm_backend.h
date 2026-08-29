@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mutils/common_types.h"
+#include "solver/core/admm_config.h"
 
 class Solver;
 
@@ -16,6 +17,17 @@ struct IADMMBackend {
     virtual IContactSolver* contact_solver() { return nullptr; }
     virtual struct Solver* as_solver() = 0;
     virtual ~IADMMBackend() = default;
+
+    /// Apply tuning parameters derived from the scene config. No constraint
+    /// dependency; must be called before init().
+    virtual void apply_config(const ADMMSolverConfig& cfg) = 0;
+
+    /// Called by the app layer AFTER all constraints are registered:
+    /// GPU backend converts host constraints to device here; CPU is a no-op.
+    virtual void finalize_constraints() = 0;
+
+    /// ADMM constraint dimension (m_nCDim), known only after constraint assembly.
+    virtual void set_constraint_dim(int n) = 0;
 };
 
 /// Placeholder for future: linear system solve (LLT vs Jacobi).
@@ -26,7 +38,7 @@ struct ILinearSolver {
 /// Phase 2: unified contact subproblem (compute_Scc + project_feasible).
 /// project_feasible: CPU uses (p, contacts, mu, max_iter); GPU ignores p/contacts, uses device state.
 struct IContactSolver {
-    virtual void compute_Scc(bool is_XPBD = false) = 0;
+    virtual void compute_Scc() = 0;
     virtual void project_feasible(Matf_X3* p, void* contacts, Real mu, size_t max_iter) = 0;
     virtual ~IContactSolver() = default;
 };

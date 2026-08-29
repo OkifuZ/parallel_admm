@@ -1,14 +1,18 @@
 #pragma once
 
+#include "contact/icollision_detector.h"
+
 namespace polyscope {
 class PointCloud;
 }
 
+class Solver;
+
 namespace ADU {
 
-class ADMMSolver;
-
-/// Update contact point cloud display. Hides impl cast; application layer needs no impl headers.
-void update_contact_display(ADMMSolver* admm_solver, bool use_gpu, polyscope::PointCloud* vis_contactP);
+/// Update contact point cloud display through the ICollisionDetector interface.
+/// `solver` is optional and only used for the ADMM-specific "S" vector quantity
+/// (CPU contact info); pass nullptr to skip it.
+void update_contact_display(ICollisionDetector* detector, Solver* solver, polyscope::PointCloud* vis_contactP);
 
 } // namespace ADU

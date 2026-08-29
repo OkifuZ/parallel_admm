@@ -3,7 +3,6 @@
 #include "constraint/triangle_constraint.h"
 #include "constraint/tetrahedral_constraint.h"
 #include "constraint/pin_constraint.h"
-#include "constraint/XPBD_constraints.h"
 #include "constraint/nodal_collision_constraint.h"
 
 #include "mesh/mesh_container.h"
@@ -25,8 +24,7 @@ public:
 
     static void geometry_to_constraints(
         MeshData& mesh_data, size_t mesh_id, const PhyxMaterial& material, 
-        std::vector<std::shared_ptr<Constraint>>& constraints, 
-        std::vector<std::shared_ptr<XPBDConstraint>>& XPBD_constraints, int typeID)
+        std::vector<std::shared_ptr<Constraint>>& constraints, int typeID)
     {
         using namespace ADU;
 
@@ -43,15 +41,6 @@ public:
                         material.tri_stretch_k, material.tri_use_limit, constraints.size(), curr_start_row);
                     curr_start_row += 2;
                     constraints.emplace_back(ct);
-
-                    //auto xct = std::make_shared<FEMTriangleConstraint>();
-                    //Real stiff = ct->k;
-                    //bool res = xct->initConstraint(mesh_data.verts, vinds(0), vinds(1), vinds(2), 
-                    //    stiff, stiff, stiff, 0.3_r, 0.3_r);
-                    //ct->Binv_XPBD = xct->m_invRestMat;
-                    //if (!res) ADU::make_exception("XPBD triangle constraint init issue");
-                    ////xct->stiffness = 1e6;
-                    //XPBD_constraints.push_back(xct);
                 }
             }
 #endif
@@ -66,11 +55,6 @@ public:
                         material.tet_stretch_k, constraints.size(), curr_start_row);
                     curr_start_row += 3;
                     constraints.emplace_back(ct);
-
-                    /*auto xct = std::make_shared<XPBD_FEMTetConstraint>();
-                    bool res = xct->initConstraint(mesh_data.verts, vinds(0), vinds(1), vinds(2), vinds(3), 2e2, 0.4_r);
-                    if (!res) ADU::make_exception("XPBD FEM constraint init issue");
-                    XPBD_constraints.push_back(xct);*/
                 }
             }
         }
@@ -87,103 +71,11 @@ public:
                         constraints.size(), curr_start_row);
                     curr_start_row += 1;
                     constraints.emplace_back(ct);
-                    //if (mesh_data.on_boundary(vi)) {
-                    //    
-                    //} // boundary points, ignore
-                    //else {
-                    //    const std::vector<int>& ring_idx = mesh_data.get_adjacency(vi);
-                    //    auto& ct = std::make_shared<BendingConstraint>(
-                    //        vi, ring_idx, mesh_data.verts, material.tri_bending_k,
-                    //        constraints.size(), curr_start_row);
-                    //    curr_start_row += 1;
-                    //    constraints.emplace_back(ct);
-                    //}
-
-                    /*auto xct = std::make_shared<XPBDBendingConstraint>();
-                    bool res = xct->initConstraint(ct);
-                    if (!res) ADU::make_exception("XPBD bending constraint init issue");
-                    xct->stiffness = 0.001_r;
-                    XPBD_constraints.push_back(xct);*/
                 }
                 printf("cur start row 2: %d\n", curr_start_row);
 #endif
             }
         }
-
-        //if (mesh.type == MeshData::TRI) { // streching and bending
-        //    // stretching
-        //    for (int fi = mesh.start_faceIdx; fi < mesh.end_faceIdx; fi++) {
-        //        const auto& vinds = mesh_data.faces.row(fi);
-        //        auto& ct = std::make_shared<TriangleConstraint>(
-        //            vinds, mesh_data.verts, material.tri_stretch_min, material.tri_stretch_max, 
-        //            material.tri_stretch_k, material.tri_use_limit, constraints.size(), curr_start_row);
-        //        curr_start_row += 2;
-        //        constraints.emplace_back(ct);
-
-        //        //auto xct = std::make_shared<FEMTriangleConstraint>();
-        //        //Real stiff = ct->k;
-        //        //bool res = xct->initConstraint(mesh_data.verts, vinds(0), vinds(1), vinds(2), 
-        //        //    stiff, stiff, stiff, 0.3_r, 0.3_r);
-        //        //ct->Binv_XPBD = xct->m_invRestMat;
-        //        //if (!res) ADU::make_exception("XPBD triangle constraint init issue");
-        //        ////xct->stiffness = 1e6;
-        //        //XPBD_constraints.push_back(xct);
-        //    }
-
-        //    printf("\ncur start row 1: %d\n", curr_start_row);
-
-        //    #ifndef DISABLE_BENDING
-        //    // bending
-        //    for (int vi = mesh.start_vertIdx; vi < mesh.end_vertIdx; vi++) {
-        //        const std::vector<int>& ring_idx = mesh_data.get_adjacency(vi);
-        //        if (ring_idx.size() < 3) continue;
-        //        auto& ct = std::make_shared<BendingConstraint>(
-        //            vi, ring_idx, mesh_data.verts, material.tri_bending_k,
-        //            constraints.size(), curr_start_row);
-        //        curr_start_row += 1;
-        //        constraints.emplace_back(ct);
-        //        //if (mesh_data.on_boundary(vi)) {
-        //        //    
-        //        //} // boundary points, ignore
-        //        //else {
-        //        //    const std::vector<int>& ring_idx = mesh_data.get_adjacency(vi);
-        //        //    auto& ct = std::make_shared<BendingConstraint>(
-        //        //        vi, ring_idx, mesh_data.verts, material.tri_bending_k,
-        //        //        constraints.size(), curr_start_row);
-        //        //    curr_start_row += 1;
-        //        //    constraints.emplace_back(ct);
-        //        //}
-
-        //        /*auto xct = std::make_shared<XPBDBendingConstraint>();
-        //        bool res = xct->initConstraint(ct);
-        //        if (!res) ADU::make_exception("XPBD bending constraint init issue");
-        //        xct->stiffness = 0.001_r;
-        //        XPBD_constraints.push_back(xct);*/
-        //    }
-
-        //    printf("cur start row 2: %d\n", curr_start_row);
-
-        //    #endif
-        //}
-        //else if (mesh.type == MeshData::TET) {
-        //    // tet strain
-        //    for (int ti = mesh.start_tetIdx; ti < mesh.end_tetIdx; ti++) {
-        //        const auto& vinds = mesh_data.tets.row(ti);
-        //        auto& ct = std::make_shared<TetrahedralConstraint>(
-        //            vinds, mesh_data.verts, material.tet_stretch_min, material.tet_stretch_max, material.tri_use_limit,
-        //            material.tet_stretch_k,  constraints.size(), curr_start_row);
-        //        curr_start_row += 3;
-        //        constraints.emplace_back(ct);
-
-        //        auto xct = std::make_shared<XPBD_FEMTetConstraint>();
-        //        bool res = xct->initConstraint(mesh_data.verts, vinds(0), vinds(1), vinds(2), vinds(3), 2e2, 0.4_r);
-        //        if (!res) ADU::make_exception("XPBD FEM constraint init issue");
-        //        XPBD_constraints.push_back(xct);
-        //    }
-        //}
-        //else {
-
-        //}
     }
 
     static void pin_to_constraints(MeshData& mesh_data, const std::vector<int>& pin_inds, 

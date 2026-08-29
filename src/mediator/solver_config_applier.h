@@ -3,11 +3,11 @@
 #include "mediator/toml_to_config.h"
 #include "mesh/mesh_container.h"
 #include "mutils/common_types.h"
-#include "solver/solver.h"
+#include "solver/core/admm_config.h"
 
 namespace ADU {
 
-/// Runtime context needed to apply solver config (mesh-derived data).
+/// Runtime context needed to derive solver config (mesh-derived data).
 struct SolverSetupContext {
     const Vecf_X& mass;
     Real dt;
@@ -18,11 +18,9 @@ struct SolverSetupContext {
     const MeshData* mesh;
 };
 
-/// Apply APPConfig to inner solver. Accepts Solver*; casts internally.
-/// Application layer does not need impl headers.
-void apply_solver_config(Solver* inner, const APPConfig& cfg, const SolverSetupContext& ctx);
-
-/// Setup GPU-specific config and convert_constraint2device. No-op when inner is CPU impl.
-void setup_parallel_backend(Solver* inner, const APPConfig& cfg);
+/// Derive ADMM tuning parameters from the scene config.
+/// Pure data: no solver/impl types involved, so any backend can consume it.
+/// (Replaces the old apply_solver_config/setup_parallel_backend dynamic_cast path.)
+ADMMSolverConfig build_solver_config(const APPConfig& cfg, const SolverSetupContext& ctx);
 
 } // namespace ADU
