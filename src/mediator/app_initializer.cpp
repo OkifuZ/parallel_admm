@@ -156,6 +156,10 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
 
     ctx.app.solver->init(ctx.app.mesh->verts, ctx.app.mass, ctx.app.dt);
 
+    // Headless runs (no window, no export, no animator) never read host x/v,
+    // so the GPU backend can skip the per-step device -> host download.
+    admm_solver->set_sync_to_host(ctx.app.show_windows || (inner->animator != nullptr));
+
     ctx.app.bvh_holder = std::make_shared<BVH_GPU>();
     ctx.app.bvh = ctx.app.bvh_holder.get();
     BVH_GPU& bvh = *ctx.app.bvh_holder;

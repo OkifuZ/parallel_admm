@@ -29,6 +29,7 @@ public:
     void apply_config(const ADMMSolverConfig& cfg) { if (backend_) backend_->apply_config(cfg); }
     void finalize_constraints() { if (backend_) backend_->finalize_constraints(); }
     void set_constraint_dim(int n) { if (backend_) backend_->set_constraint_dim(n); }
+    void set_sync_to_host(bool enabled) { if (backend_) backend_->set_sync_to_host(enabled); }
 
     // --- generic setup forwarded to the inner solver ---
     void addPins(const std::vector<int>& pin_inds) override;

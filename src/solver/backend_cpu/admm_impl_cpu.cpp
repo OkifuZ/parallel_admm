@@ -35,12 +35,14 @@ void ADMMImplCPU::apply_config(const ADMMSolverConfig& cfg) {
     enable_frictional_contact = cfg.enable_frictional_contact;
     use_CCD = cfg.use_CCD;
     use_unique_contact = cfg.use_unique_contact;
+    dump_system_matrix = cfg.dump_system_matrix;
     mu = cfg.mu;
     kappa = cfg.kappa;
     beta = cfg.beta;
     use_heuristic_W_c = cfg.use_heuristic_wc;
     heu_sigma = cfg.wc_sigma;
     heu_beta = cfg.wc_beta;
+    coloring_parallel_contact = cfg.coloring_parallel_contact;
     contact_w_list = cfg.contact_w_list;
     contact_w_inv_list = cfg.contact_w_inv_list;
 
@@ -223,8 +225,10 @@ void ADMMImplCPU::precompute() {
     if (m_LLT_solver->info() != Eigen::Success) make_exception("ADMMImplCPU::precompute LLT failed");
 
     auto save_name_A = "./m_A_damp_" + getCurTime();
-    if (Eigen::saveMarket(m_A_damp, save_name_A)) printf("saved m_A_damp\n");
-    else printf("save m_A_damp failed\n");
+    if (dump_system_matrix) {
+        if (Eigen::saveMarket(m_A_damp, save_name_A)) printf("saved m_A_damp\n");
+        else printf("save m_A_damp failed\n");
+    }
 
     printf("ADMMImplCPU done, total vert num = %d\n", nDynVert);
 }
@@ -239,29 +243,32 @@ void ADMMImplCPU::step_fast() {
     gamma = m_dt * kappa / (m_dt * kappa + beta);
     int nDynVert = static_vert_begin;
 
-    Matf_X3 x_0 = m_vertices;
-    Matf_X3 v_0 = m_velocities;
+    x_0 = m_vertices;
+    v_0 = m_velocities;
     for (int i = 0; i < nDynVert; i++) {
         if (m_pin_inds_set.count(i)) v_0.row(i).setZero();
         else v_0.row(i).y() -= g * m_dt;
     }
 
-    Matf_X3 x_tilde = x_0.block(0, 0, nDynVert, 3) + m_dt * v_0.block(0, 0, nDynVert, 3);
-    Matf_X3 M_x_tilde = m_M * x_tilde;
-    Matf_X3 b(nDynVert, 3);
+    x_tilde.resize(nDynVert, 3);
+    x_tilde = x_0.block(0, 0, nDynVert, 3) + m_dt * v_0.block(0, 0, nDynVert, 3);
+    M_x_tilde.resize(nDynVert, 3);
+    M_x_tilde = m_M * x_tilde;
+    b.resize(nDynVert, 3);
     b.setZero();
 
-    Matf_X3 x_curr(m_nVert, 3);
+    x_curr.resize(m_nVert, 3);
     x_curr.block(0, 0, nDynVert, 3) = x_tilde;
     x_curr.block(nDynVert, 0, m_nVert - nDynVert, 3) = x_0.block(nDynVert, 0, m_nVert - nDynVert, 3);
-    Matf_X3 z(m_nCDim, 3);
+    z.resize(m_nCDim, 3);
     z.setZero();
-    Matf_X3 DX(m_nCDim, 3);
+    DX.resize(m_nCDim, 3);
     DX.setZero();
 
     if (animator) animator->animate_all(m_vertices, x_curr, v_0, this->m_dt);
-    Matf_X3 b_ini = m_Damp_Mat * x_0.block(0, 0, nDynVert, 3);
-    Matf_X3 p(m_nVert, 3);
+    b_ini.resize(nDynVert, 3);
+    b_ini = m_Damp_Mat * x_0.block(0, 0, nDynVert, 3);
+    p.resize(m_nVert, 3);
     p = v_0;
 
     if (!warmstart_Ue) m_Ue.setZero();
@@ -284,6 +291,9 @@ void ADMMImplCPU::step_fast() {
             if (use_unique_contact) prox_query->unique_contact();
             need_recompute_Scc = true;
             find_contact_islands();
+            if (coloring_parallel_contact) {
+                sequential_greedy_coloring(prox_query->contact_info_list);
+            }
         }
 
         x_prev = x_curr;
@@ -353,7 +363,11 @@ void ADMMImplCPU::compute_Scc() {
 }
 
 void ADMMImplCPU::project_feasible(ADU::Matf_X3& p, ProximalQuery::ContactInfoList& contacts, ADU::Real mu, size_t max_GS_iter) {
-    _project_feasible_plain(p, contacts, mu, max_GS_iter);
+    if (coloring_parallel_contact) {
+        _project_feasible_colored(p, contacts, mu, max_GS_iter);
+    } else {
+        _project_feasible_plain(p, contacts, mu, max_GS_iter);
+    }
 }
 
 void ADMMImplCPU::_project_feasible_plain(ADU::Matf_X3& p, ProximalQuery::ContactInfoList& contacts, ADU::Real mu, size_t max_GS_iter) {
@@ -368,45 +382,83 @@ void ADMMImplCPU::_project_feasible_plain(ADU::Matf_X3& p, ProximalQuery::Contac
             }
         }
     });
-    Vecf_3 u, u_star, u_star_new, u_star_T;
-    Real u_star_N, tau, alpha;
     for (size_t gs_iter = 0; gs_iter < max_GS_iter; gs_iter++) {
         for (size_t ci = 0; ci < nContact; ci++) {
-            auto& ct = contacts[ci];
-            const auto& vinds = ct.vinds;
-            u = ct.bary[0] * p.row(vinds[0]) + ct.bary[1] * p.row(vinds[1]) +
-                ct.bary[2] * p.row(vinds[2]) + ct.bary[3] * p.row(vinds[3]);
-            u += K_c[ci];
-            u_star = u - ct.r_c;
-            const auto& normal = ct.normal;
-            u_star_N = normal.dot(u_star);
-            u_star_T = u_star - u_star_N * normal;
-            if (u_star_N < 0) {
-                if (!use_anisotropy) {
-                    tau = u_star_T.norm();
-                    alpha = -mu * u_star_N;
-                    u_star_N = 0;
-                    if (tau <= alpha) u_star_T = Vecf_3::Zero();
-                    else u_star_T = (1.0_r - alpha / tau) * u_star_T;
-                } else {
-                    Real mu_t_curr = ct.d * mu_t + (1 - ct.d) * mu;
-                    Real mu_b_curr = ct.d * mu_b + (1 - ct.d) * mu;
-                    const Vecf_3& t = (ct.Sm - ct.Sm.dot(normal) * normal).normalized();
-                    const Vecf_3& b = normal.cross(t).normalized();
-                    Real tau_t = u_star_T.dot(t), tau_b = u_star_T.dot(b);
-                    Real alpha_t = -mu_t_curr * u_star_N, alpha_b = -mu_b_curr * u_star_N;
-                    u_star_N = 0;
-                    u_star_T.setZero();
-                    if (std::abs(tau_b) > alpha_b) u_star_T += (1.0_r - alpha_b / std::abs(tau_b)) * tau_b * b;
-                    if (std::abs(tau_t) > alpha_t) u_star_T += (1.0_r - alpha_t / std::abs(tau_t)) * tau_t * t;
-                }
-            }
-            u_star_new = u_star_N * ct.normal + u_star_T;
-            ct.r_c += u_star_new - u;
+            _project_one_contact(p, contacts, ci, mu);
+        }
+    }
+}
+
+/// Per-contact friction-cone projection step, shared by the plain (serial GS)
+/// and the colored (parallel per color) paths.
+void ADMMImplCPU::_project_one_contact(ADU::Matf_X3& p, ProximalQuery::ContactInfoList& contacts, size_t ci, ADU::Real mu) {
+    using namespace ADU;
+    auto& ct = contacts[ci];
+    const auto& vinds = ct.vinds;
+    Vecf_3 u = ct.bary[0] * p.row(vinds[0]) + ct.bary[1] * p.row(vinds[1]) +
+        ct.bary[2] * p.row(vinds[2]) + ct.bary[3] * p.row(vinds[3]);
+    u += K_c[ci];
+    Vecf_3 u_star = u - ct.r_c;
+    const auto& normal = ct.normal;
+    Real u_star_N = normal.dot(u_star);
+    Vecf_3 u_star_T = u_star - u_star_N * normal;
+    if (u_star_N < 0) {
+        if (!use_anisotropy) {
+            Real tau = u_star_T.norm();
+            Real alpha = -mu * u_star_N;
+            u_star_N = 0;
+            if (tau <= alpha) u_star_T = Vecf_3::Zero();
+            else u_star_T = (1.0_r - alpha / tau) * u_star_T;
+        } else {
+            Real mu_t_curr = ct.d * mu_t + (1 - ct.d) * mu;
+            Real mu_b_curr = ct.d * mu_b + (1 - ct.d) * mu;
+            const Vecf_3& t = (ct.Sm - ct.Sm.dot(normal) * normal).normalized();
+            const Vecf_3& b = normal.cross(t).normalized();
+            Real tau_t = u_star_T.dot(t), tau_b = u_star_T.dot(b);
+            Real alpha_t = -mu_t_curr * u_star_N, alpha_b = -mu_b_curr * u_star_N;
+            u_star_N = 0;
+            u_star_T.setZero();
+            if (std::abs(tau_b) > alpha_b) u_star_T += (1.0_r - alpha_b / std::abs(tau_b)) * tau_b * b;
+            if (std::abs(tau_t) > alpha_t) u_star_T += (1.0_r - alpha_t / std::abs(tau_t)) * tau_t * t;
+        }
+    }
+    Vecf_3 u_star_new = u_star_N * ct.normal + u_star_T;
+    ct.r_c += u_star_new - u;
+    for (size_t k = 0; k < 4; k++) {
+        size_t j = ct.vinds[k];
+        if (j < static_cast<size_t>(static_vert_begin)) p.row(j) += Gamma_c[ci](k) * (u_star_new - u);
+    }
+}
+
+/// Colored parallel GS projection: colors are processed sequentially; contacts
+/// within one color are vertex-disjoint (greedy coloring) and projected in
+/// parallel. Opt-in via config (coloring_parallel_contact): iteration order
+/// differs from the plain path, so float results may differ slightly.
+void ADMMImplCPU::_project_feasible_colored(ADU::Matf_X3& p, ProximalQuery::ContactInfoList& contacts, ADU::Real mu, size_t max_GS_iter) {
+    using namespace ADU;
+    size_t nContact = contacts.size();
+    tbb::parallel_for(tbb::blocked_range<size_t>(0, nContact), [&](const tbb::blocked_range<size_t>& r) {
+        for (size_t ci = r.begin(); ci < r.end(); ci++) {
+            const auto& ct = contacts[ci];
             for (size_t k = 0; k < 4; k++) {
                 size_t j = ct.vinds[k];
-                if (j < static_cast<size_t>(static_vert_begin)) p.row(j) += Gamma_c[ci](k) * (u_star_new - u);
+                if (j < static_cast<size_t>(static_vert_begin)) p.row(j) += Gamma_c[ci](k) * ct.r_c;
             }
+        }
+    });
+    for (size_t gs_iter = 0; gs_iter < max_GS_iter; gs_iter++) {
+        for (int color = 1; color <= _color_max_num; color++) {
+            const auto& color_list = color_result[color];
+            tbb::parallel_for(tbb::blocked_range<size_t>(0, color_list.size()), [&](const tbb::blocked_range<size_t>& r) {
+                for (size_t i = r.begin(); i < r.end(); i++) {
+                    _project_one_contact(p, contacts, color_list[i], mu);
+                }
+            });
+        }
+        // Uncolored overflow contacts (may share vertices): serial fallback.
+        const auto& overflow = color_result[0];
+        for (size_t i = 0; i < overflow.size(); i++) {
+            _project_one_contact(p, contacts, overflow[i], mu);
         }
     }
 }

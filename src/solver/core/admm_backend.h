@@ -28,6 +28,10 @@ struct IADMMBackend {
 
     /// ADMM constraint dimension (m_nCDim), known only after constraint assembly.
     virtual void set_constraint_dim(int n) = 0;
+
+    /// Toggle per-step host <-> device sync (GPU backend). Default true;
+    /// set false for headless runs without visualization/export/animators.
+    virtual void set_sync_to_host(bool /*enabled*/) {}
 };
 
 /// Placeholder for future: linear system solve (LLT vs Jacobi).

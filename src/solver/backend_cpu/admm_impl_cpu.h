@@ -38,6 +38,19 @@ public:
     int m_nCDim{};
     bool parallel = true;
 
+    // Per-step scratch buffers (reused across steps; avoids per-step
+    // Eigen allocations in the ADMM hot loop).
+    ADU::Matf_X3 x_0;
+    ADU::Matf_X3 v_0;
+    ADU::Matf_X3 x_tilde;
+    ADU::Matf_X3 M_x_tilde;
+    ADU::Matf_X3 b;
+    ADU::Matf_X3 b_ini;
+    ADU::Matf_X3 x_curr;
+    ADU::Matf_X3 z;
+    ADU::Matf_X3 DX;
+    ADU::Matf_X3 p;
+
     bool enable_frictional_contact{ true };
     bool warmstart_Ue{ true };
     bool warmstart_Uc{ true };
@@ -106,6 +119,7 @@ public:
     ADU::Matf_X3 tangent_vec;
     bool use_CCD{ false };
     bool use_unique_contact{ false };
+    bool dump_system_matrix{ false };
 
     virtual void init();
     virtual void precompute();
@@ -113,6 +127,8 @@ public:
     void apply_config(const ADMMSolverConfig& cfg);
     virtual void project_feasible(ADU::Matf_X3& p, ProximalQuery::ContactInfoList& contacts, ADU::Real mu, size_t max_jacobi_iter);
     virtual void _project_feasible_plain(ADU::Matf_X3& p, ProximalQuery::ContactInfoList& contacts, ADU::Real mu, size_t max_jacobi_iter);
+    void _project_feasible_colored(ADU::Matf_X3& p, ProximalQuery::ContactInfoList& contacts, ADU::Real mu, size_t max_jacobi_iter);
+    void _project_one_contact(ADU::Matf_X3& p, ProximalQuery::ContactInfoList& contacts, size_t ci, ADU::Real mu);
 
     std::unordered_set<int> vinds_surf_set;
     ADU::Matf_X3 x_prev;

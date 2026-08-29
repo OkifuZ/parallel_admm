@@ -53,6 +53,7 @@ struct APPConfig {
             int Global_Jacobi_iter{20};
             bool warmstart_Uc;
             bool warmstart_Ue;
+            bool dump_A{ false };
         };
         ADMM admm;
 
@@ -66,6 +67,7 @@ struct APPConfig {
             bool unique;
             bool use_jacobi{false};
 
+            bool coloring{ false };
             bool use_heu_wc{ false };
             ADU::Real wc_beta{ 25 };
             ADU::Real wc_sigma{ 0.001 };
@@ -212,6 +214,10 @@ struct APPConfig {
         auto& solver_admm_config = solver_config["admm"];
         app_config.solver.admm.warmstart_Ue = _CTML(solver_admm_config["warmstart_Ue"].value<bool>());
         app_config.solver.admm.warmstart_Uc = _CTML(solver_admm_config["warmstart_Uc"].value<bool>());
+        auto dump_A = solver_admm_config["dump_A"];
+        if (dump_A) {
+            app_config.solver.admm.dump_A = *dump_A.value<bool>();
+        }
 
         auto& solver_contact_config = solver_config["contact"];
         app_config.solver.contact.enable = _CTML(solver_contact_config["enable"].value<bool>());
@@ -225,6 +231,11 @@ struct APPConfig {
         app_config.solver.contact.kappa = _CTML(solver_contact_config["kappa"].value<ADU::Real>());
         app_config.solver.contact.beta = _CTML(solver_contact_config["beta"].value<ADU::Real>());
         app_config.solver.contact.unique = _CTML(solver_contact_config["unique"].value<bool>());
+
+        auto coloring = solver_contact_config["coloring"].value<bool>();
+        if (coloring) {
+            app_config.solver.contact.coloring = *coloring;
+        }
 
         auto use_wc = solver_contact_config["use_heu_wc"].value<bool>();
         if (use_wc) {

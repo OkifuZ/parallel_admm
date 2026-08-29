@@ -51,6 +51,11 @@ public:
 
     int Global_Jacobi_iter = 20;
 
+    /// When false, the per-step host <-> device download of x/v is skipped
+    /// (headless runs without visualization/export or animators). Default true.
+    bool sync_to_host = true;
+    void set_sync_to_host(bool v) { sync_to_host = v; }
+
     void do_compute_Scc() { compute_Scc(); }
     void do_project_feasible_parallel() { project_feasible_parallel(); }
 
@@ -88,9 +93,6 @@ private:
     thrust::device_vector<Real> cache_nCDimX3;
 
     Matf_X3 jacobi_buffer;
-    Matf_X3 x_curr;
-    Matf_X3 p;
-    Matf_X3 b_curr;
 
     std::vector<tbb::concurrent_vector<Real>> Gamma_i;
     std::vector<Vecf_4> Gamma_c_aux;

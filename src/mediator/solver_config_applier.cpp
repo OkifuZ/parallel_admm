@@ -20,6 +20,8 @@ ADMMSolverConfig build_solver_config(const APPConfig& cfg, const SolverSetupCont
     c.warmstart_Uc = cfg.solver.admm.warmstart_Uc;
     c.use_jacobi = cfg.solver.contact.use_jacobi;
     c.g = cfg.global.g;
+    c.dump_system_matrix = cfg.solver.admm.dump_A;
+    c.coloring_parallel_contact = cfg.solver.contact.coloring;
 
     // --- frictional contact ---
     c.enable_frictional_contact = cfg.solver.contact.enable;

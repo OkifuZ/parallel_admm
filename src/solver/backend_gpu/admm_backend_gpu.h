@@ -25,6 +25,7 @@ public:
     }
     void finalize_constraints() override { impl_->convert_constraint2device(); }
     void set_constraint_dim(int n) override { impl_->m_nCDim = n; }
+    void set_sync_to_host(bool enabled) override { impl_->set_sync_to_host(enabled); }
 
     ADMMImplGPU* impl() { return impl_.get(); }
     const ADMMImplGPU* impl() const { return impl_.get(); }

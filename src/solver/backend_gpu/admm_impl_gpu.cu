@@ -211,7 +211,6 @@ void ADMMImplGPU::precompute() {
     } else {
         m_A = (m_M + m_dt2DTWeTWeD).eval();
     }
-    m_A_damp = (m_A + m_Damp_Mat).eval();
 
     m_I = SpMatf(nDynVert, nDynVert);
     m_I.setIdentity();
@@ -223,10 +222,6 @@ void ADMMImplGPU::precompute() {
     resizeThrust<Real>(m_Uc_device, 3 * nDynVert, 0);
 
     if (enable_frictional_contact && prox_query) Gamma_c.reserve(prox_query->max_collision_num);
-
-    m_LLT_solver = std::make_unique<SolverT>();
-    m_LLT_solver->compute(m_A_damp);
-    if (m_LLT_solver->info() != Eigen::Success) make_exception("ADMMImplGPU::precompute LLT failed");
 
     printf("ADMMImplGPU done, total vert num = %d\n", nDynVert);
 
@@ -245,8 +240,6 @@ void ADMMImplGPU::step() {
 
     x_curr.resize(m_nVert, 3);
     x_curr.setZero();
-    b_curr.resize(nDynVert, 3);
-    b_curr.setZero();
 
     if (animator) {
         animator->animate_all(m_vertices, x_curr, m_velocities, this->m_dt);
@@ -324,8 +317,10 @@ void ADMMImplGPU::step() {
     do_post_process(m_nVert, nDynVert, m_dt, solver_data_device->v_0_device.data().get(),
         solver_data_device->x_curr_device.data().get(), solver_data_device->x_0_device.data().get());
 
-    copy_thrustvector2mat(solver_data_device->x_0_device, m_vertices, m_nVert);
-    copy_thrustvector2mat(solver_data_device->v_0_device, m_velocities, m_nVert);
+    if (sync_to_host) {
+        copy_thrustvector2mat(solver_data_device->x_0_device, m_vertices, m_nVert);
+        copy_thrustvector2mat(solver_data_device->v_0_device, m_velocities, m_nVert);
+    }
     step_cnt++;
 }
 

@@ -27,6 +27,10 @@ struct ADMMSolverConfig {
     bool use_jacobi{ false };
     ADU::Real g{ static_cast<ADU::Real>(0.98) };
 
+    /// Dump the assembled damped system matrix (m_A_damp) to disk during
+    /// precompute (debug / paper figures). Default off: it is pure I/O.
+    bool dump_system_matrix{ false };
+
     // --- frictional contact ---
     bool enable_frictional_contact{ true };
     bool use_CCD{ false };
@@ -39,6 +43,10 @@ struct ADMMSolverConfig {
     ADU::Real wc_beta{ static_cast<ADU::Real>(25) };
     ADU::Vecf_X contact_w_list;
     ADU::Vecf_X contact_w_inv_list;
+
+    /// Parallelize the CPU contact projection (GS sweeps) via greedy coloring.
+    /// Changes iteration order -> slightly different float results; opt-in.
+    bool coloring_parallel_contact{ false };
 
     // --- damping ---
     ADU::Real damp_k_L{ static_cast<ADU::Real>(1e-4) };
