@@ -19,6 +19,7 @@ struct APPConfig {
     bool separate_out{ false };
     bool show_windows{ true };
     bool out_bin{ false };
+    bool export_obj{ false };
     int end_frame{ 2000 };
 
     bool use_GPU{ false };
@@ -166,6 +167,10 @@ struct APPConfig {
         app_config.show_windows = _CTML(config["show_windows"].value<bool>());
         auto out_bin_temp = config["out_bin"].value<bool>();
         if (out_bin_temp) app_config.out_bin = *out_bin_temp;
+
+        // Headless batch export: dump OBJ/PLY per frame without the GUI checkbox.
+        auto export_obj_opt = config["export_obj"].value<bool>();
+        if (export_obj_opt) app_config.export_obj = *export_obj_opt;
 
         auto end_frame_opt = config["end_frame"].value<int>();
         if (end_frame_opt && *end_frame_opt > 0) {

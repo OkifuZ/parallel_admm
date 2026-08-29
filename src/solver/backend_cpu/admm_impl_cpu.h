@@ -140,6 +140,8 @@ public:
 
     virtual void init();
     virtual void precompute();
+    /// Assemble M / D / We / Damp / Wc / A matrices (precompute stage 1).
+    void assemble_matrices();
     /// Apply typed tuning parameters (from scene config). No constraint dependency.
     void apply_config(const ADMMSolverConfig& cfg);
     virtual void project_feasible(ADU::Matf_X3& p, ProximalQuery::ContactInfoList& contacts, ADU::Real mu, size_t max_jacobi_iter);
@@ -162,8 +164,6 @@ public:
     virtual void compute_Scc();
     virtual void step();
     void step_fast();
-
-    int step_cnt = 0;
     std::vector<std::vector<ADU::Real>> primal_residual, dual_residual, combined_residual, x_residual, time_spans;
     void compute_SaSb();
 

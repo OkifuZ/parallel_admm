@@ -33,9 +33,13 @@ public:
     virtual size_t peak_contact_count() const = 0;
 
     /// Contact points as host float3 array (visualization).
+    /// NOTE: polyscope point clouds are registered with max_slots() points,
+    /// so these must return arrays of exactly max_slots() entries
+    /// (unused slots zero-filled); dynamic-size arrays break the GUI update.
     virtual std::vector<std::array<float, 3>> points() = 0;
 
-    /// Contact normals as host float3 array (visualization).
+    /// Contact normals as host float3 array (visualization). Same size
+    /// contract as points().
     virtual std::vector<std::array<float, 3>> normals() = 0;
 
     /// Clear contact results (e.g. on reset).

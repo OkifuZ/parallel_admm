@@ -8,6 +8,7 @@
 #include "animator.h"
 
 #include <Eigen/core>
+#include <fstream>
 #include <memory>
 #include <vector>
 #include <unordered_set>
@@ -23,6 +24,25 @@ class Solver {
 	
 public:
 
+	/// Per-step performance/contact metrics, collected by each solver's step()
+	/// and written as CSV by write_step_metrics_csv() (comparison tooling).
+	struct StepMetrics {
+		size_t frame{};
+		double step_ms{};
+		size_t n_contacts{};
+	};
+	std::vector<StepMetrics> step_metrics;
+	size_t step_cnt = 0;
+
+	/// Write step_metrics as CSV (header: frame,step_ms,n_contacts).
+	void write_step_metrics_csv(const std::string& path) const {
+		std::ofstream f(path);
+		if (!f.is_open()) return;
+		f << "frame,step_ms,n_contacts\n";
+		for (const auto& m : step_metrics) {
+			f << m.frame << "," << m.step_ms << "," << m.n_contacts << "\n";
+		}
+	}
 
 	using ConstraintsList = std::vector<std::shared_ptr<Constraint>>;
 	using NodalCollisionConstraintsList = std::vector<std::shared_ptr<NodalCollisionConstraint>>;

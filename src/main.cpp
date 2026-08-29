@@ -158,6 +158,14 @@ int main(int argc, const char* argv[]) {
         ? static_cast<ICollisionDetector*>(g_ctx.app.bvh)
         : static_cast<ICollisionDetector*>(inner->prox_query.get());
     std::cout << "max collision num: " << det->peak_contact_count() << "\n";
+
+    // Per-step metrics CSV (frame, step_ms, n_contacts) for solver comparison.
+    if (g_ctx.app.save_res && !inner->step_metrics.empty()) {
+        const auto metrics_path = g_ctx.out_path / "step_metrics.csv";
+        inner->write_step_metrics_csv(metrics_path.string());
+        std::cout << "step metrics: " << metrics_path << "\n";
+    }
+
     std::cout << "logger:\n";
     std::cout << ADU::Timer::getLog();
 }

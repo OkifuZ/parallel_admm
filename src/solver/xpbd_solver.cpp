@@ -2,6 +2,8 @@
 #include "constraint/xpbd/mesh_to_xpbd_constraint.h"
 #include "mutils/exception_handle.h"
 
+#include <chrono>
+
 namespace ADU {
 
 XPBDSolver::XPBDSolver() {
@@ -42,6 +44,7 @@ void XPBDSolver::init(const Matf_X3& verts, const Vecf_X& mass, Real dt) {
 
 void XPBDSolver::step() {
     using namespace ADU;
+    const auto t0 = std::chrono::steady_clock::now();
     const Real h = m_dt / static_cast<Real>(m_subSteps);
     const Real h_inv = 1.0_r / h;
 
@@ -87,6 +90,9 @@ void XPBDSolver::step() {
     }
     m_velocities = v_curr;
     m_vertices = x_curr;
+    step_cnt++;
+    const double step_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+    step_metrics.push_back({ step_cnt, step_ms, prox_query ? prox_query->contact_info_list.size() : 0 });
 }
 
 void XPBDSolver::solve_contact_constraints(const ProximalQuery::ContactInfoList& contacts,

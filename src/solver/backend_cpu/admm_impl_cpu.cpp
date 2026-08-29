@@ -151,12 +151,11 @@ void ADMMImplCPU::init() {
     printf("ADMMImplCPU init done\n");
 }
 
-void ADMMImplCPU::precompute() {
+void ADMMImplCPU::assemble_matrices() {
     using namespace ADU;
-    printf("ADMMImplCPU::precompute start\n");
     if (m_constraints.empty()) throw std::runtime_error("ADMMImplCPU::precompute Error: empty constraints");
-    int m = static_cast<int>(m_constraints.size());
-    int nDynVert = static_vert_begin;
+    const int m = static_cast<int>(m_constraints.size());
+    const int nDynVert = static_vert_begin;
 
     m_M = SpMatf(nDynVert, nDynVert);
     TripList M_trips;
@@ -175,8 +174,8 @@ void ADMMImplCPU::precompute() {
     }
     m_D.setFromTriplets(D_trips.begin(), D_trips.end());
     m_W_e.setFromTriplets(We_trips.begin(), We_trips.end());
-    m_dt2DTWeTWe = m_dt2 * m_D.transpose() * m_W_e.transpose() * m_W_e;
-    m_dt2DTWeTWeD = m_dt2DTWeTWe * m_D;
+    m_dt2DTWeTWe = (m_dt2 * m_D.transpose() * m_W_e.transpose() * m_W_e).eval();
+    m_dt2DTWeTWeD = (m_dt2DTWeTWe * m_D).eval();
 
     m_Damp_Mat = SpMatf(nDynVert, nDynVert);
     TripList D_d_trips, We_d_trips;
@@ -189,7 +188,7 @@ void ADMMImplCPU::precompute() {
     SpMatf Wd(m_nCDim, m_nCDim), Dd(m_nCDim, nDynVert);
     Wd.setFromTriplets(We_d_trips.begin(), We_d_trips.end());
     Dd.setFromTriplets(D_d_trips.begin(), D_d_trips.end());
-    m_Damp_Mat = m_dt * (damp_k_L * Dd.transpose() * Wd * Dd + damp_k_M * m_M);
+    m_Damp_Mat = (m_dt * (damp_k_L * Dd.transpose() * Wd * Dd + damp_k_M * m_M)).eval();
 
     m_dt2Wc = SpMatf(nDynVert, nDynVert);
     m_W_c = SpMatf(nDynVert, nDynVert);
@@ -218,10 +217,17 @@ void ADMMImplCPU::precompute() {
     }
 
     m_A = SpMatf(nDynVert, nDynVert);
-    m_A = m_M + m_dt2DTWeTWeD + m_dt2Wc;
-    m_A_damp = m_A + m_Damp_Mat;
+    m_A = (m_M + m_dt2DTWeTWeD + m_dt2Wc).eval();
+    m_A_damp = (m_A + m_Damp_Mat).eval();
     m_I = SpMatf(nDynVert, nDynVert);
     m_I.setIdentity();
+}
+
+void ADMMImplCPU::precompute() {
+    using namespace ADU;
+    printf("ADMMImplCPU::precompute start\n");
+    assemble_matrices();
+    const int nDynVert = static_vert_begin;
 
     m_Ue = Matf_X3(m_nCDim, 3);
     m_Ue.setZero();
@@ -251,13 +257,13 @@ void ADMMImplCPU::precompute() {
 
     printf("ADMMImplCPU done, total vert num = %d\n", nDynVert);
 }
-
 void ADMMImplCPU::step() {
     step_fast();
 }
 
 void ADMMImplCPU::step_fast() {
     using namespace ADU;
+    const auto t0 = std::chrono::steady_clock::now();
     epsilon = 1.0_r / (m_dt2 * kappa + m_dt * beta);
     gamma = m_dt * kappa / (m_dt * kappa + beta);
     int nDynVert = static_vert_begin;
@@ -348,6 +354,8 @@ void ADMMImplCPU::step_fast() {
     m_velocities.block(nDynVert, 0, m_nVert - nDynVert, 3) = v_0.block(nDynVert, 0, m_nVert - nDynVert, 3);
     m_vertices = x_curr;
     step_cnt++;
+    const double step_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+    step_metrics.push_back({ step_cnt, step_ms, prox_query ? prox_query->contact_info_list.size() : 0 });
 }
 
 void ADMMImplCPU::compute_Scc() {

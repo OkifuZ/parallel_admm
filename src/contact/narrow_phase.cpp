@@ -537,21 +537,25 @@ ADU::Matf_X3& ProximalQuery::get_contact_normals() {
 }
 
 std::vector<std::array<float, 3>> ProximalQuery::points() {
-	std::vector<std::array<float, 3>> pts(contact_count());
-	for (size_t ci = 0; ci < pts.size(); ci++) {
-		const auto& ct = contact_info_list[ci];
-		pts[ci] = { ct.point.x(), ct.point.y(), ct.point.z() };
-	}
-	return pts;
+    // Fixed size (max_slots) to match the polyscope registration size;
+    // unused slots are zero-filled.
+    std::vector<std::array<float, 3>> pts(max_slots());
+    const size_t n = std::min(contact_count(), pts.size());
+    for (size_t ci = 0; ci < n; ci++) {
+        const auto& ct = contact_info_list[ci];
+        pts[ci] = { ct.point.x(), ct.point.y(), ct.point.z() };
+    }
+    return pts;
 }
 
 std::vector<std::array<float, 3>> ProximalQuery::normals() {
-	std::vector<std::array<float, 3>> normals(contact_count());
-	for (size_t ci = 0; ci < normals.size(); ci++) {
-		const auto& ct = contact_info_list[ci];
-		normals[ci] = { ct.normal.x(), ct.normal.y(), ct.normal.z() };
-	}
-	return normals;
+    std::vector<std::array<float, 3>> normals(max_slots());
+    const size_t n = std::min(contact_count(), normals.size());
+    for (size_t ci = 0; ci < n; ci++) {
+        const auto& ct = contact_info_list[ci];
+        normals[ci] = { ct.normal.x(), ct.normal.y(), ct.normal.z() };
+    }
+    return normals;
 }
 
 

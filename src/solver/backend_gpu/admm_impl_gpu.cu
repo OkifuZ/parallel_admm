@@ -16,6 +16,7 @@
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_for_each.h>
 #include <tbb/task_arena.h>
+#include <chrono>
 #include <memory>
 
 ContactDataDevice::ContactDataDevice(int max_Vert, int max_Contact) {
@@ -254,6 +255,7 @@ void ADMMImplGPU::precompute() {
 
 void ADMMImplGPU::step() {
     using namespace ADU;
+    const auto t0 = std::chrono::steady_clock::now();
     epsilon = 1.0_r / (m_dt2 * kappa + m_dt * beta);
     gamma = m_dt * kappa / (m_dt * kappa + beta);
     int nDynVert = static_vert_begin;
@@ -337,6 +339,8 @@ void ADMMImplGPU::step() {
         copy_thrustvector2mat(solver_data_device->v_0_device, m_velocities, m_nVert);
     }
     step_cnt++;
+    const double step_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+    step_metrics.push_back({ step_cnt, step_ms, bvh ? bvh->h_cpNum : 0 });
 }
 
 void ADMMImplGPU::GS_global(const Matf_X3& b, Matf_X3& x_curr, int iter_cnt) {

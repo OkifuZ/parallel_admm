@@ -35,11 +35,37 @@ Visualization and stats go through the interface.
 
 ### XPBD
 
-The XPBD solver is **archived** (not part of the build): files live in
-`archive/xpbd/`; the `[xpbd]` TOML section is parsed for backward
-compatibility but ignored. `XPBD_utils` math helpers stay in
-`src/constraint/xpbd_utils.h` because the ADMM triangle constraint uses
-`get_FEMTriangleGradient()`. See `agent_aux/xpbd-archive.md`.
+A second, independent solver is implemented: `XPBDSolver : Solver`
+(`solver/xpbd_solver.{h,cpp}`, Macklin et al. 2016 formulas). It reuses the
+generic Solver state, `ICollisionDetector`, and the XPBD constraint module
+(`src/constraint/xpbd/`, revived from the archive). Select it with
+`[solver] type = "xpbd"` (legacy `[xpbd] enable = true` also works).
+The old ADMM-parasitic XPBD implementation stays in `archive/xpbd/`;
+`XPBD_utils` math helpers live in `src/constraint/xpbd_utils.h`.
+See `agent_aux/xpbd-integration-plan.md`.
+
+### Comparing solvers (headless batch)
+
+Per-step metrics (frame, step_ms, n_contacts) are collected by every solver
+and written to `<out_file>/step_metrics.csv`. Batch OBJ export is enabled
+with the top-level `export_obj = true` (plus `show_windows = false` and
+`end_frame = N` for headless runs).
+
+`tools/compare_solvers.py` automates an ADMM-vs-XPBD run of one scene:
+
+```bash
+python tools/compare_solvers.py \
+    --scene resource/scene/test_XPBD_ADMM.toml \
+    --resource resource \
+    --solvers admm,xpbd \
+    --frames 30 \
+    --exe build/Release/main.exe \
+    --out build/compare_out
+```
+
+It patches the scene for each solver (headless + export), runs both, then
+writes `frames.csv` (per-frame mean/max vertex difference, contact counts,
+step times) and `compare.png` (requires matplotlib).
 
 ## Dependencies and submodules
 

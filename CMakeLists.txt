@@ -17,6 +17,13 @@ set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "/O2 /MP /EHsc")
 
+# --- AddressSanitizer (debugging only; MSVC, CXX sources) ---
+option(ENABLE_ASAN "Enable AddressSanitizer for CXX sources" OFF)
+if(ENABLE_ASAN)
+    add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:/fsanitize=address>")
+    add_link_options("/fsanitize=address")
+endif()
+
 # --- CUDA ---
 set(CMAKE_CUDA_ARCHITECTURES 86)
 set(CUDA_SEPARABLE_COMPILATION ON)

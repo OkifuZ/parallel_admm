@@ -179,8 +179,10 @@ void BVH_GPU::download_contact_info() {
 
 std::vector<std::array<float, 3>> BVH_GPU::points() {
     download_contact_info();
-    std::vector<std::array<float, 3>> pts(h_cpNum);
-    for (size_t i = 0; i < pts.size(); i++) {
+    // Fixed size (max_slots) to match the polyscope registration size.
+    std::vector<std::array<float, 3>> pts(max_slots());
+    const size_t n = std::min<size_t>(h_cpNum, pts.size());
+    for (size_t i = 0; i < n; i++) {
         const auto& res = h_contact_info[i];
         const ADU::Vecf_3 mid = (res.closest[0] + res.closest[1]) * static_cast<ADU::Real>(0.5);
         pts[i] = { mid.x(), mid.y(), mid.z() };
@@ -190,13 +192,14 @@ std::vector<std::array<float, 3>> BVH_GPU::points() {
 
 std::vector<std::array<float, 3>> BVH_GPU::normals() {
     download_contact_info();
-    std::vector<std::array<float, 3>> normals(h_cpNum);
-    for (size_t i = 0; i < normals.size(); i++) {
+    std::vector<std::array<float, 3>> normals(max_slots());
+    const size_t n = std::min<size_t>(h_cpNum, normals.size());
+    for (size_t i = 0; i < n; i++) {
         const auto& res = h_contact_info[i];
-        ADU::Vecf_3 n = res.closest[0] - res.closest[1];
-        const ADU::Real len = n.norm();
-        if (len > 0) n /= len;
-        normals[i] = { n.x(), n.y(), n.z() };
+        ADU::Vecf_3 nd = res.closest[0] - res.closest[1];
+        const ADU::Real len = nd.norm();
+        if (len > 0) nd /= len;
+        normals[i] = { nd.x(), nd.y(), nd.z() };
     }
     return normals;
 }

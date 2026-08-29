@@ -54,6 +54,7 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
     }
 
     ctx.app.use_bin = ctx.config.out_bin;
+    ctx.app.export_obj = ctx.config.export_obj;
     ctx.app.show_windows = ctx.config.show_windows;
     ctx.app.end_frame = ctx.config.end_frame;
     ctx.app.sub_step = ctx.config.global.sub_step;
@@ -130,6 +131,7 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
         for (size_t i = 0; i < mesh_id_list.size(); i++) {
             build_xpbd_constraints(*ctx.app.mesh, mesh_id_list[i], material_list[i], xpbd_cslist);
         }
+        std::cout << "[xpbd] constraints built: " << xpbd_cslist.size() << std::endl;
         xpbd->set_constraints(xpbd_cslist);
     } else {
         admm_solver = static_cast<ADMMSolver*>(ctx.app.solver.get());
@@ -146,12 +148,11 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
             }
         }
 
-        // Constraint dimension is known only after assembly; finalize AFTER all
-        // constraints are registered so the GPU backend converts a complete list
-        // (regression fix: convert_constraint2device used to run too early).
+        // Constraint dimension is known only after assembly; the pin
+        // constraints appended below also occupy rows, so set the dimension
+        // and finalize AFTER pin_to_constraints (regression fix: the GPU
+        // convert_constraint2device also needs the complete list).
         admm_solver->add_constraints(cslist);
-        admm_solver->set_constraint_dim(Mesh2Constraint::curr_start_row);
-        admm_solver->finalize_constraints();
     }
     ctx.app.inner = inner;
 
@@ -167,6 +168,8 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
         Solver::ConstraintsList& cslist = admm_solver->inner_solver()->getConstraints();
         Mesh2Constraint::pin_to_constraints(*ctx.app.mesh, ctx.config.global.pin_ids, cslist,
             ctx.app.pin_v, is_static, ctx.app.pin_start, ctx.app.pin_end);
+        admm_solver->set_constraint_dim(Mesh2Constraint::curr_start_row);
+        admm_solver->finalize_constraints();
     }
 
     ContactParameter::set_broadphase_radius(ctx.config.dcd.broad.radius);
@@ -222,3 +225,4 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
 }
 
 } // namespace ADU
+

@@ -121,7 +121,7 @@ inline void ensure_builtin_constraints_registered() {
             for (int ti = mesh.start_tetIdx; ti < mesh.end_tetIdx; ti++) {
                 const auto& vinds = mesh_data.tets.row(ti);
                 auto& ct = std::make_shared<TetrahedralConstraint>(
-                    vinds, mesh_data.verts, material.tet_stretch_min, material.tet_stretch_max, material.tri_use_limit,
+                    vinds, mesh_data.verts, material.tet_stretch_min, material.tet_stretch_max, material.tet_use_limit,
                     material.tet_stretch_k, constraints.size(), Mesh2Constraint::curr_start_row);
                 Mesh2Constraint::curr_start_row += 3;
                 constraints.emplace_back(ct);
