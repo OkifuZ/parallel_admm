@@ -115,3 +115,41 @@ CMake GLOB 同步更新（src/app、src/config 加入，src/mediator 移除）�
 - `find_contact_islands()`/`compute_SaSb()` 空桩；collision_detection_cuda.cpp
   两处 "TODO init got memory leak!" 注释待核实。
 - twobody/triangle/tetrahedral.cpp：可选 target 已注释且代码已过期（不参与构建）。
+
+---
+
+## Phase D 追加：子问题接口真实化 + 约束工厂 + prox 视图化（完成）
+
+### D3. ILinearSolver / ILocalProjector 真实实现
+- `solver/core/admm_backend.h`：占位接口替换为真实接口
+  - `ILinearSolver::solve()` — 全局步：CPU=SimplicialLLT（3 列并行），GPU=Jacobi
+  - `ILocalProjector::project_elastic()` — 局部步：z = prox(D*x + Ue)
+  - `IADMMBackend::linear_solver() / local_projector()` 暴露组件
+- 具体实现：
+  - `backend_cpu/linear_solver_cpu.h`、`backend_cpu/local_projector_cpu.h`
+  - `backend_gpu/linear_solver_gpu.h`、`backend_gpu/local_projector_gpu.h`
+    （通过 `ADMMImplGPU::do_jacobi_global()` / `do_project_elastic()` 包装调用设备逻辑）
+- 归属：`ADMMImplCPUBase` 持有 `unique_ptr<ILinearSolver/ILocalProjector>`，
+  CPU/GPU impl 的构造函数各自装入对应实现；step 热循环经由接口调用（行为不变）。
+- 意义：全局求解器（未来 CG/批处理 LDLT）与局部投影可插拔替换，无需改 step。
+
+### D4. 约束工厂（typeID → creator）
+- 新增 `constraint/constraint_factory.h`：`register_constraint_creator(type_id, fn)`
+  / `create_constraints_for_type(...)` 注册表。
+- `mesh_to_constraint.h` 的内建 tri/tet/bending 创建逻辑迁入
+  `ensure_builtin_constraints_registered()`（惰性注册）；`geometry_to_constraints`
+  改为走注册表。新增约束类型不再需要改 mesh_to_constraint。
+
+### D5. prox 按类型分块 dispatch（CPU 局部步）
+- `ADMMImplCPUBase::constraint_type_ranges`：precompute 时按类型记录连续区间；
+  局部步对每个类型区间各发一个 `parallel_for`（GPU 侧原本就是按类型 run_proxy）。
+- 尝试过把 `Constraint::prox` 改为 `Eigen::Ref<Matf_XX,0,Stride<D,D>>` 直接绑定
+  `z.block(...)` 以消除每约束拷贝——Eigen 的 Ref 无法绑定列优先矩阵的行块
+  （inner stride ≠ 1，编译期拒绝），已回退；拷贝开销本身很小（每约束 12–36 floats），
+  维持 `Matf_XX&` 签名。
+- 与局部步/全局步一起被封装为 `ILocalProjector` / `ILinearSolver`（见 D3）。
+
+### 验证
+- 全部阶段构建通过（Release, MSVC + nvcc）。
+- 数值行为：默认配置下（coloring/dump_A 均关）与重构前一致；prox 视图化仅改变
+  数据通路（同一批浮点运算），coloring 为 opt-in。

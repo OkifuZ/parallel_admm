@@ -8,15 +8,21 @@ class Solver;
 namespace ADU {
 
 struct IContactSolver;
+struct ILinearSolver;
+struct ILocalProjector;
 
 /// Abstract interface for ADMM backend (CPU or GPU).
-/// Phase 1: minimal; Phase 3 will add linear_solver(), contact_solver(), etc.
 struct IADMMBackend {
     virtual void precompute() = 0;
     virtual void step() = 0;
     virtual IContactSolver* contact_solver() { return nullptr; }
     virtual struct Solver* as_solver() = 0;
     virtual ~IADMMBackend() = default;
+
+    /// Sub-problem components (see below). May return nullptr on backends
+    /// that keep these steps inline.
+    virtual ILinearSolver* linear_solver() { return nullptr; }
+    virtual ILocalProjector* local_projector() { return nullptr; }
 
     /// Apply tuning parameters derived from the scene config. No constraint
     /// dependency; must be called before init().
@@ -34,9 +40,20 @@ struct IADMMBackend {
     virtual void set_sync_to_host(bool /*enabled*/) {}
 };
 
-/// Placeholder for future: linear system solve (LLT vs Jacobi).
+/// Global linear system solve (the "global step": A x = b).
+/// CPU: Eigen SimplicialLLT, the 3 RHS columns solved in parallel.
+/// GPU: iterative Jacobi on device state.
 struct ILinearSolver {
     virtual ~ILinearSolver() = default;
+    /// Solve the current global system into the solver state (x_curr).
+    virtual void solve() = 0;
+};
+
+/// Elastic constraint prox (the "local step": z = prox(D*x + Ue)).
+struct ILocalProjector {
+    virtual ~ILocalProjector() = default;
+    /// Compute z = prox(D*x + Ue) into the solver state.
+    virtual void project_elastic() = 0;
 };
 
 /// Phase 2: unified contact subproblem (compute_Scc + project_feasible).
@@ -45,11 +62,6 @@ struct IContactSolver {
     virtual void compute_Scc() = 0;
     virtual void project_feasible(Matf_X3* p, void* contacts, Real mu, size_t max_iter) = 0;
     virtual ~IContactSolver() = default;
-};
-
-/// Placeholder for future: elastic constraint prox (D*x → z).
-struct ILocalProjector {
-    virtual ~ILocalProjector() = default;
 };
 
 } // namespace ADU

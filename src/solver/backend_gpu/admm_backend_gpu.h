@@ -17,6 +17,8 @@ public:
     void precompute() override { impl_->precompute(); }
     void step() override { impl_->step(); }
     IContactSolver* contact_solver() override { return contact_solver_.get(); }
+    ILinearSolver* linear_solver() override { return impl_->linear_solver(); }
+    ILocalProjector* local_projector() override { return impl_->local_projector(); }
     Solver* as_solver() override { return impl_.get(); }
 
     void apply_config(const ADMMSolverConfig& cfg) override {

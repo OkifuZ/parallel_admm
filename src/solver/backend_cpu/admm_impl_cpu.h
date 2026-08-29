@@ -7,6 +7,7 @@
 #include <mutils/common_type_hostonly.h>
 
 #include "solver/core/admm_config.h"
+#include "solver/core/admm_backend.h"
 #include "solver/compact_sparse_matrix.h"
 #include "solver/solver.h"
 #include "constraint/constraint.h"
@@ -50,6 +51,19 @@ public:
     ADU::Matf_X3 z;
     ADU::Matf_X3 DX;
     ADU::Matf_X3 p;
+
+    /// Contiguous [begin, end) index ranges of m_constraints per type
+    /// (constraints are appended grouped by type). Computed in precompute();
+    /// used by the local-step dispatch so each type is a single parallel range.
+    std::vector<std::pair<size_t, size_t>> constraint_type_ranges;
+
+    // Sub-problem components (created by the derived impl ctors):
+    // CPU: LinearSolverCPU / LocalProjectorCPU; GPU replaces them with the
+    // device versions. Exposed through IADMMBackend::linear_solver()/local_projector().
+    std::unique_ptr<ILinearSolver> linear_solver_;
+    std::unique_ptr<ILocalProjector> local_projector_;
+    ILinearSolver* linear_solver() { return linear_solver_.get(); }
+    ILocalProjector* local_projector() { return local_projector_.get(); }
 
     bool enable_frictional_contact{ true };
     bool warmstart_Ue{ true };
@@ -100,6 +114,9 @@ public:
 /// RL-damping CPU implementation (migrated from ADMMSolverFull_RL_damping).
 class ADMMImplCPU : public ADMMImplCPUBase {
 public:
+    ADMMImplCPU();
+    ~ADMMImplCPU();
+
     bool enable_large_scale{ false };
     bool use_heuristic_W_c{ false };
     ADU::Real heu_sigma{ 0.001 };

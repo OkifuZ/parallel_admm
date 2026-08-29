@@ -37,6 +37,9 @@ namespace ADU {
 /// GPU ADMM implementation (migrated from ADMMParallelSolver).
 class ADMMImplGPU : public ADMMImplCPU {
 public:
+    ADMMImplGPU();
+    ~ADMMImplGPU();
+
     void convert_constraint2device();
 
     void init() override;
@@ -58,6 +61,11 @@ public:
 
     void do_compute_Scc() { compute_Scc(); }
     void do_project_feasible_parallel() { project_feasible_parallel(); }
+
+    /// Wrappers used by the backend sub-solver components
+    /// (LinearSolverGPU / LocalProjectorGPU).
+    void do_jacobi_global() { Jacobi_global(Global_Jacobi_iter); }
+    void do_project_elastic();
 
 protected:
     void project_feasible_parallel();

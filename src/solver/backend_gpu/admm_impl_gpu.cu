@@ -1,6 +1,8 @@
 /// Phase 3.4: GPU ADMM implementation (migrated from admm_parallel_global_solver.cu).
 
 #include "solver/backend_gpu/admm_impl_gpu.h"
+#include "solver/backend_gpu/linear_solver_gpu.h"
+#include "solver/backend_gpu/local_projector_gpu.h"
 #include "mutils/timer.h"
 #include "constraint/pin_constraint.h"
 #include "constraint/bending_constraint.h"
@@ -36,6 +38,24 @@ ContactDataDevice::ContactDataDevice(int max_Vert, int max_Contact) {
 }
 
 namespace ADU {
+
+ADMMImplGPU::ADMMImplGPU() {
+    // Replace the CPU sub-solvers with the device versions.
+    linear_solver_ = std::make_unique<LinearSolverGPU>(this);
+    local_projector_ = std::make_unique<LocalProjectorGPU>(this);
+}
+
+ADMMImplGPU::~ADMMImplGPU() = default;
+
+/// Device elastic prox: z = D*x + Ue, then per-type run_proxy kernels.
+void ADMMImplGPU::do_project_elastic() {
+    op_Ax(*m_D_device, solver_data_device->x_curr_device, DX_device);
+    op_a_plus_b(DX_device, m_Ue_device, solver_data_device->z_buffer, m_nCDim);
+    tet_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + tet_constraint_start_row * 3));
+    triangle_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + triangle_constraint_start_row * 3));
+    bending_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + bending_constraint_start_row * 3));
+    pin_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + pin_constraint_start_row * 3));
+}
 
 void ADMMImplGPU::convert_constraint2device() {
     std::vector<std::shared_ptr<TriangleConstraint>> tri_constraints;
@@ -268,12 +288,7 @@ void ADMMImplGPU::step() {
         }
 
         {
-            op_Ax(*m_D_device, solver_data_device->x_curr_device, DX_device);
-            op_a_plus_b(DX_device, m_Ue_device, solver_data_device->z_buffer, m_nCDim);
-            tet_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + tet_constraint_start_row * 3));
-            triangle_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + triangle_constraint_start_row * 3));
-            bending_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + bending_constraint_start_row * 3));
-            pin_constraint_cu->run_proxy(thrust::raw_pointer_cast(solver_data_device->z_buffer.data() + pin_constraint_start_row * 3));
+            local_projector_->project_elastic();
 
             if (enable_frictional_contact) {
                 op_a_minus_b(solver_data_device->x_curr_device, solver_data_device->x_0_device, cache_nDynVertX3, nDynVert);
@@ -299,7 +314,7 @@ void ADMMImplGPU::step() {
                 op_Ax(*m_dt2Wc_device, cache_nDynVertX3, cache_nDynVertX3);
                 op_a_plus_b(solver_data_device->b_curr_device, cache_nDynVertX3, solver_data_device->b_curr_device, nDynVert);
             }
-            Jacobi_global(Global_Jacobi_iter);
+            linear_solver_->solve();
         }
 
         op_Ax(*m_D_device, solver_data_device->x_curr_device, DX_device);

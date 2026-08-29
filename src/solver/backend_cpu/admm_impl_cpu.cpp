@@ -1,6 +1,8 @@
 /// Phase 3.4: CPU ADMM implementation (migrated from admm_full_solver.cpp + admm_full_solver_RL_damping.cpp).
 
 #include "solver/backend_cpu/admm_impl_cpu.h"
+#include "solver/backend_cpu/linear_solver_cpu.h"
+#include "solver/backend_cpu/local_projector_cpu.h"
 #include "mutils/timer.h"
 #include "constraint/pin_constraint.h"
 
@@ -18,6 +20,13 @@
 #include <chrono>
 
 namespace ADU {
+
+ADMMImplCPU::ADMMImplCPU() {
+    linear_solver_ = std::make_unique<LinearSolverCPU>(this);
+    local_projector_ = std::make_unique<LocalProjectorCPU>(this);
+}
+
+ADMMImplCPU::~ADMMImplCPU() = default;
 
 void ADMMImplCPU::apply_config(const ADMMSolverConfig& cfg) {
     static_mesh_id_begin = cfg.static_mesh_id_begin;
@@ -220,6 +229,16 @@ void ADMMImplCPU::precompute() {
     m_Uc.setZero();
     if (enable_frictional_contact && prox_query) Gamma_c.reserve(prox_query->max_collision_num);
 
+    // Constraints are appended grouped by type; record the contiguous ranges
+    // so the per-step prox dispatch can parallelize each type as one range.
+    constraint_type_ranges.clear();
+    for (size_t ci = 0; ci < m_constraints.size();) {
+        const int type = m_constraints[ci]->type;
+        const size_t begin = ci;
+        while (ci < m_constraints.size() && m_constraints[ci]->type == type) ci++;
+        constraint_type_ranges.emplace_back(begin, ci);
+    }
+
     m_LLT_solver = std::make_unique<SolverT>();
     m_LLT_solver->compute(m_A_damp);
     if (m_LLT_solver->info() != Eigen::Success) make_exception("ADMMImplCPU::precompute LLT failed");
@@ -299,14 +318,7 @@ void ADMMImplCPU::step_fast() {
         x_prev = x_curr;
         tbb::parallel_invoke(
             [&]() {
-                DX = m_D * x_curr.block(0, 0, nDynVert, 3);
-                z = DX + m_Ue;
-                tbb::parallel_for_each(m_constraints.begin(), m_constraints.end(), [&](const std::shared_ptr<Constraint>& ct) {
-                    int cdim = ct->dim;
-                    Matf_XX zi = z.block(ct->start_row, 0, cdim, 3);
-                    ct->prox(zi);
-                    z.block(ct->start_row, 0, cdim, 3) = zi;
-                });
+                local_projector_->project_elastic();
             },
             [&]() {
                 if (enable_frictional_contact) {
@@ -325,10 +337,7 @@ void ADMMImplCPU::step_fast() {
             b += m_dt2Wc * (m_dt * p.block(0, 0, nDynVert, 3) + x_0.block(0, 0, nDynVert, 3) - m_Uc);
         b += b_ini;
 
-        tbb::parallel_invoke(
-            [&]() { x_curr.block(0, 0, nDynVert, 1) = m_LLT_solver->solve(b.col(0)); },
-            [&]() { x_curr.block(0, 1, nDynVert, 1) = m_LLT_solver->solve(b.col(1)); },
-            [&]() { x_curr.block(0, 2, nDynVert, 1) = m_LLT_solver->solve(b.col(2)); });
+        linear_solver_->solve();
 
         DX = m_D * x_curr.block(0, 0, nDynVert, 3);
         m_Ue += DX - z;
