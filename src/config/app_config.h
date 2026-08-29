@@ -321,10 +321,11 @@ struct APPConfig {
             app_config.meshes.push_back(mesh);
         }
 
-        // mesh post
-        auto& center_ids_config = *mesh_post_config["center_ids"].as_array();
-        for (int i = 0; i < center_ids_config.size(); i++) {
-            app_config.mesh_post.center_mesh_ids.insert(_CTML(center_ids_config[i].value<int>()));
+        // mesh post (optional section; absent in many scenes)
+        if (auto* center_ids_array = mesh_post_config["center_ids"].as_array()) {
+            for (int i = 0; i < center_ids_array->size(); i++) {
+                app_config.mesh_post.center_mesh_ids.insert(_CTML((*center_ids_array)[i].value<int>()));
+            }
         }
 
         // collider
