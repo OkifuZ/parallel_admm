@@ -13,9 +13,10 @@ struct XPBDConfig {
     bool use_GS_contact{ true };
     ADU::Real g{ static_cast<ADU::Real>(0.98) };
 
-    // --- frictional contact (wired in P4) ---
+    // --- frictional contact ---
     bool enable_frictional_contact{ true };
-    bool use_CCD{ false };
+    int dcd_interval{ 5 };
+    bool use_unique_contact{ false };
     ADU::Real mu{ static_cast<ADU::Real>(0.5) };
 };
 

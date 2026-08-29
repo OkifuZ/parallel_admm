@@ -18,7 +18,10 @@ void XPBDSolver::apply_config(const XPBDConfig& cfg) {
     contact_stiffness = cfg.contact_stiffness;
     use_GS_contact = cfg.use_GS_contact;
     g = cfg.g;
-    // P4 will wire: enable_frictional_contact / use_CCD / mu
+    enable_frictional_contact = cfg.enable_frictional_contact;
+    dcd_interval = cfg.dcd_interval;
+    use_unique_contact = cfg.use_unique_contact;
+    mu = cfg.mu;
 }
 
 void XPBDSolver::init(const Matf_X3& verts, const Vecf_X& mass, Real dt) {
@@ -38,14 +41,98 @@ void XPBDSolver::init(const Matf_X3& verts, const Vecf_X& mass, Real dt) {
 }
 
 void XPBDSolver::step() {
-    // P2 skeleton: gravity + explicit position update.
-    // Elastic/contact constraints are wired in P3/P4.
+    using namespace ADU;
     const Real h = m_dt / static_cast<Real>(m_subSteps);
-    for (int i = 0; i < m_nVert; i++) {
-        if (m_pin_inds_set.count(i)) continue;
-        m_velocities.row(i).y() -= g * h;
+    const Real h_inv = 1.0_r / h;
+
+    // Pin vertices stay fixed: gravity/integration skips them and their
+    // velocity is kept at zero, so x does not drift.
+    Matf_X3 x_prev(m_vertices);
+    Matf_X3 x_curr(m_vertices);
+    Matf_X3 v_curr(m_velocities);
+
+    for (unsigned int substep = 0; substep < m_subSteps; substep++) {
+        x_prev = x_curr;
+        for (int i = 0; i < m_nVert; i++) {
+            if (m_pin_inds_set.count(i)) continue;
+            v_curr.row(i).y() -= g * h;
+        }
+        x_curr += v_curr * h;
+
+        for (unsigned int iter = 0; iter < m_maxIterations; iter++) {
+            // collision detection (broad + narrow phase, host positions)
+            if (enable_frictional_contact && prox_query && (iter % dcd_interval == 0)) {
+                prox_query->proximal_query(x_curr);
+                if (use_unique_contact) prox_query->unique_contact();
+            }
+
+            // elastic constraints (FEM triangle / tet / bending)
+            for (auto& ct : m_xpbd_constraints) {
+                ct->updateConstraint();
+                ct->solvePositionConstraint(x_curr, Matf_X3{}, m_M_inv_vec, iter, h);
+            }
+
+            // frictional contacts as PT/EE XPBD distance constraints
+            // (compression stiffness = contact_stiffness; 5 Gauss-Seidel passes
+            // per iteration, matching the pre-archive behavior).
+            if (enable_frictional_contact && prox_query) {
+                for (int pass = 0; pass < 5; pass++) {
+                    solve_contact_constraints(prox_query->contact_info_list, m_M_inv_vec, x_curr);
+                }
+            }
+        }
+
+        v_curr = h_inv * (x_curr - x_prev);
+        v_curr *= 0.9995_r;
     }
-    m_vertices += m_velocities * h;
+    m_velocities = v_curr;
+    m_vertices = x_curr;
+}
+
+void XPBDSolver::solve_contact_constraints(const ProximalQuery::ContactInfoList& contacts,
+    const ADU::Vecf_X& M_inv_list, ADU::Matf_X3& pos) {
+    using namespace ADU;
+    std::array<Vecf_3, 4> corr;
+    const Real compress_stiff = contact_stiffness;
+    const Real alpha = 1.0_r;
+
+    for (size_t i = 0; i < contacts.size(); i++) {
+        const auto& ct = contacts[i];
+        const auto& inds = ct.vinds;
+
+        const Real m_inv0 = M_inv_list[inds[0]];
+        const Real m_inv1 = M_inv_list[inds[1]];
+        const Real m_inv2 = M_inv_list[inds[2]];
+        const Real m_inv3 = M_inv_list[inds[3]];
+
+        bool res{ false };
+        if (ct.pair_type == ContactInfo::PT) {
+            res = XPBD_utils::solve_TrianglePointDistanceConstraint(
+                pos.row(inds[0]), m_inv0,
+                pos.row(inds[1]), m_inv1,
+                pos.row(inds[2]), m_inv2,
+                pos.row(inds[3]), m_inv3,
+                ContactParameter::get_thickness(),
+                compress_stiff, 0,
+                corr[0], corr[1], corr[2], corr[3]);
+        } else if (ct.pair_type == ContactInfo::EE) {
+            res = XPBD_utils::solve_EdgeEdgeDistanceConstraint(
+                pos.row(inds[0]), m_inv0,
+                pos.row(inds[1]), m_inv1,
+                pos.row(inds[2]), m_inv2,
+                pos.row(inds[3]), m_inv3,
+                ContactParameter::get_thickness(),
+                compress_stiff, 0,
+                corr[0], corr[1], corr[2], corr[3]);
+        }
+
+        if (res) {
+            pos.row(inds[0]) += corr[0] * alpha;
+            pos.row(inds[1]) += corr[1] * alpha;
+            pos.row(inds[2]) += corr[2] * alpha;
+            pos.row(inds[3]) += corr[3] * alpha;
+        }
+    }
 }
 
 void XPBDSolver::reset(const Matf_X3& ini_verts, bool need_precompute) {

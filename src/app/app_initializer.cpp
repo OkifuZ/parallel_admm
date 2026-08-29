@@ -98,8 +98,9 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
     ctx.app.mesh->get_mass(ctx.app.mass);
 
     // --- solver creation & typed configuration ---
+    // Selection: explicit [solver] type, or legacy [xpbd] enable=true.
     SolverType solver_type = SolverType::ADMM_CPU;
-    if (ctx.config.solver.type == "xpbd") {
+    if (ctx.config.solver.type == "xpbd" || ctx.config.xpbd.use_XPBD) {
         solver_type = SolverType::XPBD;
     } else {
         solver_type = ctx.config.use_GPU ? SolverType::ADMM_GPU : SolverType::ADMM_CPU;
@@ -118,6 +119,10 @@ void init_app(AppContext& ctx, const AppInitParams& params) {
         xpbd_cfg.contact_stiffness = ctx.config.xpbd.contact_stiffness;
         xpbd_cfg.use_GS_contact = ctx.config.xpbd.use_GS_contact;
         xpbd_cfg.g = ctx.config.global.g;
+        xpbd_cfg.enable_frictional_contact = ctx.config.solver.contact.enable;
+        xpbd_cfg.dcd_interval = ctx.config.solver.admm.DCD_interval;
+        xpbd_cfg.use_unique_contact = ctx.config.solver.contact.unique;
+        xpbd_cfg.mu = ctx.config.solver.contact.mu;
         xpbd->apply_config(xpbd_cfg);
 
         // XPBD constraints: tri stretch / tet strain / bending (per mesh).

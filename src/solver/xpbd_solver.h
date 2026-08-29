@@ -28,13 +28,23 @@ public:
     unsigned int m_subSteps = 1;
     unsigned int m_maxIterations = 400;
     ADU::Real contact_stiffness = 10;
-    bool use_GS_contact = true;
+    bool use_GS_contact = true; // parsed for compatibility; contacts are always
+                                // solved with PT/EE distance constraints
+    bool enable_frictional_contact{ true };
+    int dcd_interval{ 5 };
+    bool use_unique_contact{ false };
+    ADU::Real mu{ static_cast<ADU::Real>(0.5) };
 
     void set_constraints(const XPBDConstraintList& cs) { m_xpbd_constraints = cs; }
     XPBDConstraintList& constraints() { return m_xpbd_constraints; }
     const XPBDConstraintList& constraints() const { return m_xpbd_constraints; }
 
 private:
+    /// Solve PT/EE contact pairs as XPBD distance constraints (thickness
+    /// from ContactParameter, compression stiffness = contact_stiffness).
+    void solve_contact_constraints(const ProximalQuery::ContactInfoList& contacts,
+        const ADU::Vecf_X& M_inv_list, ADU::Matf_X3& pos);
+
     XPBDConstraintList m_xpbd_constraints;
 };
 

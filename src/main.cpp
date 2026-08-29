@@ -27,6 +27,10 @@ constexpr int kEigenNumThreads = 12;
 AppContext g_ctx;
 
 void main_loop() {
+    // Headless runs (show_windows = false) must not wait for GUI input:
+    // auto-run until end_frame, then unshow and exit.
+    if (!g_ctx.app.show_windows) g_ctx.app.pause = false;
+
     ImGui::CheckboxFlags("pause", (unsigned int*)&g_ctx.app.pause, ImGuiConfigFlags_NavEnableKeyboard); ImGui::SameLine();
     if (ImGui::Button("step")) g_ctx.app.step = true;
     if (ImGui::Button("reset")) g_ctx.app.reset = true;
