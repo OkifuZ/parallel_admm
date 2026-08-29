@@ -135,4 +135,19 @@ TOML: [solver] type = "admm_cpu" | "admm_gpu" | "xpbd"
 
 ---
 
-*调研链接见 §1；进度记录随实现追加到本文档与 refactor-phase-a-b.md。*
+---
+
+## 实施进度
+
+| 阶段 | 状态 | 说明 |
+|------|------|------|
+| P1 约束复活 | ✅ 2026-03 | `src/constraint/xpbd/`（xpbd_constraint.h + 3 个实现 + 工厂 + mesh 构建）；数学复用共享 `xpbd_utils.h` |
+| P2 求解器骨架 | ✅ | `XPBDSolver : Solver`；`XPBDConfig` + `[xpbd]` 段扩展；`SolverType::XPBD` + `create_solver` 返回 `Solver*`；app_initializer 分支装配；`AppContext::inner` 取代 main 的 cast；旧场景 `[xpbd] enable=true` 兼容选择 |
+| P3 弹性约束 | ✅ | step 完整 XPBD 循环（substep → 重力/积分 → 迭代解弹性约束 → 速度阻尼 0.9995）；FEMTriangle/XPBD_FEMTet/Bending 接入 |
+| P4 碰撞与摩擦 | ✅ | ProximalQuery 检测（dcd_interval）→ PT/EE 距离约束（thickness + contact_stiffness，5 遍 GS/迭代）；摩擦锥为后续扩展（mu 字段已预留） |
+| P5 验证与收尾 | ✅（基本） | rod 场景 headless 冒烟：4 帧 1.3s、exit 0、碰撞计数正确；数值对比待用户视觉/实验确认；顺带修复 headless 模式仿真不启动的 bug |
+
+**后续可选**：摩擦锥投影（mu）、BVH_GPU 接触、接触解算并行化（TBB，同 ADMM 分块思路）、
+`use_GS_contact` 语义清理（当前独立实现恒用距离约束解算，字段仅兼容解析）。
+
+*调研链接见 §1。*
