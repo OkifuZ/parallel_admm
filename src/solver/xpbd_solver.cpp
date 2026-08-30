@@ -66,26 +66,28 @@ void XPBDSolver::step() {
         }
         x_curr += v_curr * h;
 
-        for (unsigned int iter = 0; iter < m_maxIterations; iter++) {
-            // collision detection (broad + narrow phase, host positions)
-            if (enable_frictional_contact && prox_query && (iter % dcd_interval == 0)) {
-                prox_query->proximal_query(x_curr);
-                if (use_unique_contact) prox_query->unique_contact();
-            }
+        // Collision detection ONCE per substep (standard XPBD: Bender PBD,
+        // Blender XPBD, Macklin). The contact set is reused across all solver
+        // iterations - position-level contact correction does not need fresh
+        // detection every iteration (unlike ADMM's implicit projection).
+        if (enable_frictional_contact && prox_query) {
+            prox_query->proximal_query(x_curr);
+            if (use_unique_contact) prox_query->unique_contact();
+        }
 
+        for (unsigned int iter = 0; iter < m_maxIterations; iter++) {
             // elastic constraints (FEM triangle / tet / bending)
             for (auto& ct : m_xpbd_constraints) {
                 ct->updateConstraint();
                 ct->solvePositionConstraint(x_curr, Matf_X3{}, m_M_inv_vec, iter, h);
             }
 
-            // frictional contacts as PT/EE XPBD distance constraints
-            // (compression stiffness = contact_stiffness; 5 Gauss-Seidel passes
-            // per iteration, matching the pre-archive behavior).
+            // frictional contacts as PT/EE XPBD distance constraints.
+            // Standard XPBD solves each contact constraint once per iteration
+            // (the iteration loop is itself the Gauss-Seidel sweep); the old
+            // 5-pass version came from the pre-archive ADMM-parasitic code.
             if (enable_frictional_contact && prox_query) {
-                for (int pass = 0; pass < 5; pass++) {
-                    solve_contact_constraints(prox_query->contact_info_list, m_M_inv_vec, x_curr);
-                }
+                solve_contact_constraints(prox_query->contact_info_list, m_M_inv_vec, x_curr);
             }
         }
 
