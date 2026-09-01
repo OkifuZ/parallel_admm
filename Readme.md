@@ -102,3 +102,34 @@ Example:
 ```
 
 Scene TOML configures meshes, materials, collision, solver options, output path, etc. See examples under `resource/scene/`.
+
+## In Development (indev)
+
+Current development status and known limitations.
+
+### XPBD solver
+
+Implemented: elastic constraints (FEM triangle / tet / bending), PT/EE
+contact constraints, infinitely-heavy pins. Collision detection runs once
+per substep (standard XPBD; the contact set is reused across solver
+iterations).
+
+| Item | Status |
+|------|--------|
+| Friction cone projection | Not implemented (config `mu` is parsed but unused) |
+| Contact solve parallelization | Single-threaded Gauss-Seidel; rod scene ≈ 1 s/frame |
+| Embree batch queries (`rtcIntersect1M`) | Planned — `query_edge_edge` is the current hotspot (~750 ms/query with many contacts) |
+| GPU contacts (BVH_GPU + CUDA solve) | Not implemented |
+
+### ADMM
+
+- GPU backend: headless smoke tests pass; full GUI/long-run validation pending.
+- Known dead code / cleanups: `GS_global`, `use_jacobi` (write-only),
+  `find_contact_islands()` empty stub, "TODO init got memory leak!" comments.
+
+### Tooling
+
+- `ENABLE_ASAN` CMake option applies to CXX sources only and does not link
+  with CUDA objects (known limitation).
+- `tools/compare_solvers.py` plots need `pip install matplotlib` (text
+  summary + CSV work without it).
