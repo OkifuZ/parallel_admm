@@ -1,6 +1,8 @@
-# parallel_admm
+# parallel_admm — GPU version
 
-Implementation for *Efficient Frictional Contacts for Soft Body Dynamics via ADMM*, CGI 2024 (submitted to The Visual Computer).
+This is the **GPU version** of the paper *Efficient Frictional Contacts for Soft
+Body Dynamics via ADMM* (CGI 2024, The Visual Computer): CUDA acceleration for
+the ADMM solver, with a CPU backend kept for comparison and debugging.
 
 ## Solver Architecture (CPU/GPU)
 
